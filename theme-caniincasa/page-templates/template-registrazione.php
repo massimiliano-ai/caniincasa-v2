@@ -31,7 +31,7 @@ get_header();
                     <p class="auth-subtitle">Crea il tuo account per accedere a tutti i servizi</p>
                 </div>
 
-                <form id="register-form" class="auth-form">
+                <form id="registration-form" class="auth-form">
 
                     <?php wp_nonce_field( 'caniincasa_register_nonce', 'nonce' ); ?>
 
@@ -99,7 +99,7 @@ get_header();
                     </div>
 
                     <!-- Messages -->
-                    <div class="form-message" id="register-message" style="display:none;"></div>
+                    <div class="form-message" style="display:none;"></div>
 
                 </form>
 

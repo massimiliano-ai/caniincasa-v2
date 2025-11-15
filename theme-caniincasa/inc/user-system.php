@@ -125,8 +125,11 @@ function caniincasa_ajax_register() {
     update_user_meta( $user_id, 'data_registrazione', current_time( 'mysql' ) );
     update_user_meta( $user_id, 'privacy_accettata', 1 );
 
-    // Email di benvenuto
-    wp_new_user_notification( $user_id, null, 'user' );
+    // Email di benvenuto personalizzata
+    caniincasa_send_welcome_email( $user_id, $email, $nome );
+
+    // Notifica admin di nuova registrazione
+    caniincasa_notify_admin_new_user( $user_id, $username, $email, $nome, $cognome );
 
     // Auto-login
     wp_set_current_user( $user_id );
@@ -136,6 +139,78 @@ function caniincasa_ajax_register() {
         'message' => 'Registrazione completata! Benvenuto su CaninCasa.',
         'redirect' => home_url( '/dashboard/' )
     ) );
+}
+
+/**
+ * Send Welcome Email to New User
+ */
+function caniincasa_send_welcome_email( $user_id, $email, $nome ) {
+    $site_name = get_bloginfo( 'name' );
+    $site_url = home_url();
+    $dashboard_url = home_url( '/dashboard/' );
+
+    $subject = sprintf( 'Benvenuto su %s!', $site_name );
+
+    $message = sprintf(
+        "Ciao %s,\n\n" .
+        "Benvenuto su %s!\n\n" .
+        "La tua registrazione è stata completata con successo.\n\n" .
+        "Ora puoi:\n" .
+        "- Inserire annunci di cucciolate e adozioni\n" .
+        "- Vedere i contatti di allevatori e strutture\n" .
+        "- Richiedere modifiche alle schede informative\n" .
+        "- Salvare i tuoi contenuti preferiti\n\n" .
+        "Accedi alla tua dashboard: %s\n\n" .
+        "Se hai domande o hai bisogno di aiuto, non esitare a contattarci.\n\n" .
+        "Grazie per esserti registrato!\n\n" .
+        "Il Team di %s\n" .
+        "%s",
+        $nome,
+        $site_name,
+        $dashboard_url,
+        $site_name,
+        $site_url
+    );
+
+    $headers = array(
+        'Content-Type: text/plain; charset=UTF-8',
+        sprintf( 'From: %s <%s>', $site_name, get_option( 'admin_email' ) )
+    );
+
+    wp_mail( $email, $subject, $message, $headers );
+}
+
+/**
+ * Notify Admin of New User Registration
+ */
+function caniincasa_notify_admin_new_user( $user_id, $username, $email, $nome, $cognome ) {
+    $site_name = get_bloginfo( 'name' );
+    $admin_email = get_option( 'admin_email' );
+    $user_profile_url = admin_url( 'user-edit.php?user_id=' . $user_id );
+
+    $subject = sprintf( '[%s] Nuova registrazione utente', $site_name );
+
+    $message = sprintf(
+        "Nuova registrazione utente su %s\n\n" .
+        "Nome: %s %s\n" .
+        "Username: %s\n" .
+        "Email: %s\n" .
+        "Data: %s\n\n" .
+        "Visualizza profilo utente:\n%s",
+        $site_name,
+        $nome,
+        $cognome,
+        $username,
+        $email,
+        current_time( 'mysql' ),
+        $user_profile_url
+    );
+
+    $headers = array(
+        'Content-Type: text/plain; charset=UTF-8'
+    );
+
+    wp_mail( $admin_email, $subject, $message, $headers );
 }
 
 /**

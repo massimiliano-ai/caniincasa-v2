@@ -255,7 +255,7 @@ function caniincasa_scripts() {
         );
     }
 
-    // Enqueue auth pages CSS (login and registration)
+    // Enqueue auth pages CSS and JS (login and registration)
     if ( is_page_template( 'page-templates/template-login.php' ) ||
          is_page_template( 'page-templates/template-registrazione.php' ) ) {
         wp_enqueue_style(
@@ -264,6 +264,19 @@ function caniincasa_scripts() {
             array( 'caniincasa-main' ),
             CANIINCASA_VERSION
         );
+
+        wp_enqueue_script(
+            'caniincasa-auth-forms',
+            CANIINCASA_THEME_URI . '/js/auth-forms.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+
+        wp_localize_script( 'caniincasa-auth-forms', 'caniincasaAuth', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'caniincasa-auth-nonce' ),
+        ) );
     }
 
     // Enqueue dashboard CSS

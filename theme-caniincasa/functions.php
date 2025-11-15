@@ -131,6 +131,28 @@ function caniincasa_widgets_init() {
 add_action( 'widgets_init', 'caniincasa_widgets_init' );
 
 /**
+ * Hide Admin Bar for Non-Administrators
+ */
+function caniincasa_hide_admin_bar_for_non_admins() {
+    // Hide admin bar only in frontend for non-administrators
+    if ( ! current_user_can( 'administrator' ) && ! is_admin() ) {
+        show_admin_bar( false );
+    }
+}
+add_action( 'after_setup_theme', 'caniincasa_hide_admin_bar_for_non_admins' );
+
+/**
+ * Remove Admin Bar CSS for Non-Administrators
+ * This removes the margin-top added by WordPress when admin bar is shown
+ */
+function caniincasa_remove_admin_bar_margin() {
+    if ( ! current_user_can( 'administrator' ) && ! is_admin() ) {
+        remove_action( 'wp_head', '_admin_bar_bump_cb' );
+    }
+}
+add_action( 'get_header', 'caniincasa_remove_admin_bar_margin' );
+
+/**
  * Enqueue Stylesheets and Scripts
  */
 function caniincasa_scripts() {

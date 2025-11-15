@@ -175,15 +175,19 @@
             let score = 0;
             let maxScore = 100;
 
+            // Normalize breed data for comparison
+            const normalize = (val) => val ? String(val).toLowerCase() : '';
+
             // 1. Esperienza (peso: 15)
+            const adattoPrinc = normalize(breed.adatto_principianti);
             if (answers.esperienza === 'si') {
-                if (breed.adatto_principianti === 'si') score += 15;
-                else if (breed.adatto_principianti === 'medio') score += 8;
-                else score += 0;
+                if (adattoPrinc === 'si' || adattoPrinc === 'alto' || adattoPrinc === '5') score += 15;
+                else if (adattoPrinc === 'medio' || adattoPrinc === '3') score += 8;
+                else score += 2; // Give some points anyway
             } else if (answers.esperienza === 'poca') {
-                if (breed.adatto_principianti === 'si') score += 12;
-                else if (breed.adatto_principianti === 'medio') score += 15;
-                else score += 5;
+                if (adattoPrinc === 'si' || adattoPrinc === 'alto') score += 12;
+                else if (adattoPrinc === 'medio') score += 15;
+                else score += 7;
             } else {
                 score += 15; // Esperti possono gestire qualsiasi razza
             }
@@ -288,18 +292,29 @@
             // 10. Budget (peso: 0 - informativo)
             // Not scored, just informative
 
+            // Add small random variance (±3 points) to avoid all breeds having same score
+            // This helps differentiate breeds when ACF data is sparse
+            const variance = (Math.random() * 6) - 3; // Random between -3 and +3
+            const finalScore = Math.max(0, Math.min(maxScore, score + variance));
+
             // Calculate percentage
-            const percentage = Math.round((score / maxScore) * 100);
+            const percentage = Math.round((finalScore / maxScore) * 100);
 
             scored.push({
                 breed: breed,
-                score: score,
+                score: finalScore,
                 percentage: percentage
             });
         });
 
-        // Sort by score descending
-        scored.sort((a, b) => b.score - a.score);
+        // Sort by score descending WITH randomization for equal scores
+        scored.sort((a, b) => {
+            // If scores are equal, randomize order
+            if (b.score === a.score) {
+                return Math.random() - 0.5;
+            }
+            return b.score - a.score;
+        });
 
         // Return top 5
         return scored.slice(0, 5);
@@ -340,9 +355,25 @@
             html += '<span class="match-percent">' + percentage + '% Match</span>';
             html += '</div>';
 
-            if (breed.caratteristiche) {
+            // Display characteristics - filter out null/empty values
+            let traits = [];
+            if (breed.caratteristiche && Array.isArray(breed.caratteristiche)) {
+                traits = breed.caratteristiche.filter(function(t) {
+                    return t && t !== null && t !== '' && t !== 'null';
+                });
+            }
+
+            // Fallback traits based on breed data
+            if (traits.length === 0) {
+                if (breed.taglia) traits.push('Taglia: ' + capitalizeFirst(breed.taglia));
+                if (breed.tipo_pelo) traits.push('Pelo: ' + capitalizeFirst(breed.tipo_pelo));
+                if (breed.temperamento) traits.push(capitalizeFirst(breed.temperamento));
+            }
+
+            // Display traits (max 3)
+            if (traits.length > 0) {
                 html += '<ul class="result-traits">';
-                breed.caratteristiche.slice(0, 3).forEach(function(trait) {
+                traits.slice(0, 3).forEach(function(trait) {
                     html += '<li>✓ ' + trait + '</li>';
                 });
                 html += '</ul>';
@@ -380,6 +411,14 @@
         }
 
         $('#results-content').html(html);
+    }
+
+    /**
+     * Helper: Capitalize first letter
+     */
+    function capitalizeFirst(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     /**

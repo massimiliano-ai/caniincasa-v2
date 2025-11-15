@@ -456,26 +456,49 @@ function caniincasa_ajax_get_breeds_for_quiz() {
     $breeds_data = array();
 
     foreach ( $breeds as $breed ) {
-        // Get ACF fields (adapt to your field names)
+        // Get ACF fields with normalization and fallbacks
+        $taglia = get_field( 'taglia', $breed->ID );
+        $tipo_pelo = get_field( 'tipo_pelo', $breed->ID );
+        $livello_energia = get_field( 'livello_energia', $breed->ID );
+
+        // Normalize values to lowercase for consistent matching
+        $taglia_norm = $taglia ? strtolower( $taglia ) : 'media';
+        $tipo_pelo_norm = $tipo_pelo ? strtolower( $tipo_pelo ) : 'medio';
+
+        // Build characteristics array, filtering out empty values
+        $caratteristiche = array_filter( array(
+            get_field( 'caratteristica_1', $breed->ID ),
+            get_field( 'caratteristica_2', $breed->ID ),
+            get_field( 'caratteristica_3', $breed->ID ),
+            get_field( 'caratteristica_principale', $breed->ID ), // Alternative field name
+            get_field( 'carattere', $breed->ID ), // Alternative field name
+        ), function( $val ) {
+            return ! empty( $val ) && $val !== null;
+        } );
+
+        // Extract from excerpt if no characteristics
+        if ( empty( $caratteristiche ) && has_excerpt( $breed->ID ) ) {
+            $excerpt = get_the_excerpt( $breed->ID );
+            if ( $excerpt ) {
+                $caratteristiche[] = wp_trim_words( $excerpt, 10, '...' );
+            }
+        }
+
         $breeds_data[] = array(
             'name' => $breed->post_title,
             'link' => get_permalink( $breed->ID ),
-            'image' => get_the_post_thumbnail_url( $breed->ID, 'thumbnail' ),
-            'taglia' => get_field( 'taglia', $breed->ID ),
-            'tipo_pelo' => get_field( 'tipo_pelo', $breed->ID ),
-            'livello_energia' => get_field( 'livello_energia', $breed->ID ),
-            'adatto_bambini' => get_field( 'adatto_bambini', $breed->ID ),
-            'adatto_appartamento' => get_field( 'adatto_appartamento', $breed->ID ),
-            'adatto_principianti' => get_field( 'adatto_principianti', $breed->ID ),
-            'facilita_addestramento' => get_field( 'facilita_addestramento', $breed->ID ),
-            'tendenza_abbaio' => get_field( 'tendenza_abbaio', $breed->ID ),
-            'ipoallergenico' => get_field( 'ipoallergenico', $breed->ID ),
-            'temperamento' => get_field( 'temperamento', $breed->ID ),
-            'caratteristiche' => array(
-                get_field( 'caratteristica_1', $breed->ID ),
-                get_field( 'caratteristica_2', $breed->ID ),
-                get_field( 'caratteristica_3', $breed->ID ),
-            ),
+            'image' => get_the_post_thumbnail_url( $breed->ID, 'medium' ),
+            'taglia' => $taglia_norm,
+            'tipo_pelo' => $tipo_pelo_norm,
+            'livello_energia' => get_field( 'livello_energia', $breed->ID ) ?: 'medio',
+            'adatto_bambini' => get_field( 'adatto_bambini', $breed->ID ) ?: 'medio',
+            'adatto_appartamento' => get_field( 'adatto_appartamento', $breed->ID ) ?: 'medio',
+            'adatto_principianti' => get_field( 'adatto_principianti', $breed->ID ) ?: 'medio',
+            'facilita_addestramento' => get_field( 'facilita_addestramento', $breed->ID ) ?: 'media',
+            'tendenza_abbaio' => get_field( 'tendenza_abbaio', $breed->ID ) ?: 'media',
+            'ipoallergenico' => get_field( 'ipoallergenico', $breed->ID ) ?: 'no',
+            'temperamento' => get_field( 'temperamento', $breed->ID ) ?: get_field( 'carattere', $breed->ID ) ?: '',
+            'caratteristiche' => array_values( $caratteristiche ), // Re-index array
         );
     }
 

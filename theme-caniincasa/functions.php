@@ -242,6 +242,9 @@ require_once CANIINCASA_INC_DIR . '/custom-post-types.php';
 // Custom Taxonomies
 require_once CANIINCASA_INC_DIR . '/taxonomies.php';
 
+// Populate Italian Provinces
+require_once CANIINCASA_INC_DIR . '/populate-provinces.php';
+
 // Custom Fields (ACF)
 if ( file_exists( CANIINCASA_INC_DIR . '/custom-fields.php' ) ) {
     require_once CANIINCASA_INC_DIR . '/custom-fields.php';

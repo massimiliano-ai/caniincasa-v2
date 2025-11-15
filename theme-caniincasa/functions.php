@@ -516,6 +516,7 @@ function caniincasa_ajax_filter_archive() {
 
     $post_type = sanitize_text_field( $_POST['post_type'] );
     $provincia = isset( $_POST['provincia'] ) ? intval( $_POST['provincia'] ) : 0;
+    $razza = isset( $_POST['razza'] ) ? intval( $_POST['razza'] ) : 0;
 
     // Build query args
     $args = array(
@@ -526,15 +527,28 @@ function caniincasa_ajax_filter_archive() {
         'order' => 'ASC',
     );
 
-    // Add taxonomy filter if provincia is set
+    // Build tax_query for multiple taxonomies
+    $tax_query = array( 'relation' => 'AND' );
+
     if ( $provincia > 0 ) {
-        $args['tax_query'] = array(
-            array(
-                'taxonomy' => 'provincia',
-                'field' => 'term_id',
-                'terms' => $provincia,
-            ),
+        $tax_query[] = array(
+            'taxonomy' => 'provincia',
+            'field' => 'term_id',
+            'terms' => $provincia,
         );
+    }
+
+    if ( $razza > 0 ) {
+        $tax_query[] = array(
+            'taxonomy' => 'razze_allevamenti',
+            'field' => 'term_id',
+            'terms' => $razza,
+        );
+    }
+
+    // Only add tax_query if we have filters
+    if ( count( $tax_query ) > 1 ) {
+        $args['tax_query'] = $tax_query;
     }
 
     $query = new WP_Query( $args );
@@ -579,6 +593,28 @@ function caniincasa_ajax_filter_archive() {
                             <span class="text"><?php echo esc_html( $province[0]->name ); ?></span>
                         </div>
                     <?php endif; ?>
+
+                    <?php
+                    // Razze allevate (only for allevamenti)
+                    if ( $post_type === 'allevamenti' ) {
+                        $razze = wp_get_post_terms( get_the_ID(), 'razze_allevamenti' );
+                        if ( ! empty( $razze ) && ! is_wp_error( $razze ) ):
+                        ?>
+                            <div class="item-breeds">
+                                <span class="icon">🐕</span>
+                                <span class="text">
+                                    <?php
+                                    $razze_names = array_slice( array_map( function($r) { return $r->name; }, $razze ), 0, 3 );
+                                    echo esc_html( implode( ', ', $razze_names ) );
+                                    if ( count( $razze ) > 3 ) {
+                                        echo ' +' . ( count( $razze ) - 3 );
+                                    }
+                                    ?>
+                                </span>
+                            </div>
+                        <?php endif;
+                    }
+                    ?>
 
                     <?php
                     // Indirizzo

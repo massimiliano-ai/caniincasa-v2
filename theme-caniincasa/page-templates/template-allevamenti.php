@@ -28,9 +28,9 @@ get_header();
             <?php endif; ?>
         </div>
 
-        <!-- Filtri Zona -->
+        <!-- Filtri Zona e Razze -->
         <div class="filters-wrapper">
-            <h3 class="filters-title">Filtra per zona</h3>
+            <h3 class="filters-title">Filtra allevamenti</h3>
             <div class="filters-row">
                 <div class="filter-group">
                     <label for="filter-provincia">Provincia:</label>
@@ -51,6 +51,27 @@ get_header();
                         <?php endforeach; ?>
                     </select>
                 </div>
+
+                <div class="filter-group">
+                    <label for="filter-razza">Razza:</label>
+                    <select id="filter-razza" class="filter-select">
+                        <option value="">Tutte le razze</option>
+                        <?php
+                        $razze = get_terms( array(
+                            'taxonomy' => 'razze_allevamenti',
+                            'hide_empty' => true,
+                            'orderby' => 'name',
+                            'order' => 'ASC',
+                        ) );
+                        foreach ( $razze as $razza ):
+                        ?>
+                            <option value="<?php echo $razza->term_id; ?>">
+                                <?php echo esc_html( $razza->name ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
                 <button id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
             </div>
         </div>

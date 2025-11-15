@@ -385,6 +385,7 @@ function caniincasa_ajax_submit_cucciolata() {
     $user_id = get_current_user_id();
 
     // Sanitize input
+    $tipo_cucciolata_id = intval( $_POST['tipo_cucciolata'] );
     $titolo = sanitize_text_field( $_POST['titolo'] );
     $razza_id = intval( $_POST['razza'] );
     $data_nascita = sanitize_text_field( $_POST['data_nascita'] );
@@ -396,7 +397,7 @@ function caniincasa_ajax_submit_cucciolata() {
     $descrizione = wp_kses_post( $_POST['descrizione'] );
 
     // Validate
-    if ( empty( $titolo ) || empty( $razza_id ) || empty( $data_nascita ) || empty( $descrizione ) ) {
+    if ( empty( $tipo_cucciolata_id ) || empty( $titolo ) || empty( $razza_id ) || empty( $data_nascita ) || empty( $descrizione ) ) {
         wp_send_json_error( array( 'message' => 'Compila tutti i campi obbligatori' ) );
     }
 
@@ -425,8 +426,9 @@ function caniincasa_ajax_submit_cucciolata() {
         update_field( 'pedigree', $pedigree, $post_id );
     }
 
-    // Set taxonomy
+    // Set taxonomies
     wp_set_post_terms( $post_id, array( $provincia_id ), 'provincia' );
+    wp_set_post_terms( $post_id, array( $tipo_cucciolata_id ), 'tipo_cucciolata' );
 
     // Handle image uploads
     if ( ! empty( $_FILES['immagini'] ) ) {
@@ -590,6 +592,191 @@ function caniincasa_ajax_reject_post() {
     wp_mail( $author->user_email, 'Annuncio non approvato', $message );
 
     wp_send_json_success( array( 'message' => 'Annuncio rifiutato' ) );
+}
+
+/**
+ * Block admin access for non-admin users
+ * CRITICAL: Registered users can only access front-end
+ */
+function caniincasa_block_admin_access() {
+    // Allow AJAX requests
+    if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+        return;
+    }
+
+    // Allow administrators and moderators
+    if ( current_user_can( 'administrator' ) || current_user_can( 'moderate_content' ) ) {
+        return;
+    }
+
+    // Redirect all other logged-in users to dashboard
+    if ( is_user_logged_in() ) {
+        wp_redirect( home_url( '/dashboard/' ) );
+        exit;
+    }
+}
+add_action( 'admin_init', 'caniincasa_block_admin_access' );
+
+/**
+ * Hide admin bar for non-admin users
+ */
+function caniincasa_hide_admin_bar() {
+    if ( ! current_user_can( 'administrator' ) && ! current_user_can( 'moderate_content' ) ) {
+        show_admin_bar( false );
+    }
+}
+add_action( 'after_setup_theme', 'caniincasa_hide_admin_bar' );
+
+/**
+ * Redirect after login
+ * Send users to dashboard instead of admin
+ */
+function caniincasa_login_redirect( $redirect_to, $request, $user ) {
+    // Return default for non-users
+    if ( ! isset( $user->roles ) || ! is_array( $user->roles ) ) {
+        return $redirect_to;
+    }
+
+    // Admins and moderators go to admin
+    if ( in_array( 'administrator', $user->roles ) || in_array( 'moderatore_annunci', $user->roles ) ) {
+        return admin_url();
+    }
+
+    // All other users go to front-end dashboard
+    return home_url( '/dashboard/' );
+}
+add_filter( 'login_redirect', 'caniincasa_login_redirect', 10, 3 );
+
+/**
+ * Submit Dogsitter AJAX
+ */
+add_action( 'wp_ajax_caniincasa_submit_dogsitter', 'caniincasa_ajax_submit_dogsitter' );
+
+function caniincasa_ajax_submit_dogsitter() {
+    check_ajax_referer( 'caniincasa_submit_dogsitter', 'nonce' );
+
+    if ( ! is_user_logged_in() || ! current_user_can( 'submit_annuncio' ) ) {
+        wp_send_json_error( array( 'message' => 'Non autorizzato' ) );
+    }
+
+    $user_id = get_current_user_id();
+
+    // Sanitize input
+    $titolo = sanitize_text_field( $_POST['titolo'] );
+    $provincia_id = intval( $_POST['provincia'] );
+    $comune = sanitize_text_field( $_POST['comune'] );
+    $esperienza = sanitize_text_field( $_POST['esperienza'] );
+    $tariffe = floatval( $_POST['tariffe'] );
+    $disponibilita = isset( $_POST['disponibilita'] ) ? array_map( 'sanitize_text_field', $_POST['disponibilita'] ) : array();
+    $servizi = isset( $_POST['servizi'] ) ? array_map( 'sanitize_text_field', $_POST['servizi'] ) : array();
+    $taglie = isset( $_POST['taglie'] ) ? array_map( 'sanitize_text_field', $_POST['taglie'] ) : array();
+    $descrizione = wp_kses_post( $_POST['descrizione'] );
+
+    // Validate
+    if ( empty( $titolo ) || empty( $provincia_id ) || empty( $comune ) || empty( $descrizione ) ) {
+        wp_send_json_error( array( 'message' => 'Compila tutti i campi obbligatori' ) );
+    }
+
+    if ( strlen( $descrizione ) < 100 ) {
+        wp_send_json_error( array( 'message' => 'La descrizione deve essere almeno 100 caratteri' ) );
+    }
+
+    if ( empty( $disponibilita ) ) {
+        wp_send_json_error( array( 'message' => 'Seleziona almeno una disponibilità' ) );
+    }
+
+    if ( empty( $servizi ) ) {
+        wp_send_json_error( array( 'message' => 'Seleziona almeno un servizio offerto' ) );
+    }
+
+    if ( empty( $taglie ) ) {
+        wp_send_json_error( array( 'message' => 'Seleziona almeno una taglia accettata' ) );
+    }
+
+    // Create post
+    $post_id = wp_insert_post( array(
+        'post_title' => $titolo,
+        'post_content' => $descrizione,
+        'post_status' => 'pending', // Pending review
+        'post_type' => 'annunci_dogsitter',
+        'post_author' => $user_id,
+    ) );
+
+    if ( is_wp_error( $post_id ) ) {
+        wp_send_json_error( array( 'message' => $post_id->get_error_message() ) );
+    }
+
+    // Add meta fields
+    update_post_meta( $post_id, 'comune', $comune );
+    update_post_meta( $post_id, 'esperienza', $esperienza );
+    update_post_meta( $post_id, 'tariffe', $tariffe );
+    update_post_meta( $post_id, 'disponibilita', $disponibilita );
+    update_post_meta( $post_id, 'servizi', $servizi );
+    update_post_meta( $post_id, 'taglie', $taglie );
+
+    // Set taxonomy
+    wp_set_post_terms( $post_id, array( $provincia_id ), 'provincia' );
+
+    // Handle image uploads
+    if ( ! empty( $_FILES['immagini'] ) ) {
+        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+        $files = $_FILES['immagini'];
+        $image_ids = array();
+
+        for ( $i = 0; $i < count( $files['name'] ) && $i < 3; $i++ ) {
+            if ( $files['error'][$i] === 0 ) {
+                $file = array(
+                    'name'     => $files['name'][$i],
+                    'type'     => $files['type'][$i],
+                    'tmp_name' => $files['tmp_name'][$i],
+                    'error'    => $files['error'][$i],
+                    'size'     => $files['size'][$i],
+                );
+
+                $_FILES = array( 'upload' => $file );
+
+                $attachment_id = media_handle_upload( 'upload', $post_id );
+
+                if ( ! is_wp_error( $attachment_id ) ) {
+                    $image_ids[] = $attachment_id;
+
+                    // Set first image as featured
+                    if ( $i === 0 ) {
+                        set_post_thumbnail( $post_id, $attachment_id );
+                    }
+                }
+            }
+        }
+
+        // Store all image IDs
+        if ( ! empty( $image_ids ) ) {
+            update_post_meta( $post_id, 'galleria_immagini', $image_ids );
+        }
+    }
+
+    // Send notification email to moderators
+    $moderators = get_users( array( 'role' => 'moderatore_annunci' ) );
+    $admins = get_users( array( 'role' => 'administrator' ) );
+    $all_moderators = array_merge( $moderators, $admins );
+
+    foreach ( $all_moderators as $moderator ) {
+        wp_mail(
+            $moderator->user_email,
+            'Nuovo annuncio dogsitter da moderare',
+            "È stato pubblicato un nuovo annuncio dogsitter che richiede la tua approvazione.\n\n" .
+            "Titolo: $titolo\n" .
+            "Provincia: " . get_term( $provincia_id )->name . "\n" .
+            "Link modifica: " . admin_url( "post.php?post=$post_id&action=edit" )
+        );
+    }
+
+    wp_send_json_success( array(
+        'message' => 'Annuncio inviato con successo! Sarà pubblicato dopo la moderazione.',
+        'post_id' => $post_id
+    ) );
 }
 
 /**

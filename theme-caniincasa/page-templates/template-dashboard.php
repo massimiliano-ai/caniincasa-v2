@@ -53,6 +53,9 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                     <a href="?tab=aggiungi-cucciolata" class="tab-link <?php echo $active_tab === 'aggiungi-cucciolata' ? 'active' : ''; ?>">
                         <span class="icon">➕</span> Nuova cucciolata
                     </a>
+                    <a href="?tab=aggiungi-dogsitter" class="tab-link <?php echo $active_tab === 'aggiungi-dogsitter' ? 'active' : ''; ?>">
+                        <span class="icon">🐕</span> Offri servizio dogsitter
+                    </a>
                 <?php endif; ?>
                 <?php if ( current_user_can( 'suggest_edits' ) ): ?>
                     <a href="?tab=segnalazioni" class="tab-link <?php echo $active_tab === 'segnalazioni' ? 'active' : ''; ?>">
@@ -232,6 +235,28 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                             <?php wp_nonce_field( 'caniincasa_submit_cucciolata', 'cucciolata_nonce' ); ?>
 
                             <div class="form-group">
+                                <label for="tipo_cucciolata">Tipo Annuncio *</label>
+                                <select id="tipo_cucciolata" name="tipo_cucciolata" required>
+                                    <option value="">Seleziona il tipo di annuncio</option>
+                                    <?php
+                                    $tipi_cucciolata = get_terms( array(
+                                        'taxonomy' => 'tipo_cucciolata',
+                                        'hide_empty' => false,
+                                        'orderby' => 'name',
+                                        'order' => 'ASC',
+                                    ) );
+
+                                    foreach ( $tipi_cucciolata as $tipo ):
+                                    ?>
+                                        <option value="<?php echo $tipo->term_id; ?>" title="<?php echo esc_attr( $tipo->description ); ?>">
+                                            <?php echo esc_html( $tipo->name ); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <small class="form-help" id="tipo-help"></small>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="titolo">Titolo Annuncio *</label>
                                 <input type="text" id="titolo" name="titolo" required
                                        placeholder="Es: Cuccioli di Labrador Retriever disponibili">
@@ -350,6 +375,188 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                             </div>
 
                             <div class="form-message" id="cucciolata-message" style="display:none;"></div>
+                        </form>
+                    </div>
+
+                <?php elseif ( $active_tab === 'aggiungi-dogsitter' && current_user_can( 'submit_cucciolata' ) ): ?>
+                    <!-- AGGIUNGI DOGSITTER TAB -->
+                    <div class="tab-pane active" id="aggiungi-dogsitter">
+                        <h2 class="tab-title">Offri il tuo servizio di dogsitter</h2>
+                        <p class="tab-description">Compila il form per proporti come dogsitter. Il tuo annuncio sarà visibile dopo la moderazione.</p>
+
+                        <form id="dogsitter-form" class="dashboard-form">
+                            <?php wp_nonce_field( 'caniincasa_submit_dogsitter', 'dogsitter_nonce' ); ?>
+
+                            <div class="form-group">
+                                <label for="titolo_dogsitter">Titolo Annuncio *</label>
+                                <input type="text" id="titolo_dogsitter" name="titolo" required
+                                       placeholder="Es: Dogsitter esperto con esperienza pluriennale">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="provincia_dogsitter">Provincia *</label>
+                                    <select id="provincia_dogsitter" name="provincia" required>
+                                        <option value="">Seleziona provincia</option>
+                                        <?php
+                                        $province = get_terms( array(
+                                            'taxonomy' => 'provincia',
+                                            'hide_empty' => false,
+                                            'orderby' => 'name',
+                                            'order' => 'ASC',
+                                        ) );
+
+                                        foreach ( $province as $provincia ):
+                                        ?>
+                                            <option value="<?php echo $provincia->term_id; ?>">
+                                                <?php echo esc_html( $provincia->name ); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="comune_dogsitter">Comune *</label>
+                                    <input type="text" id="comune_dogsitter" name="comune" required
+                                           placeholder="Es: Milano">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="esperienza">Anni di Esperienza *</label>
+                                    <select id="esperienza" name="esperienza" required>
+                                        <option value="">Seleziona</option>
+                                        <option value="meno-1">Meno di 1 anno</option>
+                                        <option value="1-3">1-3 anni</option>
+                                        <option value="3-5">3-5 anni</option>
+                                        <option value="5-10">5-10 anni</option>
+                                        <option value="oltre-10">Oltre 10 anni</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="tariffe">Tariffa Oraria (€) *</label>
+                                    <input type="number" id="tariffe" name="tariffe" min="5" max="100" step="1" required
+                                           placeholder="Es: 15">
+                                    <small class="form-help">Tariffa oraria indicativa in euro</small>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Disponibilità *</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="disponibilita[]" value="mattina">
+                                        <span>Mattina (08:00-13:00)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="disponibilita[]" value="pomeriggio">
+                                        <span>Pomeriggio (13:00-19:00)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="disponibilita[]" value="sera">
+                                        <span>Sera (19:00-23:00)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="disponibilita[]" value="weekend">
+                                        <span>Weekend</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="disponibilita[]" value="notturno">
+                                        <span>Notturno</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Servizi Offerti *</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="servizi[]" value="passeggiate">
+                                        <span>Passeggiate</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="servizi[]" value="pensione">
+                                        <span>Pensione a casa mia</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="servizi[]" value="domicilio">
+                                        <span>Assistenza a domicilio</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="servizi[]" value="toelettatura">
+                                        <span>Toelettatura base</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="servizi[]" value="trasporto">
+                                        <span>Trasporto</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="servizi[]" value="addestramento">
+                                        <span>Addestramento base</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Taglie Accettate *</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="taglie[]" value="piccola">
+                                        <span>Piccola (fino a 10kg)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="taglie[]" value="media">
+                                        <span>Media (10-25kg)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="taglie[]" value="grande">
+                                        <span>Grande (25-45kg)</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="taglie[]" value="gigante">
+                                        <span>Gigante (oltre 45kg)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="descrizione_dogsitter">Presentazione e Descrizione Servizi *</label>
+                                <textarea id="descrizione_dogsitter" name="descrizione" rows="8" required
+                                          placeholder="Descrivi la tua esperienza, le tue competenze, eventuali certificazioni, disponibilità di spazi (giardino, ecc.), e cosa ti rende un buon dogsitter..."></textarea>
+                                <small class="form-help">Minimo 100 caratteri</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="immagini_dogsitter">Foto Profilo e Immagini</label>
+                                <input type="file" id="immagini_dogsitter" name="immagini[]" multiple accept="image/*">
+                                <small class="form-help">Prima foto = foto profilo. Puoi caricare fino a 3 immagini (max 2MB ciascuna)</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="terms_dogsitter" id="terms_dogsitter" required>
+                                    <span>Ho letto e accetto i <a href="/termini/" target="_blank">Termini e Condizioni</a> per la pubblicazione di annunci</span>
+                                </label>
+                            </div>
+
+                            <div class="form-message info" style="margin-bottom: 1.5rem;">
+                                <strong>Nota:</strong> Il tuo annuncio sarà sottoposto a moderazione prima della pubblicazione.
+                                Riceverai una notifica via email quando verrà approvato.
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="btn-text">Invia Annuncio</span>
+                                    <span class="btn-loading" style="display:none;">
+                                        <span class="spinner"></span> Invio...
+                                    </span>
+                                </button>
+                                <a href="?tab=annunci" class="btn btn-outline">Annulla</a>
+                            </div>
+
+                            <div class="form-message" id="dogsitter-message" style="display:none;"></div>
                         </form>
                     </div>
 

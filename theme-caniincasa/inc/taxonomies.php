@@ -171,7 +171,42 @@ function caniincasa_register_taxonomies() {
     ) );
 
     /**
-     * 5. Province (optional but useful)
+     * 5. Tipo Cucciolata
+     * Taxonomy for litter types (NEW)
+     * Used on: cucciolate, annunci_cucciolate
+     * Types: Cucciolata Allevamento, Cucciolata Privato, Adozione Cuccioli, Adozione Adulti
+     */
+    register_taxonomy( 'tipo_cucciolata', array( 'cucciolate', 'annunci_cucciolate' ), array(
+        'labels' => array(
+            'name'                       => _x( 'Tipologie Cucciolata', 'Taxonomy general name', 'caniincasa' ),
+            'singular_name'              => _x( 'Tipologia Cucciolata', 'Taxonomy singular name', 'caniincasa' ),
+            'menu_name'                  => __( 'Tipologie', 'caniincasa' ),
+            'all_items'                  => __( 'Tutte le Tipologie', 'caniincasa' ),
+            'new_item_name'              => __( 'Nuova Tipologia', 'caniincasa' ),
+            'add_new_item'               => __( 'Aggiungi Nuova Tipologia', 'caniincasa' ),
+            'edit_item'                  => __( 'Modifica Tipologia', 'caniincasa' ),
+            'update_item'                => __( 'Aggiorna Tipologia', 'caniincasa' ),
+            'view_item'                  => __( 'Visualizza Tipologia', 'caniincasa' ),
+            'search_items'               => __( 'Cerca Tipologie', 'caniincasa' ),
+            'not_found'                  => __( 'Nessuna tipologia trovata', 'caniincasa' ),
+        ),
+        'hierarchical'          => false,
+        'public'                => true,
+        'show_ui'               => true,
+        'show_admin_column'     => true,
+        'show_in_nav_menus'     => true,
+        'show_tagcloud'         => false,
+        'show_in_rest'          => true,
+        'query_var'             => true,
+        'rewrite'               => array(
+            'slug'         => 'tipo-cucciolata',
+            'with_front'   => true,
+            'hierarchical' => false,
+        ),
+    ) );
+
+    /**
+     * 6. Province (optional but useful)
      * Taxonomy for Italian provinces
      * Used on: allevamenti, struttureveterinarie, canili, centri_cinofili, pensioni_per_cani
      */
@@ -220,3 +255,55 @@ function caniincasa_razze_allevamenti_columns( $columns ) {
     return $new_columns;
 }
 add_filter( 'manage_edit-razze_allevamenti_columns', 'caniincasa_razze_allevamenti_columns' );
+
+/**
+ * Populate default terms for tipo_cucciolata taxonomy
+ * Creates the 4 main types if they don't exist
+ */
+function caniincasa_populate_tipo_cucciolata_terms() {
+    // Only run once
+    if ( get_option( 'caniincasa_tipo_cucciolata_populated' ) ) {
+        return;
+    }
+
+    $terms = array(
+        array(
+            'name' => 'Cucciolata Allevamento',
+            'slug' => 'cucciolata-allevamento',
+            'description' => 'Cuccioli provenienti da allevamento riconosciuto con pedigree',
+        ),
+        array(
+            'name' => 'Cucciolata Privato',
+            'slug' => 'cucciolata-privato',
+            'description' => 'Cuccioli provenienti da privati, senza pedigree',
+        ),
+        array(
+            'name' => 'Adozione Cuccioli',
+            'slug' => 'adozione-cuccioli',
+            'description' => 'Cuccioli in adozione da canili o associazioni',
+        ),
+        array(
+            'name' => 'Adozione Adulti',
+            'slug' => 'adozione-adulti',
+            'description' => 'Cani adulti in adozione da canili o associazioni',
+        ),
+    );
+
+    foreach ( $terms as $term_data ) {
+        // Check if term already exists
+        if ( ! term_exists( $term_data['slug'], 'tipo_cucciolata' ) ) {
+            wp_insert_term(
+                $term_data['name'],
+                'tipo_cucciolata',
+                array(
+                    'slug' => $term_data['slug'],
+                    'description' => $term_data['description'],
+                )
+            );
+        }
+    }
+
+    // Mark as populated
+    update_option( 'caniincasa_tipo_cucciolata_populated', true );
+}
+add_action( 'init', 'caniincasa_populate_tipo_cucciolata_terms', 20 );

@@ -106,6 +106,19 @@
             return;
         }
 
+        // Tipo cucciolata change handler - show description
+        $('#tipo_cucciolata').on('change', function() {
+            const $option = $(this).find('option:selected');
+            const description = $option.attr('title') || '';
+            const $helpText = $('#tipo-help');
+
+            if (description) {
+                $helpText.html('<strong>ℹ️</strong> ' + description).show();
+            } else {
+                $helpText.hide();
+            }
+        });
+
         $form.on('submit', function(e) {
             e.preventDefault();
 
@@ -119,6 +132,7 @@
             const formData = new FormData();
             formData.append('action', 'caniincasa_submit_cucciolata');
             formData.append('nonce', $form.find('input[name="cucciolata_nonce"]').val());
+            formData.append('tipo_cucciolata', $('#tipo_cucciolata').val());
             formData.append('titolo', $('#titolo').val().trim());
             formData.append('razza', $('#razza').val());
             formData.append('data_nascita', $('#data_nascita').val());
@@ -366,6 +380,134 @@
     }
 
     /**
+     * Dogsitter Form Handler
+     */
+    function initDogsitterForm() {
+        const $form = $('#dogsitter-form');
+
+        if (!$form.length) {
+            return;
+        }
+
+        $form.on('submit', function(e) {
+            e.preventDefault();
+
+            // Validate
+            if (!$('#terms_dogsitter').is(':checked')) {
+                showFormMessage($form, 'error', 'Devi accettare i Termini e Condizioni');
+                return;
+            }
+
+            // Validate checkboxes
+            const disponibilita = $('input[name="disponibilita[]"]:checked').length;
+            const servizi = $('input[name="servizi[]"]:checked').length;
+            const taglie = $('input[name="taglie[]"]:checked').length;
+
+            if (disponibilita === 0) {
+                showFormMessage($form, 'error', 'Seleziona almeno una disponibilità');
+                return;
+            }
+
+            if (servizi === 0) {
+                showFormMessage($form, 'error', 'Seleziona almeno un servizio offerto');
+                return;
+            }
+
+            if (taglie === 0) {
+                showFormMessage($form, 'error', 'Seleziona almeno una taglia accettata');
+                return;
+            }
+
+            // Validate description length
+            const descrizione = $('#descrizione_dogsitter').val().trim();
+            if (descrizione.length < 100) {
+                showFormMessage($form, 'error', 'La descrizione deve essere almeno 100 caratteri (attualmente: ' + descrizione.length + ')');
+                return;
+            }
+
+            // Get form data
+            const formData = new FormData();
+            formData.append('action', 'caniincasa_submit_dogsitter');
+            formData.append('nonce', $form.find('input[name="dogsitter_nonce"]').val());
+            formData.append('titolo', $('#titolo_dogsitter').val().trim());
+            formData.append('provincia', $('#provincia_dogsitter').val());
+            formData.append('comune', $('#comune_dogsitter').val().trim());
+            formData.append('esperienza', $('#esperienza').val());
+            formData.append('tariffe', $('#tariffe').val());
+            formData.append('descrizione', descrizione);
+
+            // Add disponibilita array
+            $('input[name="disponibilita[]"]:checked').each(function() {
+                formData.append('disponibilita[]', $(this).val());
+            });
+
+            // Add servizi array
+            $('input[name="servizi[]"]:checked').each(function() {
+                formData.append('servizi[]', $(this).val());
+            });
+
+            // Add taglie array
+            $('input[name="taglie[]"]:checked').each(function() {
+                formData.append('taglie[]', $(this).val());
+            });
+
+            // Add images
+            const images = $('#immagini_dogsitter')[0].files;
+            if (images.length > 3) {
+                showFormMessage($form, 'error', 'Puoi caricare massimo 3 immagini');
+                return;
+            }
+
+            for (let i = 0; i < images.length; i++) {
+                if (images[i].size > 2 * 1024 * 1024) {
+                    showFormMessage($form, 'error', 'Ogni immagine deve essere massimo 2MB');
+                    return;
+                }
+                formData.append('immagini[]', images[i]);
+            }
+
+            // Show loading state
+            const $submitBtn = $form.find('button[type="submit"]');
+            const $btnText = $submitBtn.find('.btn-text');
+            const $btnLoading = $submitBtn.find('.btn-loading');
+
+            $submitBtn.prop('disabled', true);
+            $btnText.hide();
+            $btnLoading.show();
+
+            // AJAX request
+            $.ajax({
+                url: caniincasaDashboard.ajaxurl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        showFormMessage($form, 'success', response.data.message);
+
+                        // Redirect after 2 seconds
+                        setTimeout(function() {
+                            window.location.href = '?tab=annunci';
+                        }, 2000);
+                    } else {
+                        showFormMessage($form, 'error', response.data.message);
+                        $submitBtn.prop('disabled', false);
+                        $btnText.show();
+                        $btnLoading.hide();
+                    }
+                },
+                error: function() {
+                    showFormMessage($form, 'error', 'Si è verificato un errore. Riprova.');
+                    $submitBtn.prop('disabled', false);
+                    $btnText.show();
+                    $btnLoading.hide();
+                }
+            });
+        });
+    }
+
+    /**
      * Show form message
      */
     function showFormMessage($form, type, message) {
@@ -429,6 +571,7 @@
     $(document).ready(function() {
         initProfileForm();
         initCucciolataForm();
+        initDogsitterForm();
         initDeleteAnnuncio();
         initApprovePost();
         initRejectPost();

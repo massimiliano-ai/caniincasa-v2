@@ -255,6 +255,56 @@ function caniincasa_scripts() {
         );
     }
 
+    // Enqueue auth pages CSS (login and registration)
+    if ( is_page_template( 'page-templates/template-login.php' ) ||
+         is_page_template( 'page-templates/template-registrazione.php' ) ) {
+        wp_enqueue_style(
+            'caniincasa-auth-pages',
+            CANIINCASA_THEME_URI . '/css/auth-pages.css',
+            array( 'caniincasa-main' ),
+            CANIINCASA_VERSION
+        );
+    }
+
+    // Enqueue dashboard CSS
+    if ( is_page_template( 'page-templates/template-dashboard.php' ) ) {
+        wp_enqueue_style(
+            'caniincasa-dashboard',
+            CANIINCASA_THEME_URI . '/css/dashboard.css',
+            array( 'caniincasa-main' ),
+            CANIINCASA_VERSION
+        );
+    }
+
+    // Enqueue archive filters CSS and JS (for structure archive pages)
+    $archive_templates = array(
+        'page-templates/template-allevamenti.php',
+        'page-templates/template-veterinari.php',
+        'page-templates/template-centri-cinofili.php',
+        'page-templates/template-canili.php',
+        'page-templates/template-pensioni.php',
+    );
+
+    foreach ( $archive_templates as $template ) {
+        if ( is_page_template( $template ) ) {
+            wp_enqueue_style(
+                'caniincasa-archivi-filtri',
+                CANIINCASA_THEME_URI . '/css/archivi-filtri.css',
+                array( 'caniincasa-main' ),
+                CANIINCASA_VERSION
+            );
+
+            wp_enqueue_script(
+                'caniincasa-archivi-filtri-js',
+                CANIINCASA_THEME_URI . '/js/archivi-filtri.js',
+                array( 'jquery' ),
+                CANIINCASA_VERSION,
+                true
+            );
+            break;
+        }
+    }
+
     // Enqueue comment reply script if needed
     if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
         wp_enqueue_script( 'comment-reply' );
@@ -417,6 +467,204 @@ function caniincasa_ajax_get_breeds_for_quiz() {
     }
 
     wp_send_json_success( array( 'breeds' => $breeds_data ) );
+}
+
+/**
+ * AJAX Handler: Filter Archive by Provincia
+ */
+add_action( 'wp_ajax_filter_archive_by_provincia', 'caniincasa_ajax_filter_archive' );
+add_action( 'wp_ajax_nopriv_filter_archive_by_provincia', 'caniincasa_ajax_filter_archive' );
+
+function caniincasa_ajax_filter_archive() {
+    check_ajax_referer( 'caniincasa-nonce', 'nonce' );
+
+    $post_type = sanitize_text_field( $_POST['post_type'] );
+    $provincia = isset( $_POST['provincia'] ) ? intval( $_POST['provincia'] ) : 0;
+
+    // Build query args
+    $args = array(
+        'post_type' => $post_type,
+        'post_status' => 'publish',
+        'posts_per_page' => 12,
+        'orderby' => 'title',
+        'order' => 'ASC',
+    );
+
+    // Add taxonomy filter if provincia is set
+    if ( $provincia > 0 ) {
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'provincia',
+                'field' => 'term_id',
+                'terms' => $provincia,
+            ),
+        );
+    }
+
+    $query = new WP_Query( $args );
+
+    // Generate HTML
+    ob_start();
+
+    if ( $query->have_posts() ) {
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            ?>
+            <div class="item-card">
+
+                <!-- Image -->
+                <?php if ( has_post_thumbnail() ): ?>
+                    <div class="item-image">
+                        <a href="<?php the_permalink(); ?>">
+                            <?php the_post_thumbnail( 'medium_large', array(
+                                'loading' => 'lazy',
+                                'alt' => get_the_title()
+                            ) ); ?>
+                        </a>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Content -->
+                <div class="item-content">
+
+                    <h3 class="item-title">
+                        <a href="<?php the_permalink(); ?>">
+                            <?php the_title(); ?>
+                        </a>
+                    </h3>
+
+                    <?php
+                    // Provincia
+                    $province = wp_get_post_terms( get_the_ID(), 'provincia' );
+                    if ( ! empty( $province ) && ! is_wp_error( $province ) ):
+                    ?>
+                        <div class="item-location">
+                            <span class="icon">📍</span>
+                            <span class="text"><?php echo esc_html( $province[0]->name ); ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php
+                    // Indirizzo
+                    $indirizzo = get_field( 'indirizzo' );
+                    $citta = get_field( 'citta' );
+                    if ( $indirizzo || $citta ):
+                    ?>
+                        <div class="item-address">
+                            <span class="icon">🏠</span>
+                            <span class="text">
+                                <?php
+                                if ( $indirizzo ) {
+                                    echo esc_html( $indirizzo );
+                                    if ( $citta ) echo ', ';
+                                }
+                                if ( $citta ) echo esc_html( $citta );
+                                ?>
+                            </span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php
+                    // Excerpt
+                    if ( has_excerpt() ):
+                    ?>
+                        <div class="item-excerpt">
+                            <?php echo wp_trim_words( get_the_excerpt(), 15, '...' ); ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php
+                    // Contatti (protetti)
+                    $telefono = get_field( 'telefono_principale' ) ?: get_field( 'telefono' );
+                    $email = get_field( 'email' );
+                    $sito_web = get_field( 'sito_web' );
+
+                    if ( $telefono || $email || $sito_web ):
+                    ?>
+                        <div class="item-contacts">
+                            <?php if ( caniincasa_can_view_contacts() ): ?>
+                                <?php if ( $telefono ): ?>
+                                    <a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $telefono ) ); ?>" class="contact-item" title="Telefono">
+                                        <span class="icon">📞</span>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if ( $email ): ?>
+                                    <a href="mailto:<?php echo esc_attr( $email ); ?>" class="contact-item" title="Email">
+                                        <span class="icon">✉️</span>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if ( $sito_web ): ?>
+                                    <a href="<?php echo esc_url( $sito_web ); ?>" target="_blank" rel="noopener" class="contact-item" title="Sito web">
+                                        <span class="icon">🌐</span>
+                                    </a>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <div class="protected-contact-message">
+                                    <span class="icon">🔒</span>
+                                    <a href="<?php echo home_url( '/registrati/' ); ?>">Registrati per vedere i contatti</a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- View More Button -->
+                    <a href="<?php the_permalink(); ?>" class="btn-view-more">
+                        Visualizza dettagli
+                    </a>
+
+                </div>
+
+            </div>
+            <?php
+        }
+    } else {
+        // No results
+        $type_labels = array(
+            'allevamenti' => 'allevamenti',
+            'struttureveterinarie' => 'strutture veterinarie',
+            'centri_cinofili' => 'centri cinofili',
+            'canili' => 'canili',
+            'pensioni_per_cani' => 'pensioni',
+        );
+        $label = isset( $type_labels[$post_type] ) ? $type_labels[$post_type] : 'risultati';
+        ?>
+        <div class="no-items">
+            <div class="no-items-icon">🔍</div>
+            <h3>Nessun risultato</h3>
+            <p>Non ci sono <?php echo esc_html( $label ); ?> in questa provincia.</p>
+        </div>
+        <?php
+    }
+
+    $html = ob_get_clean();
+
+    // Generate results info
+    ob_start();
+    ?>
+    <p class="results-count">
+        Trovati <strong><?php echo $query->found_posts; ?></strong> <?php
+        $type_labels = array(
+            'allevamenti' => 'allevamenti',
+            'struttureveterinarie' => 'strutture veterinarie',
+            'centri_cinofili' => 'centri cinofili',
+            'canili' => 'canili',
+            'pensioni_per_cani' => 'pensioni',
+        );
+        echo isset( $type_labels[$post_type] ) ? $type_labels[$post_type] : 'risultati';
+        ?>
+    </p>
+    <?php
+    $results_info = ob_get_clean();
+
+    wp_reset_postdata();
+
+    wp_send_json_success( array(
+        'html' => $html,
+        'results_info' => $results_info,
+        'count' => $query->found_posts,
+    ) );
 }
 
 /**

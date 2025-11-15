@@ -223,7 +223,37 @@ function caniincasa_scripts() {
     wp_localize_script( 'caniincasa-main-js', 'canincasaAjax', array(
         'ajaxurl' => admin_url( 'admin-ajax.php' ),
         'nonce'   => wp_create_nonce( 'caniincasa-nonce' ),
+        'homeurl' => home_url(),
     ) );
+
+    // Enqueue richieste strutture JS (only on richieste page)
+    if ( is_page_template( 'page-templates/template-richieste-strutture.php' ) ) {
+        wp_enqueue_script(
+            'caniincasa-richieste',
+            CANIINCASA_THEME_URI . '/js/richieste-strutture.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+    }
+
+    // Enqueue quiz JS and CSS (only on quiz page)
+    if ( is_page_template( 'page-templates/template-quiz-scelta-razza.php' ) ) {
+        wp_enqueue_style(
+            'caniincasa-quiz',
+            CANIINCASA_THEME_URI . '/css/quiz.css',
+            array( 'caniincasa-main' ),
+            CANIINCASA_VERSION
+        );
+
+        wp_enqueue_script(
+            'caniincasa-quiz-js',
+            CANIINCASA_THEME_URI . '/js/quiz-scelta-razza.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+    }
 
     // Enqueue comment reply script if needed
     if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -231,6 +261,163 @@ function caniincasa_scripts() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'caniincasa_scripts' );
+
+/**
+ * Google Analytics GA4 Integration
+ */
+function caniincasa_google_analytics() {
+    // TODO: Replace with actual GA4 Measurement ID
+    $ga_measurement_id = get_theme_mod( 'ga_measurement_id', 'G-XXXXXXXXXX' );
+
+    if ( empty( $ga_measurement_id ) || $ga_measurement_id === 'G-XXXXXXXXXX' ) {
+        return; // Skip if not configured
+    }
+
+    ?>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $ga_measurement_id ); ?>"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '<?php echo esc_js( $ga_measurement_id ); ?>', {
+            'anonymize_ip': true,
+            'cookie_flags': 'SameSite=None;Secure'
+        });
+
+        <?php if ( is_user_logged_in() ): ?>
+        // Track logged-in user type
+        gtag('set', 'user_properties', {
+            'user_type': '<?php echo is_user_logged_in() ? 'logged_in' : 'guest'; ?>'
+        });
+        <?php endif; ?>
+    </script>
+    <?php
+}
+add_action( 'wp_head', 'caniincasa_google_analytics', 10 );
+
+/**
+ * Google Analytics Custom Events
+ */
+function caniincasa_analytics_events() {
+    ?>
+    <script>
+    jQuery(document).ready(function($) {
+        // Track form submissions
+        $('#cucciolata-form').on('submit', function() {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'form_submit', {
+                    'event_category': 'Annunci',
+                    'event_label': 'Cucciolata'
+                });
+            }
+        });
+
+        $('#dogsitter-form').on('submit', function() {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'form_submit', {
+                    'event_category': 'Annunci',
+                    'event_label': 'Dogsitter'
+                });
+            }
+        });
+
+        // Track contact reveals
+        $(document).on('click', '.reveal-contact', function() {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'contact_reveal', {
+                    'event_category': 'Engagement',
+                    'event_label': 'Contatto Visualizzato'
+                });
+            }
+        });
+
+        // Track breed filter usage
+        $('.razza-filters select, .razza-filters input').on('change', function() {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'filter_use', {
+                    'event_category': 'Razze',
+                    'event_label': 'Filtro Applicato'
+                });
+            }
+        });
+    });
+    </script>
+    <?php
+}
+add_action( 'wp_footer', 'caniincasa_analytics_events', 99 );
+
+/**
+ * Add GA4 Measurement ID option to Customizer
+ */
+function caniincasa_customize_register_analytics( $wp_customize ) {
+    // Analytics Section
+    $wp_customize->add_section( 'caniincasa_analytics', array(
+        'title'    => __( 'Analytics & Tracking', 'caniincasa' ),
+        'priority' => 130,
+    ) );
+
+    // GA4 Measurement ID
+    $wp_customize->add_setting( 'ga_measurement_id', array(
+        'default'           => '',
+        'sanitize_callback' => 'sanitize_text_field',
+    ) );
+
+    $wp_customize->add_control( 'ga_measurement_id', array(
+        'label'       => __( 'Google Analytics 4 Measurement ID', 'caniincasa' ),
+        'section'     => 'caniincasa_analytics',
+        'type'        => 'text',
+        'description' => __( 'Inserisci il tuo GA4 Measurement ID (es: G-XXXXXXXXXX)', 'caniincasa' ),
+    ) );
+}
+add_action( 'customize_register', 'caniincasa_customize_register_analytics' );
+
+/**
+ * AJAX Handler: Get Breeds for Quiz
+ */
+add_action( 'wp_ajax_get_breeds_for_quiz', 'caniincasa_ajax_get_breeds_for_quiz' );
+add_action( 'wp_ajax_nopriv_get_breeds_for_quiz', 'caniincasa_ajax_get_breeds_for_quiz' );
+
+function caniincasa_ajax_get_breeds_for_quiz() {
+    check_ajax_referer( 'caniincasa-nonce', 'nonce' );
+
+    // Get all breeds
+    $breeds = get_posts( array(
+        'post_type' => 'razze_di_cani',
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+        'orderby' => 'title',
+        'order' => 'ASC',
+    ) );
+
+    $breeds_data = array();
+
+    foreach ( $breeds as $breed ) {
+        // Get ACF fields (adapt to your field names)
+        $breeds_data[] = array(
+            'name' => $breed->post_title,
+            'link' => get_permalink( $breed->ID ),
+            'image' => get_the_post_thumbnail_url( $breed->ID, 'thumbnail' ),
+            'taglia' => get_field( 'taglia', $breed->ID ),
+            'tipo_pelo' => get_field( 'tipo_pelo', $breed->ID ),
+            'livello_energia' => get_field( 'livello_energia', $breed->ID ),
+            'adatto_bambini' => get_field( 'adatto_bambini', $breed->ID ),
+            'adatto_appartamento' => get_field( 'adatto_appartamento', $breed->ID ),
+            'adatto_principianti' => get_field( 'adatto_principianti', $breed->ID ),
+            'facilita_addestramento' => get_field( 'facilita_addestramento', $breed->ID ),
+            'tendenza_abbaio' => get_field( 'tendenza_abbaio', $breed->ID ),
+            'ipoallergenico' => get_field( 'ipoallergenico', $breed->ID ),
+            'temperamento' => get_field( 'temperamento', $breed->ID ),
+            'caratteristiche' => array(
+                get_field( 'caratteristica_1', $breed->ID ),
+                get_field( 'caratteristica_2', $breed->ID ),
+                get_field( 'caratteristica_3', $breed->ID ),
+            ),
+        );
+    }
+
+    wp_send_json_success( array( 'breeds' => $breeds_data ) );
+}
 
 /**
  * Include Required Files

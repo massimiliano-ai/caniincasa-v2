@@ -22,7 +22,7 @@ get_header();
 
         <?php caniincasa_breadcrumbs(); ?>
 
-        <div class="auth-wrapper">
+        <div class="auth-wrapper auth-wrapper-split">
 
             <div class="auth-box">
 

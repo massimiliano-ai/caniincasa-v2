@@ -1,0 +1,501 @@
+/**
+ * Page Templates: Grid Layouts
+ * CSS condiviso per template allevamenti, canili e altri CPT
+ *
+ * @package CaninCasa
+ * @since 2.0.0
+ */
+
+/* ==========================================================================
+   VARIABILI
+   ========================================================================== */
+
+:root {
+    --template-primary: #e65229;
+    --template-primary-light: #ff7b4d;
+    --template-primary-dark: #c94520;
+    --template-bg: #f9f9f9;
+    --template-card-bg: #ffffff;
+    --template-text: #333;
+    --template-text-light: #666;
+    --template-border: #e0e0e0;
+    --template-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --template-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
+   PAGE HERO
+   ========================================================================== */
+
+.page-hero {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+}
+
+.page-hero .page-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--template-text);
+    margin-bottom: 1rem;
+}
+
+.page-hero .page-intro {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--template-text-light);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   RESULTS INFO
+   ========================================================================== */
+
+.results-info {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--template-card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--template-border);
+    text-align: center;
+}
+
+.results-count {
+    margin: 0;
+    font-size: 16px;
+    color: var(--template-text-light);
+}
+
+.results-count strong {
+    color: var(--template-primary);
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   ITEMS GRID
+   ========================================================================== */
+
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+@media (max-width: 1024px) {
+    .items-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .items-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* ==========================================================================
+   ITEM CARD
+   ========================================================================== */
+
+.item-card {
+    background: var(--template-card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--template-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--template-shadow-hover);
+}
+
+/* Card Image */
+.item-image {
+    position: relative;
+    width: 100%;
+    padding-bottom: 66%; /* Aspect ratio 3:2 */
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.item-image a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.item-card:hover .item-image img {
+    transform: scale(1.05);
+}
+
+/* Card Content */
+.item-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.item-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.item-title a {
+    color: var(--template-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.item-title a:hover {
+    color: var(--template-primary);
+}
+
+/* Meta Info */
+.item-location,
+.item-breeds,
+.item-address,
+.item-excerpt {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 14px;
+    color: var(--template-text-light);
+    line-height: 1.5;
+}
+
+.item-location .icon,
+.item-breeds .icon,
+.item-address .icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.item-excerpt {
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--template-border);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--template-text-light);
+}
+
+/* Contacts */
+.item-contacts {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--template-border);
+}
+
+.contact-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--template-bg);
+    border-radius: 50%;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.contact-item .icon {
+    font-size: 18px;
+}
+
+.contact-item:hover {
+    background: var(--template-primary);
+    transform: scale(1.1);
+}
+
+.contact-item:hover .icon {
+    filter: grayscale(100%) brightness(200%);
+}
+
+/* Badges */
+.item-badge {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 12px;
+    white-space: nowrap;
+}
+
+.badge-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.badge-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Services/Courses */
+.item-services,
+.item-courses,
+.item-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 14px;
+    color: var(--template-text-light);
+    line-height: 1.5;
+}
+
+.item-services .icon,
+.item-courses .icon,
+.item-info .icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* View More Button */
+.btn-view-more {
+    display: inline-block;
+    margin-top: auto;
+    padding: 0.75rem 1.5rem;
+    background: var(--template-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.btn-view-more:hover {
+    background: var(--template-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 82, 41, 0.3);
+}
+
+/* ==========================================================================
+   PAGINATION
+   ========================================================================== */
+
+.pagination-wrapper {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.pagination-wrapper .page-numbers {
+    display: inline-flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination-wrapper .page-numbers li {
+    display: inline-block;
+}
+
+.pagination-wrapper a,
+.pagination-wrapper span {
+    display: inline-block;
+    padding: 0.7rem 1.2rem;
+    background: white;
+    color: var(--template-text);
+    border: 1px solid var(--template-border);
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.pagination-wrapper a:hover {
+    background: var(--template-primary);
+    color: white;
+    border-color: var(--template-primary);
+    transform: translateY(-2px);
+}
+
+.pagination-wrapper .current {
+    background: var(--template-primary);
+    color: white;
+    border-color: var(--template-primary);
+}
+
+.pagination-wrapper .prev,
+.pagination-wrapper .next {
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   NO ITEMS
+   ========================================================================== */
+
+.no-items {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--template-card-bg);
+    border-radius: 12px;
+    margin: 3rem 0;
+    box-shadow: var(--template-shadow);
+}
+
+.no-items-icon {
+    font-size: 80px;
+    margin-bottom: 1.5rem;
+    opacity: 0.3;
+}
+
+.no-items h3 {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 28px;
+    color: var(--template-text);
+    margin-bottom: 1rem;
+}
+
+.no-items p {
+    font-size: 16px;
+    color: var(--template-text-light);
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.item-card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Stagger animation */
+.item-card:nth-child(1) { animation-delay: 0.05s; }
+.item-card:nth-child(2) { animation-delay: 0.1s; }
+.item-card:nth-child(3) { animation-delay: 0.15s; }
+.item-card:nth-child(4) { animation-delay: 0.2s; }
+.item-card:nth-child(5) { animation-delay: 0.25s; }
+.item-card:nth-child(6) { animation-delay: 0.3s; }
+.item-card:nth-child(7) { animation-delay: 0.35s; }
+.item-card:nth-child(8) { animation-delay: 0.4s; }
+.item-card:nth-child(9) { animation-delay: 0.45s; }
+.item-card:nth-child(10) { animation-delay: 0.5s; }
+.item-card:nth-child(11) { animation-delay: 0.55s; }
+.item-card:nth-child(12) { animation-delay: 0.6s; }
+
+/* ==========================================================================
+   RESPONSIVE TWEAKS
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .page-hero .page-title {
+        font-size: 32px;
+    }
+
+    .page-hero .page-intro {
+        font-size: 16px;
+    }
+
+    .item-content {
+        padding: 1.25rem;
+    }
+
+    .item-title {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-hero {
+        margin-bottom: 2rem;
+        padding: 1rem 0;
+    }
+
+    .page-hero .page-title {
+        font-size: 28px;
+    }
+
+    .results-info {
+        font-size: 14px;
+    }
+
+    .item-content {
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .btn-view-more {
+        padding: 0.6rem 1.2rem;
+        font-size: 13px;
+    }
+
+    .pagination-wrapper a,
+    .pagination-wrapper span {
+        padding: 0.5rem 0.9rem;
+        font-size: 14px;
+    }
+}
+
+/* ==========================================================================
+   PRINT STYLES
+   ========================================================================== */
+
+@media print {
+    .item-card {
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+
+    .item-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn-view-more,
+    .pagination-wrapper {
+        display: none;
+    }
+}

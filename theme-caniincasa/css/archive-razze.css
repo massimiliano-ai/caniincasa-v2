@@ -1,0 +1,609 @@
+/**
+ * Archive Razze - Styles with AJAX Filters
+ *
+ * @package CaninCasa
+ * @since 2.0.0
+ */
+
+/* ==========================================================================
+   Archive Hero
+   ========================================================================== */
+
+.archive-razze .archive-hero {
+    text-align: center;
+    padding: 3rem 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 12px;
+    margin-bottom: 3rem;
+}
+
+.archive-hero .archive-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1a1a1a;
+}
+
+.archive-hero .title-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.archive-hero .archive-description {
+    font-size: 1.125rem;
+    color: #555;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .archive-hero .archive-title {
+        font-size: 2rem;
+    }
+
+    .archive-hero {
+        padding: 2rem 1rem;
+    }
+}
+
+/* ==========================================================================
+   Layout Grid
+   ========================================================================== */
+
+.razze-archive-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+@media (max-width: 992px) {
+    .razze-archive-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+/* ==========================================================================
+   Filters Sidebar
+   ========================================================================== */
+
+.razze-filters {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 100px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+}
+
+.filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.filters-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1a1a1a;
+}
+
+.btn-reset-filters {
+    background: transparent;
+    border: none;
+    color: #D35400;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.btn-reset-filters:hover {
+    background: #fff5f0;
+}
+
+.btn-reset-filters .icon {
+    font-size: 1.125rem;
+    margin-right: 0.25rem;
+}
+
+/* Filter Group */
+.filter-group {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.filter-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    color: #333;
+}
+
+.filter-label .label-icon {
+    margin-right: 0.5rem;
+}
+
+/* Search Input */
+.filter-search {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s;
+}
+
+.filter-search:focus {
+    outline: none;
+    border-color: #D35400;
+}
+
+/* Checkboxes */
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.filter-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.filter-checkbox input:checked + .checkbox-custom {
+    background: #D35400;
+    border-color: #D35400;
+}
+
+.filter-checkbox input:checked + .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.checkbox-label {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.filter-checkbox:hover .checkbox-custom {
+    border-color: #D35400;
+}
+
+/* Range Sliders */
+.filter-range {
+    padding: 0.5rem 0;
+}
+
+.filter-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+    -webkit-appearance: none;
+    margin-bottom: 0.75rem;
+}
+
+.filter-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #D35400;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(211, 84, 0, 0.3);
+}
+
+.filter-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #D35400;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(211, 84, 0, 0.3);
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.range-value {
+    font-weight: 700;
+    color: #D35400;
+}
+
+/* Select Dropdown */
+.filter-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #D35400;
+}
+
+/* Mobile Filter Toggle */
+.btn-toggle-filters {
+    display: none;
+    background: #D35400;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-toggle-filters .icon {
+    margin-right: 0.5rem;
+}
+
+.btn-toggle-filters:hover {
+    background: #A04000;
+}
+
+@media (max-width: 992px) {
+    .razze-filters {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 90%;
+        max-width: 350px;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .razze-filters.filters-open {
+        left: 0;
+    }
+
+    .btn-toggle-filters {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    body.filters-modal-open::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+}
+
+/* ==========================================================================
+   Results Area
+   ========================================================================== */
+
+.razze-results {
+    min-height: 500px;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.results-count {
+    font-size: 1rem;
+    color: #555;
+}
+
+.results-count strong {
+    color: #D35400;
+    font-weight: 700;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #D35400;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* No Results */
+.no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.no-results-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.no-results p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* ==========================================================================
+   Breeds Grid
+   ========================================================================== */
+
+.razze-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .razze-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* Breed Card */
+.breed-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.breed-card.animated {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.breed-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+}
+
+.breed-card__link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.breed-card__image {
+    position: relative;
+    padding-top: 75%;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.breed-card__image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.breed-card:hover .breed-card__image img {
+    transform: scale(1.05);
+}
+
+.breed-card__image--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.placeholder-icon {
+    font-size: 4rem;
+    opacity: 0.3;
+}
+
+.breed-card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    padding: 1.5rem 1rem 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.breed-card:hover .breed-card__overlay {
+    opacity: 1;
+}
+
+.view-details {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.breed-card__content {
+    padding: 1.25rem;
+}
+
+.breed-card__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+    line-height: 1.3;
+}
+
+.breed-card__temperament {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.breed-card__origin {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 1rem;
+}
+
+.breed-card__origin .icon {
+    margin-right: 0.25rem;
+}
+
+.breed-card__stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+.stat-label {
+    color: #666;
+    font-weight: 600;
+}
+
+.stat-paws {
+    display: flex;
+    gap: 0.15rem;
+}
+
+.stat-paws .paw {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.stat-paws .paw.filled {
+    color: #D35400;
+}
+
+.stat-paws .paw.empty {
+    opacity: 0.2;
+}
+
+/* Load More */
+.load-more-container {
+    text-align: center;
+    padding: 3rem 0;
+}
+
+.btn {
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+}
+
+.btn-primary {
+    background: #D35400;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #A04000;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid #D35400;
+    color: #D35400;
+}
+
+.btn-outline:hover {
+    background: #D35400;
+    color: white;
+}

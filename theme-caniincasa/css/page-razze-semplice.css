@@ -1,0 +1,328 @@
+/**
+ * Template: Razze - Griglia Semplice
+ * Stile identico al sito live, senza filtri
+ *
+ * @package CaninCasa
+ * @since 2.0.0
+ */
+
+/* ==========================================================================
+   VARIABILI COLORI - Dal sito live
+   ========================================================================== */
+
+:root {
+    --razze-header-bg: #FFCC70;
+    --razze-header-text: #4d3319;
+    --razze-card-bg: #f2f2f0;
+    --razze-link-hover: #e65229;
+    --razze-border-radius: 5px;
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+
+.razze-hero {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.razze-hero .page-title {
+    font-family: 'Baloo 2', 'Open Sans', sans-serif;
+    font-size: 39px;
+    font-weight: 700;
+    color: var(--razze-header-text);
+    margin-bottom: 1rem;
+}
+
+.razze-hero .page-intro {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   RESULTS INFO
+   ========================================================================== */
+
+.results-info {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.results-count {
+    font-size: 16px;
+    color: #555;
+    margin: 0;
+    text-align: center;
+}
+
+.results-count strong {
+    color: var(--razze-header-text);
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   GRIGLIA RAZZE - Layout Sito Live
+   ========================================================================== */
+
+.razze-grid-simple {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+/* Responsive Grid - Breakpoints dal sito live */
+@media (max-width: 1380px) {
+    .razze-grid-simple {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .razze-grid-simple {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .razze-grid-simple {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   CARD RAZZA - Stile Sito Live
+   ========================================================================== */
+
+.razza-card-simple {
+    background: var(--razze-card-bg);
+    border-radius: var(--razze-border-radius);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+    text-decoration: none;
+}
+
+.razza-card-simple:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Image Container */
+.razza-card-simple .razza-card-image {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* Aspect ratio 16:9 dal sito live */
+    overflow: hidden;
+    background: #ddd;
+}
+
+.razza-card-simple .razza-card-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.razza-card-simple:hover .razza-card-image img {
+    transform: scale(1.05);
+}
+
+/* No Image Placeholder */
+.razza-card-simple .no-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e0e0e0;
+}
+
+.razza-card-simple .no-image .icon {
+    font-size: 64px;
+    opacity: 0.3;
+}
+
+/* Card Content */
+.razza-card-simple .razza-card-content {
+    padding: 9px; /* Padding dal sito live */
+}
+
+.razza-card-simple .razza-card-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--razze-header-text);
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+.razza-card-simple:hover .razza-card-title {
+    color: var(--razze-link-hover);
+}
+
+/* Card Meta Info */
+.razza-card-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #777;
+    margin-top: 0.5rem;
+}
+
+.razza-card-meta .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.razza-card-meta .icon {
+    font-size: 14px;
+}
+
+.razza-card-meta .value {
+    font-weight: 600;
+    color: #555;
+}
+
+.razza-card-meta .meta-origin {
+    font-size: 12px;
+}
+
+.razza-card-meta .meta-origin .value {
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   PAGINATION
+   ========================================================================== */
+
+.razze-pagination {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.razze-pagination .page-numbers {
+    display: inline-flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.razze-pagination .page-numbers li {
+    display: inline-block;
+}
+
+.razze-pagination a,
+.razze-pagination span {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    background: white;
+    color: var(--razze-header-text);
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.razze-pagination a:hover {
+    background: var(--razze-link-hover);
+    color: white;
+    border-color: var(--razze-link-hover);
+    transform: translateY(-2px);
+}
+
+.razze-pagination .current {
+    background: var(--razze-link-hover);
+    color: white;
+    border-color: var(--razze-link-hover);
+}
+
+.razze-pagination .prev,
+.razze-pagination .next {
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   NO RESULTS
+   ========================================================================== */
+
+.no-razze {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--razze-card-bg);
+    border-radius: var(--razze-border-radius);
+    margin: 3rem 0;
+}
+
+.no-razze-icon {
+    font-size: 80px;
+    margin-bottom: 1.5rem;
+    opacity: 0.3;
+}
+
+.no-razze h3 {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 28px;
+    color: var(--razze-header-text);
+    margin-bottom: 1rem;
+}
+
+.no-razze p {
+    font-size: 17px;
+    color: #777;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.razza-card-simple {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Stagger animation */
+.razza-card-simple:nth-child(1) { animation-delay: 0.05s; }
+.razza-card-simple:nth-child(2) { animation-delay: 0.1s; }
+.razza-card-simple:nth-child(3) { animation-delay: 0.15s; }
+.razza-card-simple:nth-child(4) { animation-delay: 0.2s; }
+.razza-card-simple:nth-child(5) { animation-delay: 0.25s; }
+.razza-card-simple:nth-child(6) { animation-delay: 0.3s; }
+.razza-card-simple:nth-child(7) { animation-delay: 0.35s; }
+.razza-card-simple:nth-child(8) { animation-delay: 0.4s; }
+.razza-card-simple:nth-child(9) { animation-delay: 0.45s; }

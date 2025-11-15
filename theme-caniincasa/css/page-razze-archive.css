@@ -1,0 +1,576 @@
+/**
+ * Page Template: Archivio Razze con Filtri
+ * Replica il layout della pagina live con filtri aggiunti
+ *
+ * @package CaninCasa
+ * @since 2.0.0
+ */
+
+/* ==========================================================================
+   VARIABILI COLORI - Basati sul sito live
+   ========================================================================== */
+
+:root {
+    --razze-header-bg: #FFCC70;
+    --razze-header-text: #4d3319;
+    --razze-card-bg: #f2f2f0;
+    --razze-link-hover: #e65229;
+    --razze-border-radius: 5px;
+    --razze-filter-bg: #ffffff;
+    --razze-filter-border: #e0e0e0;
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+
+.razze-hero {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.razze-hero .page-title {
+    font-family: 'Baloo 2', 'Open Sans', sans-serif;
+    font-size: 39px;
+    font-weight: 700;
+    color: var(--razze-header-text);
+    margin-bottom: 1rem;
+}
+
+.razze-hero .page-intro {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   LAYOUT PRINCIPALE - Sidebar + Contenuto
+   ========================================================================== */
+
+.razze-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+    margin-bottom: 4rem;
+}
+
+/* Mobile: Stack verticale */
+@media (max-width: 1024px) {
+    .razze-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+/* ==========================================================================
+   SIDEBAR FILTRI
+   ========================================================================== */
+
+.razze-filters-sidebar {
+    background: var(--razze-filter-bg);
+    border: 1px solid var(--razze-filter-border);
+    border-radius: var(--razze-border-radius);
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+}
+
+@media (max-width: 1024px) {
+    .razze-filters-sidebar {
+        position: static;
+    }
+}
+
+.filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--razze-filter-border);
+}
+
+.filters-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--razze-header-text);
+    margin: 0;
+}
+
+.btn-reset-filters {
+    background: transparent;
+    border: 1px solid var(--razze-link-hover);
+    color: var(--razze-link-hover);
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-reset-filters:hover {
+    background: var(--razze-link-hover);
+    color: white;
+}
+
+/* Filter Groups */
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--razze-header-text);
+    margin-bottom: 0.75rem;
+}
+
+.label-icon {
+    font-size: 18px;
+}
+
+/* Search Input */
+.filter-search {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid var(--razze-filter-border);
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.filter-search:focus {
+    outline: none;
+    border-color: var(--razze-link-hover);
+}
+
+/* Checkbox Filters */
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+}
+
+.filter-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--razze-filter-border);
+    border-radius: 3px;
+    display: inline-block;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.filter-checkbox input:checked + .checkbox-custom {
+    background: var(--razze-link-hover);
+    border-color: var(--razze-link-hover);
+}
+
+.filter-checkbox input:checked + .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Range Sliders */
+.filter-range {
+    margin-top: 0.5rem;
+}
+
+.range-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #e0e0e0;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--razze-link-hover);
+    cursor: pointer;
+}
+
+.range-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--razze-link-hover);
+    cursor: pointer;
+    border: none;
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 12px;
+    color: #777;
+}
+
+.range-value {
+    font-weight: 600;
+    color: var(--razze-link-hover);
+}
+
+/* Select Dropdown */
+.filter-select {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid var(--razze-filter-border);
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--razze-link-hover);
+}
+
+/* ==========================================================================
+   AREA RISULTATI
+   ========================================================================== */
+
+.razze-main-content {
+    min-height: 500px;
+}
+
+/* Results Header */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--razze-filter-border);
+}
+
+.results-count {
+    font-size: 16px;
+    color: #555;
+    margin: 0;
+}
+
+#razze-count {
+    font-weight: 600;
+    color: var(--razze-header-text);
+}
+
+/* View Toggle Buttons */
+.view-toggle {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.view-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--razze-filter-border);
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.view-btn.active,
+.view-btn:hover {
+    background: var(--razze-link-hover);
+    color: white;
+    border-color: var(--razze-link-hover);
+}
+
+/* ==========================================================================
+   GRIGLIA RAZZE - Layout Sito Live
+   ========================================================================== */
+
+.razze-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+/* Responsive Grid - Breakpoints dal sito live */
+@media (max-width: 1380px) {
+    .razze-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .razze-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .razze-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Vista Lista (opzionale) */
+.razze-grid.list-view {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.razze-grid.list-view .razza-card {
+    display: flex;
+    flex-direction: row;
+}
+
+.razze-grid.list-view .razza-card-image {
+    width: 200px;
+    padding-bottom: 0;
+    height: 150px;
+}
+
+/* ==========================================================================
+   CARD RAZZA - Stile Sito Live
+   ========================================================================== */
+
+.razza-card {
+    background: var(--razze-card-bg);
+    border-radius: var(--razze-border-radius);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+    text-decoration: none;
+}
+
+.razza-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Image Container */
+.razza-card-image {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* Aspect ratio 16:9 dal sito live */
+    overflow: hidden;
+    background: #ddd;
+}
+
+.razza-card-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.razza-card:hover .razza-card-image img {
+    transform: scale(1.05);
+}
+
+/* Card Content */
+.razza-card-content {
+    padding: 9px; /* Padding dal sito live */
+}
+
+.razza-card-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--razze-header-text);
+    margin: 0;
+    text-align: center;
+    transition: color 0.3s ease;
+}
+
+.razza-card:hover .razza-card-title {
+    color: var(--razze-link-hover);
+}
+
+/* Card Meta Info (opzionale) */
+.razza-card-meta {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    font-size: 13px;
+    color: #777;
+}
+
+.razza-card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* ==========================================================================
+   LOADING STATE
+   ========================================================================== */
+
+.razze-loading {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--razze-link-hover);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   NO RESULTS
+   ========================================================================== */
+
+.no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--razze-card-bg);
+    border-radius: var(--razze-border-radius);
+}
+
+.no-results-icon {
+    font-size: 64px;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.no-results h3 {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 24px;
+    color: var(--razze-header-text);
+    margin-bottom: 0.5rem;
+}
+
+.no-results p {
+    color: #777;
+    margin-bottom: 1.5rem;
+}
+
+/* ==========================================================================
+   LOAD MORE BUTTON
+   ========================================================================== */
+
+.load-more-wrapper {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--razze-filter-border);
+}
+
+.btn-load-more {
+    background: var(--razze-link-hover);
+    color: white;
+    border: none;
+    padding: 0.9rem 2.5rem;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: var(--razze-border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-load-more:hover {
+    background: #d14820;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 82, 41, 0.3);
+}
+
+.btn-load-more:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+.btn {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--razze-link-hover);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #d14820;
+    transform: translateY(-2px);
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.razza-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Stagger animation per le card */
+.razza-card:nth-child(1) { animation-delay: 0.05s; }
+.razza-card:nth-child(2) { animation-delay: 0.1s; }
+.razza-card:nth-child(3) { animation-delay: 0.15s; }
+.razza-card:nth-child(4) { animation-delay: 0.2s; }
+.razza-card:nth-child(5) { animation-delay: 0.25s; }
+.razza-card:nth-child(6) { animation-delay: 0.3s; }

@@ -1,0 +1,674 @@
+/**
+ * Single Razza Layout & Styles
+ *
+ * Layout: 1/3 + 2/3 (Desktop) | Invertito su Mobile
+ *
+ * @package CaninCasa
+ * @since 2.0.0
+ */
+
+/* ==========================================================================
+   Layout Grid
+   ========================================================================== */
+
+.razza-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+/* Desktop: 2/3 + 1/3 */
+@media (min-width: 992px) {
+    .razza-layout {
+        grid-template-columns: 2fr 1fr;
+        gap: 3rem;
+    }
+
+    /* Sidebar a destra su desktop */
+    .razza-content {
+        order: 1;
+    }
+
+    .razza-sidebar {
+        order: 2;
+    }
+}
+
+/* Mobile: Prima content, poi sidebar */
+@media (max-width: 991px) {
+    .razza-content {
+        order: 1;
+    }
+
+    .razza-sidebar {
+        order: 2;
+    }
+}
+
+/* ==========================================================================
+   Razza Content (2/3)
+   ========================================================================== */
+
+.razza-content {
+    min-width: 0; /* Fix overflow */
+    max-width: 100%; /* Prevent overflow */
+    overflow: hidden; /* Contain children */
+}
+
+/* Header */
+.razza-header {
+    margin-bottom: 2rem;
+}
+
+.razza-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-dark, #1a1a1a);
+    margin: 0;
+    line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+    .razza-title {
+        font-size: 2rem;
+    }
+}
+
+/* Descrizione Generale */
+.razza-description {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--color-text, #333);
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: var(--color-background-light, #f9f9f9);
+    border-left: 4px solid var(--primary, #D35400);
+    border-radius: 4px;
+}
+
+.razza-description p:last-child {
+    margin-bottom: 0;
+}
+
+/* Sezioni Contenuto */
+.razza-sections {
+    margin-bottom: 3rem;
+}
+
+.razza-section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 100px; /* For anchor links */
+}
+
+.razza-section__title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-text-dark, #1a1a1a);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-border, #e0e0e0);
+}
+
+.section-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.razza-section__content {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-text, #333);
+}
+
+.razza-section__content h3 {
+    font-size: 1.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.razza-section__content ul,
+.razza-section__content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.razza-section__content li {
+    margin-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   Razza Sidebar (1/3)
+   ========================================================================== */
+
+.razza-sidebar {
+    position: sticky;
+    top: 20px;
+    align-self: start;
+}
+
+@media (max-width: 991px) {
+    .razza-sidebar {
+        position: static;
+    }
+}
+
+/* Featured Image in Sidebar */
+.sidebar-featured-image {
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-featured-image:hover .sidebar-image {
+    transform: scale(1.05);
+}
+
+/* Info Boxes */
+.info-box {
+    background: #fff;
+    border: 1px solid var(--color-border, #e0e0e0);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.info-box--primary {
+    border-left: 4px solid var(--primary, #D35400);
+    background: linear-gradient(135deg, #fff 0%, #fef9f6 100%);
+}
+
+.info-box--allevamenti {
+    border-left: 4px solid var(--secondary, #16A085);
+}
+
+.info-box__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-dark, #1a1a1a);
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border, #e0e0e0);
+}
+
+/* Info List (DL) */
+.info-list {
+    margin: 0;
+}
+
+.info-list dt {
+    font-weight: 600;
+    color: var(--color-text, #333);
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-list dd {
+    margin: 0 0 1rem 0;
+    padding-left: 0;
+    color: var(--color-text-light, #666);
+    font-size: 1rem;
+}
+
+.info-list dd:last-child {
+    margin-bottom: 0;
+}
+
+/* Related List (Allevamenti) */
+.related-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.related-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border-light, #f0f0f0);
+}
+
+.related-list li:last-child {
+    border-bottom: none;
+}
+
+.allevamento-link {
+    color: var(--primary, #D35400);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.allevamento-link:hover {
+    color: var(--primary-dark, #A04000);
+    text-decoration: underline;
+}
+
+.provincia {
+    color: var(--color-text-light, #666);
+    font-size: 0.875rem;
+}
+
+/* Buttons */
+.btn-block {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary, #D35400);
+    color: var(--primary, #D35400);
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-outline:hover {
+    background: var(--primary, #D35400);
+    color: #fff;
+}
+
+/* ==========================================================================
+   Caratteristiche con Zampette - Layout Migliorato
+   ========================================================================== */
+
+.breed-characteristics {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 3rem 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--color-border, #e0e0e0);
+    max-width: 100%; /* Prevent overflow */
+    overflow: hidden; /* Contain children */
+}
+
+.breed-characteristics__header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.breed-characteristics__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-dark, #1a1a1a);
+    margin: 0 0 0.5rem 0;
+}
+
+.breed-characteristics__subtitle {
+    color: var(--color-text-light, #666);
+    font-size: 1rem;
+}
+
+/* Quick Cards - Summary */
+.quick-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.quick-card {
+    background: linear-gradient(135deg, #fef9f6 0%, #fff 100%);
+    border: 2px solid var(--color-border-light, #f0f0f0);
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.quick-card:hover {
+    border-color: var(--primary, #D35400);
+    box-shadow: 0 4px 12px rgba(211, 84, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.quick-card__icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.quick-card__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text, #333);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.quick-card__value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--primary, #D35400);
+}
+
+/* Tabs */
+.characteristic-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--color-border, #e0e0e0);
+    padding-bottom: 0;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-light, #666);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    bottom: -2px;
+}
+
+.tab-button:hover {
+    color: var(--primary, #D35400);
+}
+
+.tab-button.active {
+    color: var(--primary, #D35400);
+    border-bottom-color: var(--primary, #D35400);
+}
+
+@media (max-width: 768px) {
+    .characteristic-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-button {
+        white-space: nowrap;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Characteristic Group */
+.characteristic-group {
+    margin-bottom: 2.5rem;
+}
+
+.characteristic-group__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-dark, #1a1a1a);
+    margin: 0 0 1.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.group-icon {
+    font-size: 1.5rem;
+}
+
+/* Characteristic List - Multi Column */
+.characteristic-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    max-width: 100%; /* Prevent overflow */
+}
+
+@media (min-width: 768px) {
+    .characteristic-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem 2rem;
+    }
+}
+
+@media (min-width: 1400px) {
+    .characteristic-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Rating Item */
+.rating-item {
+    background: #fafafa;
+    border: 1px solid var(--color-border-light, #f0f0f0);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    min-width: 0; /* Allow shrinking */
+    max-width: 100%; /* Prevent overflow */
+    box-sizing: border-box;
+}
+
+.rating-item:hover {
+    background: #fff;
+    border-color: var(--primary-light, #E67E22);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Rating Paws Display */
+.rating-paws {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rating-label {
+    font-weight: 600;
+    color: var(--color-text, #333);
+    font-size: 0.9rem;
+    display: block;
+}
+
+.paws-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.paws-container {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.paw {
+    font-size: 1.5rem;
+    display: inline-block;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.paw.filled {
+    color: var(--primary, #D35400);
+    filter: none;
+    transform: scale(1);
+}
+
+.paw.empty {
+    color: var(--color-text-lighter, #ddd);
+    opacity: 0.4;
+    filter: grayscale(100%);
+}
+
+/* Hover effect on rating item */
+.rating-item:hover .paw.filled {
+    transform: scale(1.1);
+}
+
+.rating-value {
+    font-weight: 700;
+    color: var(--primary, #D35400);
+    font-size: 1rem;
+    min-width: 45px;
+    text-align: right;
+}
+
+/* Rating Bar (alternativa alle zampette) */
+.rating-bar {
+    height: 8px;
+    background: var(--color-border-light, #f0f0f0);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.rating-bar__fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-light, #E67E22), var(--primary, #D35400));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Legend */
+.rating-legend {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 2rem;
+    font-size: 0.875rem;
+    color: var(--color-text-light, #666);
+}
+
+.rating-legend__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-icon {
+    font-size: 1.25rem;
+}
+
+/* ==========================================================================
+   Related Posts
+   ========================================================================== */
+
+.related-posts {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 2px solid var(--color-border, #e0e0e0);
+}
+
+.related-posts__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+    .razza-sidebar {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .breed-characteristics {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .characteristic-tabs {
+        display: none;
+    }
+
+    .tab-content {
+        display: block !important;
+    }
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+.rating-paws[aria-label]::before {
+    content: attr(aria-label);
+    position: absolute;
+    left: -9999px;
+}
+
+.tab-button:focus {
+    outline: 2px solid var(--primary, #D35400);
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Dark Mode Support (optional)
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+    .info-box {
+        background: #1a1a1a;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+
+    .breed-characteristics {
+        background: #1a1a1a;
+        border-color: #333;
+    }
+
+    .razza-title,
+    .razza-section__title,
+    .info-box__title {
+        color: #fff;
+    }
+
+    .rating-item {
+        background: #222;
+        border-color: #333;
+    }
+
+    .rating-item:hover {
+        background: #2a2a2a;
+    }
+}

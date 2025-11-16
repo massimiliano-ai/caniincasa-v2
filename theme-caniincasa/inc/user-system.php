@@ -132,9 +132,12 @@ function caniincasa_ajax_register() {
     wp_set_current_user( $user_id );
     wp_set_auth_cookie( $user_id );
 
+    // Gestisci redirect personalizzato
+    $redirect_to = isset( $_POST['redirect_to'] ) ? esc_url_raw( $_POST['redirect_to'] ) : home_url( '/dashboard/' );
+
     wp_send_json_success( array(
         'message' => 'Registrazione completata! Benvenuto su CaninCasa.',
-        'redirect' => home_url( '/dashboard/' )
+        'redirect' => $redirect_to
     ) );
 }
 

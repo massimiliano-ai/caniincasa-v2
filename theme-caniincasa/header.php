@@ -66,9 +66,11 @@
                 <div class="header-user-actions">
                     <?php
                     // Pulsante Crea Annuncio
+                    // Utente loggato → vai direttamente al tab della dashboard
+                    // Utente non loggato → vai alla registrazione con redirect
                     $annuncio_url = is_user_logged_in()
-                        ? home_url( '/inserisci-annuncio/' )
-                        : home_url( '/login/' );
+                        ? home_url( '/dashboard/?tab=aggiungi-cucciolata' )
+                        : home_url( '/registrati/?redirect_to=' . urlencode( home_url( '/dashboard/?tab=aggiungi-cucciolata' ) ) );
                     ?>
                     <a href="<?php echo esc_url( $annuncio_url ); ?>" class="user-link btn-create-ad">
                         <span class="icon">📝</span>

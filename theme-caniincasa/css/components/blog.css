@@ -1181,6 +1181,36 @@
     margin-bottom: var(--spacing-xl);
 }
 
+/* Card con immagini uniformi */
+.cucciolata-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.cucciolata-card .card-image-link {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    position: relative;
+    background-color: #f3f4f6;
+}
+
+.cucciolata-card .card-image,
+.cucciolata-card .card-image-link img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.cucciolata-card:hover .card-image,
+.cucciolata-card:hover .card-image-link img {
+    transform: scale(1.05);
+}
+
 .cucciolata-card .badge--available {
     background: #10b981;
     color: white;

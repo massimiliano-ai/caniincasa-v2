@@ -35,6 +35,14 @@ get_header();
 
                     <?php wp_nonce_field( 'caniincasa_register_nonce', 'nonce' ); ?>
 
+                    <!-- Redirect URL (se l'utente viene da "Crea Annuncio") -->
+                    <?php
+                    $redirect_to = isset( $_GET['redirect_to'] ) ? esc_url( $_GET['redirect_to'] ) : '';
+                    if ( $redirect_to ) :
+                    ?>
+                        <input type="hidden" name="redirect_to" value="<?php echo esc_attr( $redirect_to ); ?>">
+                    <?php endif; ?>
+
                     <!-- Nome e Cognome -->
                     <div class="form-row">
                         <div class="form-group">

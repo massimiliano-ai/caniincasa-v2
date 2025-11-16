@@ -1,0 +1,536 @@
+[
+    {
+        "key": "group_razze_caratteristiche_complete",
+        "title": "Caratteristiche Razza (Sistema Zampette)",
+        "fields": [
+            {
+                "key": "field_tab_temperamento_car",
+                "label": "Temperamento",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "placement": "left",
+                "endpoint": 0,
+                "selected": 0
+            },
+            {
+                "key": "field_energia_e_livelli_di_attivita",
+                "label": "Livello Energia",
+                "name": "energia_e_livelli_di_attivita",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Molto basso | 5 = Molto alto",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_affettuosita",
+                "label": "Affettuosità",
+                "name": "affettuosita",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Indipendente | 5 = Molto affettuoso",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_vocalita_e_predisposizione_ad_abbaiare",
+                "label": "Vocalità \/ Tendenza ad Abbaiare",
+                "name": "vocalita_e_predisposizione_ad_abbaiare",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Silenzioso | 5 = Molto vocale",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_socievolezza_cani",
+                "label": "Socievolezza con Altri Cani",
+                "name": "socievolezza_cani",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Preferisce essere unico | 5 = Ama altri cani",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_tab_adattabilita_car",
+                "label": "Adattabilità",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "placement": "left",
+                "endpoint": 0,
+                "selected": 0
+            },
+            {
+                "key": "field_adattabilita_appartamento",
+                "label": "Adattabilità Appartamento",
+                "name": "adattabilita_appartamento",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Necessita spazio esterno | 5 = Perfetto per appartamento",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_adattabilita_clima_caldo",
+                "label": "Tolleranza al Caldo",
+                "name": "adattabilita_clima_caldo",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Bassa tolleranza | 5 = Alta tolleranza",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_adattabilita_clima_freddo",
+                "label": "Tolleranza al Freddo",
+                "name": "adattabilita_clima_freddo",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Bassa tolleranza | 5 = Alta tolleranza",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_tolleranza_alla_solitudine",
+                "label": "Tolleranza alla Solitudine",
+                "name": "tolleranza_alla_solitudine",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Non tollera | 5 = Molto tollerante",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_tab_famiglia_car",
+                "label": "Famiglia & Socialità",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "placement": "left",
+                "endpoint": 0,
+                "selected": 0
+            },
+            {
+                "key": "field_compatibilita_con_i_bambini",
+                "label": "Compatibilità con Bambini",
+                "name": "compatibilita_con_i_bambini",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Non adatto | 5 = Eccellente",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_tolleranza_estranei",
+                "label": "Tolleranza verso Estranei",
+                "name": "tolleranza_estranei",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Diffidente\/protettivo | 5 = Amichevole con tutti",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_compatibilita_con_altri_animali_domestici",
+                "label": "Compatibilità Altri Animali",
+                "name": "compatibilita_con_altri_animali_domestici",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Difficile | 5 = Ottima",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_tab_addestramento_car",
+                "label": "Addestramento & Cura",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "placement": "left",
+                "endpoint": 0,
+                "selected": 0
+            },
+            {
+                "key": "field_facilita_di_addestramento",
+                "label": "Facilità Addestramento",
+                "name": "facilita_di_addestramento",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Molto difficile | 5 = Molto facile",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_intelligenza",
+                "label": "Intelligenza \/ Problem Solving",
+                "name": "intelligenza",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Segue l'istinto | 5 = Molto intelligente",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_esigenze_di_esercizio",
+                "label": "Bisogno di Esercizio Fisico",
+                "name": "esigenze_di_esercizio",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Minimo | 5 = Molto elevato",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_facilita_toelettatura",
+                "label": "Facilità Toelettatura",
+                "name": "facilita_toelettatura",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Richiede toelettatura professionale | 5 = Manutenzione minima",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_cura_e_perdita_pelo",
+                "label": "Perdita Pelo",
+                "name": "cura_e_perdita_pelo_",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Molto bassa | 5 = Molto elevata",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_predisposizioni_per_la_salute",
+                "label": "Robustezza Salute",
+                "name": "predisposizioni_per_la_salute",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Molte predisposizioni | 5 = Molto robusto",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_tab_esperienza_car",
+                "label": "Esperienza & Altri",
+                "name": "",
+                "aria-label": "",
+                "type": "tab",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "placement": "left",
+                "endpoint": 0,
+                "selected": 0
+            },
+            {
+                "key": "field_livello_esperienza_richiesto",
+                "label": "Livello Esperienza Richiesto",
+                "name": "livello_esperienza_richiesto",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Principianti | 5 = Solo esperti",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_costo_mantenimento",
+                "label": "Costo Mantenimento",
+                "name": "costo_mantenimento",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Economico | 5 = Costoso",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            },
+            {
+                "key": "field_istinti_di_caccia",
+                "label": "Istinti di Caccia",
+                "name": "istinti_di_caccia",
+                "aria-label": "",
+                "type": "range",
+                "instructions": "1 = Quasi assenti | 5 = Molto forti",
+                "required": false,
+                "conditional_logic": false,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": 3,
+                "min": 1,
+                "max": 5,
+                "step": 0.5,
+                "append": "\/5",
+                "prepend": ""
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "razze_di_cani"
+                }
+            ]
+        ],
+        "menu_order": 10,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "left",
+        "instruction_placement": "field",
+        "hide_on_screen": [],
+        "active": true,
+        "description": "",
+        "show_in_rest": false
+    }
+]

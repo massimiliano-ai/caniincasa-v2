@@ -237,6 +237,16 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                             <?php wp_nonce_field( 'caniincasa_submit_cucciolata', 'cucciolata_nonce' ); ?>
 
                             <div class="form-group">
+                                <label for="ricerca_offerta">Tipo Annuncio *</label>
+                                <select id="ricerca_offerta" name="ricerca_offerta" required>
+                                    <option value="">Seleziona tipo</option>
+                                    <option value="offerta">Offro cuccioli</option>
+                                    <option value="ricerca">Cerco cucciolo</option>
+                                </select>
+                                <small class="form-help">Scegli se stai offrendo cuccioli o cercando un cucciolo</small>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="titolo">Titolo Annuncio *</label>
                                 <input type="text" id="titolo" name="titolo" required
                                        placeholder="Es: Cuccioli di Labrador Retriever disponibili">
@@ -264,13 +274,13 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                                     </select>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="data_nascita">Data di Nascita Cuccioli *</label>
-                                    <input type="date" id="data_nascita" name="data_nascita" required>
+                                <div class="form-group field-offerta-only">
+                                    <label for="data_nascita">Data di Nascita Cuccioli <span class="required-offerta">*</span></label>
+                                    <input type="date" id="data_nascita" name="data_nascita" data-required-for="offerta">
                                 </div>
                             </div>
 
-                            <div class="form-row">
+                            <div class="form-row field-offerta-only">
                                 <div class="form-group">
                                     <label for="numero_maschi">Numero Maschi</label>
                                     <input type="number" id="numero_maschi" name="numero_maschi" min="0" value="0">
@@ -282,7 +292,7 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                                 </div>
                             </div>
 
-                            <div class="form-row">
+                            <div class="form-row field-offerta-only">
                                 <div class="form-group">
                                     <label for="prezzo">Prezzo (€)</label>
                                     <input type="number" id="prezzo" name="prezzo" min="0" step="50"

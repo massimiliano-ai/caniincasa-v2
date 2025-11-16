@@ -106,6 +106,33 @@
             return;
         }
 
+        // Handle ricerca/offerta field changes
+        const $ricercaOfferta = $('#ricerca_offerta');
+
+        function toggleFieldsByType() {
+            const tipo = $ricercaOfferta.val();
+            const $offertaFields = $('.field-offerta-only');
+
+            if (tipo === 'offerta') {
+                $offertaFields.show();
+                // Set data_nascita as required for offerta
+                $('[data-required-for="offerta"]').prop('required', true);
+            } else if (tipo === 'ricerca') {
+                $offertaFields.hide();
+                // Remove required from offerta-only fields
+                $('[data-required-for="offerta"]').prop('required', false);
+            } else {
+                $offertaFields.hide();
+                $('[data-required-for="offerta"]').prop('required', false);
+            }
+        }
+
+        // Initialize on page load
+        toggleFieldsByType();
+
+        // Handle changes
+        $ricercaOfferta.on('change', toggleFieldsByType);
+
         $form.on('submit', function(e) {
             e.preventDefault();
 
@@ -119,6 +146,7 @@
             const formData = new FormData();
             formData.append('action', 'caniincasa_submit_cucciolata');
             formData.append('nonce', $form.find('input[name="cucciolata_nonce"]').val());
+            formData.append('ricerca_offerta', $('#ricerca_offerta').val());
             formData.append('titolo', $('#titolo').val().trim());
             formData.append('razza', $('#razza').val());
             formData.append('data_nascita', $('#data_nascita').val());

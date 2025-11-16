@@ -385,6 +385,7 @@ function caniincasa_ajax_submit_cucciolata() {
     $user_id = get_current_user_id();
 
     // Sanitize input
+    $ricerca_offerta = sanitize_text_field( $_POST['ricerca_offerta'] );
     $titolo = sanitize_text_field( $_POST['titolo'] );
     $razza_id = intval( $_POST['razza'] );
     $data_nascita = sanitize_text_field( $_POST['data_nascita'] );
@@ -395,9 +396,14 @@ function caniincasa_ajax_submit_cucciolata() {
     $provincia_id = intval( $_POST['provincia'] );
     $descrizione = wp_kses_post( $_POST['descrizione'] );
 
-    // Validate
-    if ( empty( $titolo ) || empty( $razza_id ) || empty( $data_nascita ) || empty( $descrizione ) ) {
+    // Validate base fields
+    if ( empty( $titolo ) || empty( $razza_id ) || empty( $ricerca_offerta ) || empty( $descrizione ) ) {
         wp_send_json_error( array( 'message' => 'Compila tutti i campi obbligatori' ) );
+    }
+
+    // Validate offerta-specific fields
+    if ( $ricerca_offerta === 'offerta' && empty( $data_nascita ) ) {
+        wp_send_json_error( array( 'message' => 'La data di nascita è obbligatoria per gli annunci di offerta' ) );
     }
 
     // Create post
@@ -414,15 +420,20 @@ function caniincasa_ajax_submit_cucciolata() {
     }
 
     // Add meta fields
+    update_field( 'ricerca_offerta', $ricerca_offerta, $post_id );
     update_field( 'razza', $razza_id, $post_id );
-    update_field( 'data_nascita', $data_nascita, $post_id );
-    update_field( 'numero_maschi', $numero_maschi, $post_id );
-    update_field( 'numero_femmine', $numero_femmine, $post_id );
-    if ( $prezzo ) {
-        update_field( 'prezzo', $prezzo, $post_id );
-    }
-    if ( $pedigree ) {
-        update_field( 'pedigree', $pedigree, $post_id );
+
+    // Only save offerta-specific fields if type is offerta
+    if ( $ricerca_offerta === 'offerta' ) {
+        update_field( 'data_nascita', $data_nascita, $post_id );
+        update_field( 'numero_maschi', $numero_maschi, $post_id );
+        update_field( 'numero_femmine', $numero_femmine, $post_id );
+        if ( $prezzo ) {
+            update_field( 'prezzo', $prezzo, $post_id );
+        }
+        if ( $pedigree ) {
+            update_field( 'pedigree', $pedigree, $post_id );
+        }
     }
 
     // Set taxonomy

@@ -743,3 +743,15 @@
 .moderation-card {
     animation: fadeIn 0.3s ease-out;
 }
+
+/* ==========================================================================
+   RICERCA/OFFERTA CONDITIONAL FIELDS
+   ========================================================================== */
+
+.field-offerta-only {
+    display: none;
+}
+
+.required-offerta {
+    color: var(--dash-error);
+}

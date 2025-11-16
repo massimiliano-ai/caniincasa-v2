@@ -46,25 +46,13 @@ $current_user = wp_get_current_user();
                     <h2 class="section-title">Tipo di Annuncio</h2>
 
                     <div class="form-group">
-                        <label for="tipo_cucciolata">Tipo Annuncio *</label>
-                        <select id="tipo_cucciolata" name="tipo_cucciolata" required>
-                            <option value="">Seleziona il tipo di annuncio</option>
-                            <?php
-                            $tipi_cucciolata = get_terms( array(
-                                'taxonomy' => 'tipo_cucciolata',
-                                'hide_empty' => false,
-                                'orderby' => 'name',
-                                'order' => 'ASC',
-                            ) );
-
-                            foreach ( $tipi_cucciolata as $tipo ):
-                            ?>
-                                <option value="<?php echo $tipo->term_id; ?>" title="<?php echo esc_attr( $tipo->description ); ?>">
-                                    <?php echo esc_html( $tipo->name ); ?>
-                                </option>
-                            <?php endforeach; ?>
+                        <label for="ricerca_offerta">Cosa vuoi fare? *</label>
+                        <select id="ricerca_offerta" name="ricerca_offerta" required>
+                            <option value="">Seleziona tipo</option>
+                            <option value="offerta">Offro cuccioli</option>
+                            <option value="ricerca">Cerco cucciolo</option>
                         </select>
-                        <small class="form-help" id="tipo-help"></small>
+                        <small class="form-help">Scegli se stai offrendo cuccioli o cercando un cucciolo da adottare</small>
                     </div>
                 </div>
 
@@ -100,13 +88,13 @@ $current_user = wp_get_current_user();
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label for="data_nascita">Data di Nascita Cuccioli *</label>
-                            <input type="date" id="data_nascita" name="data_nascita" required>
+                        <div class="form-group field-offerta-only">
+                            <label for="data_nascita">Data di Nascita Cuccioli <span class="required-offerta">*</span></label>
+                            <input type="date" id="data_nascita" name="data_nascita" data-required-for="offerta">
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="form-row field-offerta-only">
                         <div class="form-group">
                             <label for="numero_maschi">Numero Maschi</label>
                             <input type="number" id="numero_maschi" name="numero_maschi" min="0" value="0">
@@ -118,7 +106,7 @@ $current_user = wp_get_current_user();
                         </div>
                     </div>
 
-                    <div class="form-row">
+                    <div class="form-row field-offerta-only">
                         <div class="form-group">
                             <label for="prezzo">Prezzo (€)</label>
                             <input type="number" id="prezzo" name="prezzo" min="0" step="50"

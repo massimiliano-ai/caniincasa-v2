@@ -51,7 +51,12 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                 </a>
                 <?php if ( current_user_can( 'submit_cucciolata' ) ): ?>
                     <a href="?tab=aggiungi-cucciolata" class="tab-link <?php echo $active_tab === 'aggiungi-cucciolata' ? 'active' : ''; ?>">
-                        <span class="icon">➕</span> Nuova cucciolata
+                        <span class="icon">➕</span> Nuovo annuncio
+                    </a>
+                <?php endif; ?>
+                <?php if ( current_user_can( 'edit_posts' ) ): ?>
+                    <a href="?tab=aggiungi-struttura" class="tab-link <?php echo $active_tab === 'aggiungi-struttura' ? 'active' : ''; ?>">
+                        <span class="icon">🏢</span> Aggiungi Struttura
                     </a>
                 <?php endif; ?>
                 <?php if ( current_user_can( 'suggest_edits' ) ): ?>
@@ -213,7 +218,7 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                                 <p>Non hai ancora pubblicato annunci.</p>
                                 <?php if ( current_user_can( 'submit_cucciolata' ) ): ?>
                                     <a href="?tab=aggiungi-cucciolata" class="btn btn-primary">
-                                        Pubblica la tua prima cucciolata
+                                        Pubblica il tuo primo annuncio
                                     </a>
                                 <?php endif; ?>
                             </div>
@@ -226,10 +231,20 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                 <?php elseif ( $active_tab === 'aggiungi-cucciolata' && current_user_can( 'submit_cucciolata' ) ): ?>
                     <!-- AGGIUNGI CUCCIOLATA TAB -->
                     <div class="tab-pane active" id="aggiungi-cucciolata">
-                        <h2 class="tab-title">Pubblica una nuova cucciolata</h2>
+                        <h2 class="tab-title">Pubblica un nuovo annuncio</h2>
 
                         <form id="cucciolata-form" class="dashboard-form">
                             <?php wp_nonce_field( 'caniincasa_submit_cucciolata', 'cucciolata_nonce' ); ?>
+
+                            <div class="form-group">
+                                <label for="ricerca_offerta">Tipo Annuncio *</label>
+                                <select id="ricerca_offerta" name="ricerca_offerta" required>
+                                    <option value="">Seleziona tipo</option>
+                                    <option value="offerta">Offro cuccioli</option>
+                                    <option value="ricerca">Cerco cucciolo</option>
+                                </select>
+                                <small class="form-help">Scegli se stai offrendo cuccioli o cercando un cucciolo</small>
+                            </div>
 
                             <div class="form-group">
                                 <label for="titolo">Titolo Annuncio *</label>
@@ -259,13 +274,13 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                                     </select>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="data_nascita">Data di Nascita Cuccioli *</label>
-                                    <input type="date" id="data_nascita" name="data_nascita" required>
+                                <div class="form-group field-offerta-only">
+                                    <label for="data_nascita">Data di Nascita Cuccioli <span class="required-offerta">*</span></label>
+                                    <input type="date" id="data_nascita" name="data_nascita" data-required-for="offerta">
                                 </div>
                             </div>
 
-                            <div class="form-row">
+                            <div class="form-row field-offerta-only">
                                 <div class="form-group">
                                     <label for="numero_maschi">Numero Maschi</label>
                                     <input type="number" id="numero_maschi" name="numero_maschi" min="0" value="0">
@@ -277,7 +292,7 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                                 </div>
                             </div>
 
-                            <div class="form-row">
+                            <div class="form-row field-offerta-only">
                                 <div class="form-group">
                                     <label for="prezzo">Prezzo (€)</label>
                                     <input type="number" id="prezzo" name="prezzo" min="0" step="50"
@@ -318,7 +333,7 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                             <div class="form-group">
                                 <label for="descrizione">Descrizione *</label>
                                 <textarea id="descrizione" name="descrizione" rows="6" required
-                                          placeholder="Descrivi la cucciolata, i genitori, eventuali caratteristiche..."></textarea>
+                                          placeholder="Descrivi l'annuncio, i cuccioli, eventuali caratteristiche..."></textarea>
                             </div>
 
                             <div class="form-group">
@@ -409,6 +424,245 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                                 <p>Non hai ancora inviato segnalazioni.</p>
                             </div>
                         <?php endif; ?>
+                    </div>
+
+                <?php elseif ( $active_tab === 'aggiungi-struttura' && current_user_can( 'edit_posts' ) ): ?>
+                    <!-- AGGIUNGI STRUTTURA TAB -->
+                    <div class="tab-pane active" id="aggiungi-struttura">
+                        <h2 class="tab-title">Aggiungi una nuova struttura</h2>
+
+                        <form id="struttura-form" class="dashboard-form">
+                            <?php wp_nonce_field( 'caniincasa_submit_struttura', 'struttura_nonce' ); ?>
+
+                            <!-- Selezione Tipo Struttura -->
+                            <div class="form-group">
+                                <label>Tipo di Struttura *</label>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="tipo_struttura" value="allevamenti" required>
+                                        <span>Allevamento</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="tipo_struttura" value="struttureveterinarie" required>
+                                        <span>Veterinario</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="tipo_struttura" value="centri_cinofili" required>
+                                        <span>Centro Cinofilo</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="tipo_struttura" value="pensioni_per_cani" required>
+                                        <span>Pensione per Cani</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="tipo_struttura" value="canili" required>
+                                        <span>Canile</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Campi Comuni -->
+                            <div id="common-fields" style="display:none;">
+                                <div class="form-group">
+                                    <label for="titolo_struttura">Nome Struttura *</label>
+                                    <input type="text" id="titolo_struttura" name="titolo_struttura"
+                                           placeholder="Inserisci il nome della struttura">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="descrizione_struttura">Descrizione</label>
+                                    <textarea id="descrizione_struttura" name="descrizione_struttura" rows="4"
+                                              placeholder="Descrizione della struttura..."></textarea>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="indirizzo">Indirizzo *</label>
+                                        <input type="text" id="indirizzo" name="indirizzo"
+                                               placeholder="Via, numero civico">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="comune">Comune *</label>
+                                        <input type="text" id="comune" name="comune"
+                                               placeholder="Comune">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="provincia_struttura">Provincia *</label>
+                                        <select id="provincia_struttura" name="provincia_struttura">
+                                            <option value="">Seleziona provincia</option>
+                                            <?php
+                                            $province = get_terms( array(
+                                                'taxonomy' => 'provincia',
+                                                'hide_empty' => false,
+                                                'orderby' => 'name',
+                                                'order' => 'ASC',
+                                            ) );
+
+                                            foreach ( $province as $provincia ):
+                                            ?>
+                                                <option value="<?php echo $provincia->term_id; ?>">
+                                                    <?php echo esc_html( $provincia->name ); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="cap">CAP</label>
+                                        <input type="text" id="cap" name="cap" maxlength="5"
+                                               placeholder="00000">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="telefono_struttura">Telefono</label>
+                                        <input type="tel" id="telefono_struttura" name="telefono_struttura"
+                                               placeholder="+39 123 456 7890">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email_struttura">Email</label>
+                                        <input type="email" id="email_struttura" name="email_struttura"
+                                               placeholder="info@esempio.it">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="sito_web">Sito Web</label>
+                                    <input type="url" id="sito_web" name="sito_web"
+                                           placeholder="https://www.esempio.it">
+                                </div>
+                            </div>
+
+                            <!-- Campi Specifici Allevamento -->
+                            <div id="allevamenti-fields" class="specific-fields" style="display:none;">
+                                <h3 class="section-title">Informazioni Allevamento</h3>
+
+                                <div class="form-group">
+                                    <label for="affisso">Affisso</label>
+                                    <input type="text" id="affisso" name="affisso"
+                                           placeholder="Nome dell'affisso">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="proprietario">Proprietario</label>
+                                    <input type="text" id="proprietario" name="proprietario"
+                                           placeholder="Nome e cognome del proprietario">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Razze Allevate</label>
+                                    <p class="form-help">Seleziona le razze che allevi (potrai specificare più razze dopo la pubblicazione)</p>
+                                </div>
+                            </div>
+
+                            <!-- Campi Specifici Veterinario -->
+                            <div id="struttureveterinarie-fields" class="specific-fields" style="display:none;">
+                                <h3 class="section-title">Informazioni Struttura Veterinaria</h3>
+
+                                <div class="form-group">
+                                    <label for="tipologia">Tipologia</label>
+                                    <select id="tipologia" name="tipologia">
+                                        <option value="">Seleziona tipologia</option>
+                                        <option value="ambulatorio">Ambulatorio Veterinario</option>
+                                        <option value="clinica">Clinica Veterinaria</option>
+                                        <option value="ospedale">Ospedale Veterinario</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="direttore_sanitario">Direttore Sanitario</label>
+                                    <input type="text" id="direttore_sanitario" name="direttore_sanitario"
+                                           placeholder="Nome del direttore sanitario">
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="pronto_soccorso_h24" value="1">
+                                            <span>Pronto Soccorso H24</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="reperibilita_h24" value="1">
+                                            <span>Reperibilità H24</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="orari_apertura">Orari di Apertura</label>
+                                    <textarea id="orari_apertura" name="orari_apertura" rows="3"
+                                              placeholder="Es: Lun-Ven: 9:00-19:00, Sab: 9:00-13:00"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Campi Specifici Centro Cinofilo -->
+                            <div id="centri_cinofili-fields" class="specific-fields" style="display:none;">
+                                <h3 class="section-title">Informazioni Centro Cinofilo</h3>
+
+                                <div class="form-group">
+                                    <label for="servizi_offerti">Servizi Offerti</label>
+                                    <textarea id="servizi_offerti" name="servizi_offerti" rows="4"
+                                              placeholder="Es: Addestramento, educazione di base, agility, etc."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Campi Specifici Pensione -->
+                            <div id="pensioni_per_cani-fields" class="specific-fields" style="display:none;">
+                                <h3 class="section-title">Informazioni Pensione</h3>
+
+                                <div class="form-group">
+                                    <label for="servizi_pensione">Servizi Disponibili</label>
+                                    <textarea id="servizi_pensione" name="servizi_pensione" rows="4"
+                                              placeholder="Es: Custodia diurna, pensione completa, area gioco, etc."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Campi Specifici Canile -->
+                            <div id="canili-fields" class="specific-fields" style="display:none;">
+                                <h3 class="section-title">Informazioni Canile</h3>
+
+                                <div class="form-group">
+                                    <label for="riferimento">Persona di Riferimento</label>
+                                    <input type="text" id="riferimento" name="riferimento"
+                                           placeholder="Nome della persona di riferimento">
+                                </div>
+                            </div>
+
+                            <div id="submit-section" style="display:none;">
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="terms_struttura" id="terms_struttura" required>
+                                        <span>Ho letto e accetto i <a href="/termini/" target="_blank">Termini e Condizioni</a></span>
+                                    </label>
+                                </div>
+
+                                <div class="form-message info" style="margin-bottom: 1.5rem;">
+                                    <strong>Nota:</strong> La tua struttura sarà sottoposta a moderazione prima della pubblicazione.
+                                    Riceverai una notifica via email quando verrà approvata.
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <span class="btn-text">Invia Struttura</span>
+                                        <span class="btn-loading" style="display:none;">
+                                            <span class="spinner"></span> Invio...
+                                        </span>
+                                    </button>
+                                    <a href="?tab=profilo" class="btn btn-outline">Annulla</a>
+                                </div>
+
+                                <div class="form-message" id="struttura-message" style="display:none;"></div>
+                            </div>
+                        </form>
                     </div>
 
                 <?php elseif ( $active_tab === 'moderation' && current_user_can( 'moderate_content' ) ): ?>

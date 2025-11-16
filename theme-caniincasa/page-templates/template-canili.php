@@ -28,6 +28,41 @@ get_header();
             <?php endif; ?>
         </div>
 
+        <!-- Filtri Zona -->
+        <div class="filters-wrapper">
+            <h3 class="filters-title">Filtra per zona</h3>
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="filter-provincia">Provincia:</label>
+                    <select id="filter-provincia" class="filter-select" data-post-type="canili">
+                        <option value="">Tutte le province</option>
+                        <?php
+                        // Get all unique province values from ACF fields 'provincia_estesa' (fallback to 'provincia')
+                        global $wpdb;
+                        $province_values = $wpdb->get_col( "
+                            SELECT DISTINCT COALESCE(NULLIF(pm1.meta_value, ''), pm2.meta_value) as provincia
+                            FROM {$wpdb->posts} p
+                            LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'provincia_estesa'
+                            LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'provincia'
+                            WHERE p.post_type = 'canili'
+                            AND p.post_status = 'publish'
+                            AND (pm1.meta_value != '' OR pm2.meta_value != '')
+                            ORDER BY provincia ASC
+                        " );
+
+                        foreach ( $province_values as $provincia ):
+                            if ( ! empty( $provincia ) ):
+                        ?>
+                            <option value="<?php echo esc_attr( $provincia ); ?>">
+                                <?php echo esc_html( $provincia ); ?>
+                            </option>
+                        <?php endif; endforeach; ?>
+                    </select>
+                </div>
+                <button id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
+            </div>
+        </div>
+
         <?php
         // Query per tutti i canili
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
@@ -44,6 +79,12 @@ get_header();
         $canili_query = new WP_Query( $args );
         ?>
 
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner" style="display:none;">
+            <div class="spinner"></div>
+            <p>Caricamento...</p>
+        </div>
+
         <!-- Results Count -->
         <div class="results-info">
             <p class="results-count">
@@ -57,7 +98,7 @@ get_header();
         <?php if ( $canili_query->have_posts() ): ?>
 
             <!-- Canili Grid -->
-            <div class="items-grid">
+            <div class="items-grid" id="items-grid">
 
                 <?php while ( $canili_query->have_posts() ): $canili_query->the_post(); ?>
 
@@ -85,21 +126,28 @@ get_header();
                             </h3>
 
                             <?php
-                            // Provincia
+                            // Provincia (try taxonomy first, then ACF field)
                             $province = wp_get_post_terms( get_the_ID(), 'provincia' );
+                            $provincia_text = get_field( 'provincia' ) ?: get_field( 'provincia_estesa' );
+
                             if ( ! empty( $province ) && ! is_wp_error( $province ) ):
                             ?>
                                 <div class="item-location">
                                     <span class="icon">📍</span>
                                     <span class="text"><?php echo esc_html( $province[0]->name ); ?></span>
                                 </div>
+                            <?php elseif ( $provincia_text ): ?>
+                                <div class="item-location">
+                                    <span class="icon">📍</span>
+                                    <span class="text"><?php echo esc_html( $provincia_text ); ?></span>
+                                </div>
                             <?php endif; ?>
 
                             <?php
-                            // Indirizzo
+                            // Indirizzo e Comune
                             $indirizzo = get_field( 'indirizzo' );
-                            $citta = get_field( 'citta' );
-                            if ( $indirizzo || $citta ):
+                            $comune = get_field( 'comune' );
+                            if ( $indirizzo || $comune ):
                             ?>
                                 <div class="item-address">
                                     <span class="icon">🏠</span>
@@ -107,9 +155,9 @@ get_header();
                                         <?php
                                         if ( $indirizzo ) {
                                             echo esc_html( $indirizzo );
-                                            if ( $citta ) echo ', ';
+                                            if ( $comune ) echo ', ';
                                         }
-                                        if ( $citta ) echo esc_html( $citta );
+                                        if ( $comune ) echo esc_html( $comune );
                                         ?>
                                     </span>
                                 </div>
@@ -121,6 +169,17 @@ get_header();
                             ?>
                                 <div class="item-excerpt">
                                     <?php echo wp_trim_words( get_the_excerpt(), 15, '...' ); ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php
+                            // Riferimento
+                            $riferimento = get_field( 'riferimento' );
+                            if ( $riferimento ):
+                            ?>
+                                <div class="item-info">
+                                    <span class="icon">👤</span>
+                                    <span class="text"><strong>Riferimento:</strong> <?php echo esc_html( $riferimento ); ?></span>
                                 </div>
                             <?php endif; ?>
 
@@ -177,14 +236,9 @@ get_header();
             <?php if ( $canili_query->max_num_pages > 1 ): ?>
                 <div class="pagination-wrapper">
                     <?php
-                    echo paginate_links( array(
-                        'base' => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
-                        'format' => '?paged=%#%',
-                        'current' => max( 1, $paged ),
+                    echo caniincasa_get_pagination_with_filters( array(
                         'total' => $canili_query->max_num_pages,
-                        'prev_text' => '&laquo; Precedente',
-                        'next_text' => 'Successiva &raquo;',
-                        'type' => 'list',
+                        'current' => max( 1, $paged ),
                     ) );
                     ?>
                 </div>

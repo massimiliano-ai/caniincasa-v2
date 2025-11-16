@@ -145,6 +145,13 @@ get_header();
         }
 
         $allevamenti_query = new WP_Query( $args );
+
+        // Pre-carica term cache e meta cache per migliorare performance
+        if ( $allevamenti_query->have_posts() ) {
+            $post_ids = wp_list_pluck( $allevamenti_query->posts, 'ID' );
+            update_post_caches( $allevamenti_query->posts, 'allevamenti', true, true );
+            update_object_term_cache( $post_ids, 'allevamenti' );
+        }
         ?>
 
         <!-- Loading Spinner -->

@@ -132,6 +132,16 @@ get_header();
         }
 
         $annunci_query = new WP_Query( $args );
+
+        // Pre-carica term cache e meta cache per migliorare performance
+        if ( $annunci_query->have_posts() ) {
+            $post_ids = wp_list_pluck( $annunci_query->posts, 'ID' );
+            // Pre-carica cache per entrambi i post types
+            foreach ( $post_types as $post_type ) {
+                update_post_caches( $annunci_query->posts, $post_type, true, true );
+                update_object_term_cache( $post_ids, $post_type );
+            }
+        }
         ?>
 
         <!-- Loading Spinner -->

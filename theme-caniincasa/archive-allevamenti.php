@@ -44,31 +44,7 @@ get_header();
                             />
                         </div>
 
-                        <!-- Provincia -->
-                        <?php
-                        $province = get_terms( array(
-                            'taxonomy' => 'provincia',
-                            'hide_empty' => true,
-                        ) );
-                        if ( ! empty( $province ) && ! is_wp_error( $province ) ) :
-                        ?>
-                            <div class="filter-group">
-                                <label for="filter-provincia"><?php esc_html_e( 'Provincia', 'caniincasa' ); ?></label>
-                                <select id="filter-provincia" name="provincia" class="form-control">
-                                    <option value=""><?php esc_html_e( 'Tutte le province', 'caniincasa' ); ?></option>
-                                    <?php
-                                    $selected_provincia = get_query_var( 'provincia' );
-                                    foreach ( $province as $provincia ) :
-                                    ?>
-                                        <option value="<?php echo esc_attr( $provincia->slug ); ?>" <?php selected( $selected_provincia, $provincia->slug ); ?>>
-                                            <?php echo esc_html( $provincia->name ); ?> (<?php echo esc_html( $provincia->count ); ?>)
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
-
-                        <!-- Regione (se necessario) -->
+                        <!-- Regione -->
                         <div class="filter-group">
                             <label for="filter-regione"><?php esc_html_e( 'Regione', 'caniincasa' ); ?></label>
                             <select id="filter-regione" name="regione" class="form-control">
@@ -111,7 +87,8 @@ get_header();
                         $razze = get_terms( array(
                             'taxonomy' => 'razze_allevamenti',
                             'hide_empty' => true,
-                            'number' => 50,
+                            'orderby' => 'name',
+                            'order' => 'ASC',
                         ) );
                         if ( ! empty( $razze ) && ! is_wp_error( $razze ) ) :
                         ?>
@@ -124,71 +101,12 @@ get_header();
                                     foreach ( $razze as $razza ) :
                                     ?>
                                         <option value="<?php echo esc_attr( $razza->slug ); ?>" <?php selected( $selected_razza, $razza->slug ); ?>>
-                                            <?php echo esc_html( $razza->name ); ?> (<?php echo esc_html( $razza->count ); ?>)
+                                            <?php echo esc_html( $razza->name ); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                         <?php endif; ?>
-
-                        <!-- Certificazioni -->
-                        <div class="filter-group">
-                            <label><?php esc_html_e( 'Certificazioni', 'caniincasa' ); ?></label>
-                            <div class="checkbox-group">
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="certificato_enci"
-                                        value="1"
-                                        <?php checked( get_query_var( 'certificato_enci' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Certificato ENCI', 'caniincasa' ); ?></span>
-                                </label>
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="certificato_fci"
-                                        value="1"
-                                        <?php checked( get_query_var( 'certificato_fci' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Certificato FCI', 'caniincasa' ); ?></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Servizi Disponibili -->
-                        <div class="filter-group">
-                            <label><?php esc_html_e( 'Servizi disponibili', 'caniincasa' ); ?></label>
-                            <div class="checkbox-group">
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="cuccioli_disponibili"
-                                        value="1"
-                                        <?php checked( get_query_var( 'cuccioli_disponibili' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Cuccioli disponibili', 'caniincasa' ); ?></span>
-                                </label>
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="consegna_disponibile"
-                                        value="1"
-                                        <?php checked( get_query_var( 'consegna_disponibile' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Consegna disponibile', 'caniincasa' ); ?></span>
-                                </label>
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="visite_consentite"
-                                        value="1"
-                                        <?php checked( get_query_var( 'visite_consentite' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Visite consentite', 'caniincasa' ); ?></span>
-                                </label>
-                            </div>
-                        </div>
 
                         <!-- Action Buttons -->
                         <div class="filter-actions">

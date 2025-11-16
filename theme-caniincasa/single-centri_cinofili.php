@@ -12,18 +12,25 @@ get_header();
 <main id="main-content" class="site-main">
     <?php while ( have_posts() ) : the_post(); ?>
 
+        <?php
+        // Hero Section
+        caniincasa_page_hero( array(
+            'subtitle' => 'Centro Cinofilo',
+        ) );
+        ?>
+
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'centro-single' ); ?>>
 
-            <?php caniincasa_breadcrumbs(); ?>
-
             <div class="container">
+
+                <?php caniincasa_breadcrumbs(); ?>
+
                 <div class="centro-single__layout">
 
                     <!-- Main Content -->
                     <div class="centro-single__content">
 
                         <header class="centro-single__header">
-                            <h1 class="centro-single__title"><?php the_title(); ?></h1>
 
                             <?php
                             $citta = get_field( 'citta' );

@@ -12,18 +12,25 @@ get_header();
 <main id="main-content" class="site-main">
     <?php while ( have_posts() ) : the_post(); ?>
 
+        <?php
+        // Hero Section
+        caniincasa_page_hero( array(
+            'subtitle' => 'Pensione per Cani',
+        ) );
+        ?>
+
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'pensione-single' ); ?>>
 
-            <?php caniincasa_breadcrumbs(); ?>
-
             <div class="container">
+
+                <?php caniincasa_breadcrumbs(); ?>
+
                 <div class="pensione-single__layout">
 
                     <!-- Main Content -->
                     <div class="pensione-single__content">
 
                         <header class="pensione-single__header">
-                            <h1 class="pensione-single__title"><?php the_title(); ?></h1>
 
                             <?php
                             $citta = get_field( 'citta' );

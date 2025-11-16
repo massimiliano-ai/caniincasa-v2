@@ -489,12 +489,30 @@ acf_add_local_field_group( array(
     'title' => 'Impostazioni Barra Titolo',
     'fields' => array(
         array(
+            'key' => 'field_hero_disable',
+            'label' => 'Disabilita Barra Titolo',
+            'name' => 'hero_disable',
+            'type' => 'true_false',
+            'instructions' => 'Attiva per nascondere completamente la barra del titolo in questa pagina.',
+            'default_value' => 0,
+            'ui' => 1,
+        ),
+        array(
             'key' => 'field_page_subtitle',
             'label' => 'Sottotitolo (H2)',
             'name' => 'page_subtitle',
             'type' => 'text',
             'instructions' => 'Sottotitolo da visualizzare sotto il titolo principale nella barra hero. Lascia vuoto per usare il valore predefinito.',
             'placeholder' => 'Es: Veterinari - Cliniche e Ambulatori',
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_hero_disable',
+                        'operator' => '!=',
+                        'value' => '1',
+                    ),
+                ),
+            ),
         ),
         array(
             'key' => 'field_hero_background_image',
@@ -505,6 +523,34 @@ acf_add_local_field_group( array(
             'return_format' => 'id',
             'preview_size' => 'medium',
             'library' => 'all',
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_hero_disable',
+                        'operator' => '!=',
+                        'value' => '1',
+                    ),
+                ),
+            ),
+        ),
+        array(
+            'key' => 'field_hero_overlay_color',
+            'label' => 'Colore Overlay',
+            'name' => 'hero_overlay_color',
+            'type' => 'color_picker',
+            'instructions' => 'Colore dell\'overlay scuro sopra l\'immagine di sfondo. Lascia vuoto per usare il nero predefinito (rgba(0,0,0,0.5)).',
+            'default_value' => '',
+            'enable_opacity' => 1,
+            'return_format' => 'string',
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_hero_disable',
+                        'operator' => '!=',
+                        'value' => '1',
+                    ),
+                ),
+            ),
         ),
     ),
     'location' => array(

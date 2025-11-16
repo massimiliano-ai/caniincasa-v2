@@ -23,9 +23,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  *     @type string $subtitle    H2 subtitle. Default: auto from post type or customizer
  *     @type string $image       Background image URL. Default: from post meta or customizer
  *     @type bool   $use_excerpt Use page excerpt as subtitle. Default: false
+ *     @type bool   $force       Force display even if disabled in meta. Default: false
  * }
  */
 function caniincasa_page_hero( $args = array() ) {
+
+    // Check if hero is disabled
+    $hero_disabled = get_post_meta( get_the_ID(), 'hero_disable', true );
+    if ( $hero_disabled && empty( $args['force'] ) ) {
+        return; // Don't display hero if disabled
+    }
 
     // Default arguments
     $defaults = array(
@@ -33,6 +40,7 @@ function caniincasa_page_hero( $args = array() ) {
         'subtitle'    => '',
         'image'       => '',
         'use_excerpt' => false,
+        'force'       => false,
     );
 
     $args = wp_parse_args( $args, $defaults );
@@ -46,11 +54,19 @@ function caniincasa_page_hero( $args = array() ) {
     // Get background image
     $bg_image = caniincasa_get_hero_background_image( $args );
 
+    // Get overlay color
+    $overlay_color = get_post_meta( get_the_ID(), 'hero_overlay_color', true );
+    if ( empty( $overlay_color ) ) {
+        $overlay_color = 'rgba(0, 0, 0, 0.5)'; // Default overlay
+    }
+
     // Build style attribute
     $style_attr = '';
     if ( ! empty( $bg_image ) ) {
         $style_attr = sprintf(
-            'style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(%s);"',
+            'style="background-image: linear-gradient(%s, %s), url(%s);"',
+            esc_attr( $overlay_color ),
+            esc_attr( $overlay_color ),
             esc_url( $bg_image )
         );
     }

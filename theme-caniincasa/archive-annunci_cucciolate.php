@@ -16,7 +16,7 @@ get_header();
 
         <header class="archive-header">
             <h1 class="archive-title">
-                <?php esc_html_e( 'Annunci Cucciolate', 'caniincasa' ); ?>
+                <?php esc_html_e( 'Annunci', 'caniincasa' ); ?>
             </h1>
             <p class="archive-description">
                 <?php esc_html_e( 'Trova cuccioli disponibili da allevamenti certificati. Scegli la razza e la zona che preferisci.', 'caniincasa' ); ?>
@@ -209,7 +209,7 @@ get_header();
                             <?php
                             global $wp_query;
                             printf(
-                                esc_html( _n( '%d cucciolata trovata', '%d cucciolate trovate', $wp_query->found_posts, 'caniincasa' ) ),
+                                esc_html( _n( '%d annuncio trovato', '%d annunci trovati', $wp_query->found_posts, 'caniincasa' ) ),
                                 number_format_i18n( $wp_query->found_posts )
                             );
                             ?>
@@ -336,7 +336,7 @@ get_header();
 
                     <div class="no-results">
                         <div class="no-results__icon">🐶</div>
-                        <h2><?php esc_html_e( 'Nessuna cucciolata trovata', 'caniincasa' ); ?></h2>
+                        <h2><?php esc_html_e( 'Nessun annuncio trovato', 'caniincasa' ); ?></h2>
                         <p><?php esc_html_e( 'Prova a modificare i filtri o a cercare un\'altra razza o zona.', 'caniincasa' ); ?></p>
                     </div>
 

@@ -51,7 +51,7 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                 </a>
                 <?php if ( current_user_can( 'submit_cucciolata' ) ): ?>
                     <a href="?tab=aggiungi-cucciolata" class="tab-link <?php echo $active_tab === 'aggiungi-cucciolata' ? 'active' : ''; ?>">
-                        <span class="icon">➕</span> Nuova cucciolata
+                        <span class="icon">➕</span> Nuovo annuncio
                     </a>
                 <?php endif; ?>
                 <?php if ( current_user_can( 'edit_posts' ) ): ?>
@@ -218,7 +218,7 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                                 <p>Non hai ancora pubblicato annunci.</p>
                                 <?php if ( current_user_can( 'submit_cucciolata' ) ): ?>
                                     <a href="?tab=aggiungi-cucciolata" class="btn btn-primary">
-                                        Pubblica la tua prima cucciolata
+                                        Pubblica il tuo primo annuncio
                                     </a>
                                 <?php endif; ?>
                             </div>
@@ -231,7 +231,7 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                 <?php elseif ( $active_tab === 'aggiungi-cucciolata' && current_user_can( 'submit_cucciolata' ) ): ?>
                     <!-- AGGIUNGI CUCCIOLATA TAB -->
                     <div class="tab-pane active" id="aggiungi-cucciolata">
-                        <h2 class="tab-title">Pubblica una nuova cucciolata</h2>
+                        <h2 class="tab-title">Pubblica un nuovo annuncio</h2>
 
                         <form id="cucciolata-form" class="dashboard-form">
                             <?php wp_nonce_field( 'caniincasa_submit_cucciolata', 'cucciolata_nonce' ); ?>
@@ -323,7 +323,7 @@ $active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pro
                             <div class="form-group">
                                 <label for="descrizione">Descrizione *</label>
                                 <textarea id="descrizione" name="descrizione" rows="6" required
-                                          placeholder="Descrivi la cucciolata, i genitori, eventuali caratteristiche..."></textarea>
+                                          placeholder="Descrivi l'annuncio, i cuccioli, eventuali caratteristiche..."></textarea>
                             </div>
 
                             <div class="form-group">

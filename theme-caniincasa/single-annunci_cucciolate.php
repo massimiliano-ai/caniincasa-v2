@@ -209,7 +209,7 @@ get_header();
 
                         <!-- CTA Pubblica Annuncio -->
                         <div class="cta-card cta-card--small">
-                            <h4><?php esc_html_e( 'Hai una cucciolata?', 'caniincasa' ); ?></h4>
+                            <h4><?php esc_html_e( 'Hai un annuncio da pubblicare?', 'caniincasa' ); ?></h4>
                             <p><?php esc_html_e( 'Pubblica il tuo annuncio gratuitamente', 'caniincasa' ); ?></p>
                             <a href="<?php echo esc_url( home_url( '/contattaci/' ) ); ?>" class="btn btn-sm">
                                 <?php esc_html_e( 'Pubblica Annuncio', 'caniincasa' ); ?>
@@ -236,7 +236,7 @@ get_header();
                 ?>
                     <div class="related-posts">
                         <h2 class="related-posts__title">
-                            <?php esc_html_e( 'Altri Annunci di Cucciolate', 'caniincasa' ); ?>
+                            <?php esc_html_e( 'Altri Annunci', 'caniincasa' ); ?>
                         </h2>
                         <div class="grid grid-3">
                             <?php

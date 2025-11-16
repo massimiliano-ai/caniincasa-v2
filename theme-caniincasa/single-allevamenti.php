@@ -140,7 +140,7 @@ get_header();
 
                         <!-- CTA Annuncio Cucciolata -->
                         <div class="cta-card cta-card--small">
-                            <h4>Hai una cucciolata disponibile?</h4>
+                            <h4>Hai un annuncio da pubblicare?</h4>
                             <p>Pubblica il tuo annuncio</p>
                             <a href="<?php echo esc_url( home_url( '/contattaci/' ) ); ?>" class="btn btn-sm">
                                 Invia Annuncio

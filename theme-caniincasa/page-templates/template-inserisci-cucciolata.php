@@ -33,8 +33,8 @@ $current_user = wp_get_current_user();
         <?php caniincasa_breadcrumbs(); ?>
 
         <div class="page-header">
-            <h1 class="page-title">Pubblica Annuncio Cucciolata</h1>
-            <p class="page-subtitle">Compila il form per pubblicare il tuo annuncio di cucciolata disponibile</p>
+            <h1 class="page-title">Pubblica Annuncio</h1>
+            <p class="page-subtitle">Compila il form per pubblicare il tuo annuncio</p>
         </div>
 
         <div class="form-container">
@@ -168,8 +168,8 @@ $current_user = wp_get_current_user();
                     <div class="form-group">
                         <label for="descrizione">Descrizione *</label>
                         <textarea id="descrizione" name="descrizione" rows="8" required
-                                  placeholder="Descrivi la cucciolata, i genitori, eventuali caratteristiche, temperamento..."></textarea>
-                        <small class="form-help">Minimo 100 caratteri. Descrivi dettagliatamente la cucciolata.</small>
+                                  placeholder="Descrivi l'annuncio, i cuccioli, i genitori, eventuali caratteristiche, temperamento..."></textarea>
+                        <small class="form-help">Minimo 100 caratteri. Descrivi dettagliatamente l'annuncio.</small>
                     </div>
                 </div>
 

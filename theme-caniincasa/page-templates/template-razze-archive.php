@@ -136,6 +136,81 @@ get_header();
                     </div>
                 </div>
 
+                <!-- Affettuosità Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <span class="label-icon">❤️</span>
+                        Affettuosità
+                    </label>
+                    <div class="filter-range">
+                        <input
+                            type="range"
+                            id="filter-affection"
+                            name="affettuosita"
+                            min="0"
+                            max="5"
+                            step="0.5"
+                            value="0"
+                            class="range-slider"
+                        >
+                        <div class="range-labels">
+                            <span class="range-min">Basso</span>
+                            <span class="range-value" id="affection-value">Tutti</span>
+                            <span class="range-max">Alto</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tolleranza verso Estranei Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <span class="label-icon">👥</span>
+                        Tolleranza verso Estranei
+                    </label>
+                    <div class="filter-range">
+                        <input
+                            type="range"
+                            id="filter-strangers"
+                            name="tolleranza_estranei"
+                            min="0"
+                            max="5"
+                            step="0.5"
+                            value="0"
+                            class="range-slider"
+                        >
+                        <div class="range-labels">
+                            <span class="range-min">Basso</span>
+                            <span class="range-value" id="strangers-value">Tutti</span>
+                            <span class="range-max">Alto</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vocalità Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <span class="label-icon">🔊</span>
+                        Vocalità
+                    </label>
+                    <div class="filter-range">
+                        <input
+                            type="range"
+                            id="filter-vocality"
+                            name="vocalita"
+                            min="0"
+                            max="5"
+                            step="0.5"
+                            value="0"
+                            class="range-slider"
+                        >
+                        <div class="range-labels">
+                            <span class="range-min">Silenzioso</span>
+                            <span class="range-value" id="vocality-value">Tutti</span>
+                            <span class="range-max">Molto vocale</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Kids Friendly Filter -->
                 <div class="filter-group">
                     <label class="filter-label">

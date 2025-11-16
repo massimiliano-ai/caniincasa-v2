@@ -28,6 +28,77 @@ get_header();
             <?php endif; ?>
         </div>
 
+        <!-- Filtri Zona e Razze -->
+        <div class="filters-wrapper">
+            <h3 class="filters-title">Filtra allevamenti</h3>
+            <form id="filtri-allevamenti-form" method="GET">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label for="filter-provincia">Provincia:</label>
+                        <select id="filter-provincia" name="filter_provincia" class="filter-select" data-post-type="allevamenti">
+                            <option value="">Tutte le province</option>
+                            <?php
+                            // Get all unique province values from ACF field 'desprovincia'
+                            global $wpdb;
+                            $province_values = $wpdb->get_col( "
+                                SELECT DISTINCT pm.meta_value
+                                FROM {$wpdb->posts} p
+                                INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+                                WHERE pm.meta_key = 'desprovincia'
+                                AND p.post_type = 'allevamenti'
+                                AND p.post_status = 'publish'
+                                AND pm.meta_value != ''
+                                ORDER BY pm.meta_value ASC
+                            " );
+
+                            $selected_provincia = isset( $_GET['filter_provincia'] ) ? $_GET['filter_provincia'] : '';
+
+                            foreach ( $province_values as $provincia ):
+                                if ( ! empty( $provincia ) ):
+                            ?>
+                                <option value="<?php echo esc_attr( $provincia ); ?>" <?php selected( $selected_provincia, $provincia ); ?>>
+                                    <?php echo esc_html( $provincia ); ?>
+                                </option>
+                            <?php endif; endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-razza">Razza:</label>
+                        <select id="filter-razza" name="filter_razza" class="filter-select">
+                            <option value="">Tutte le razze</option>
+                            <?php
+                            // Get all razze_allevamenti taxonomy terms
+                            $razze_terms = get_terms( array(
+                                'taxonomy' => 'razze_allevamenti',
+                                'hide_empty' => true,
+                                'orderby' => 'name',
+                                'order' => 'ASC',
+                            ) );
+
+                            $selected_razza = isset( $_GET['filter_razza'] ) ? $_GET['filter_razza'] : '';
+
+                            if ( ! empty( $razze_terms ) && ! is_wp_error( $razze_terms ) ):
+                                foreach ( $razze_terms as $razza_term ):
+                            ?>
+                                <option value="<?php echo esc_attr( $razza_term->slug ); ?>" <?php selected( $selected_razza, $razza_term->slug ); ?>>
+                                    <?php echo esc_html( $razza_term->name ); ?>
+                                </option>
+                            <?php endforeach; endif; ?>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <button type="submit" class="btn btn-primary">Filtra</button>
+                    </div>
+
+                    <div class="filter-group">
+                        <button type="button" id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <?php
         // Query per tutti gli allevamenti
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
@@ -41,8 +112,44 @@ get_header();
             'order' => 'ASC',
         );
 
+        // Apply filters
+        $meta_query = array( 'relation' => 'AND' );
+        $tax_query = array( 'relation' => 'AND' );
+
+        // Filter by provincia (ACF field)
+        if ( isset( $_GET['filter_provincia'] ) && ! empty( $_GET['filter_provincia'] ) ) {
+            $meta_query[] = array(
+                'key' => 'desprovincia',
+                'value' => sanitize_text_field( $_GET['filter_provincia'] ),
+                'compare' => '='
+            );
+        }
+
+        // Filter by razza (taxonomy)
+        if ( isset( $_GET['filter_razza'] ) && ! empty( $_GET['filter_razza'] ) ) {
+            $tax_query[] = array(
+                'taxonomy' => 'razze_allevamenti',
+                'field' => 'slug',
+                'terms' => sanitize_text_field( $_GET['filter_razza'] )
+            );
+        }
+
+        if ( count( $meta_query ) > 1 ) {
+            $args['meta_query'] = $meta_query;
+        }
+
+        if ( count( $tax_query ) > 1 ) {
+            $args['tax_query'] = $tax_query;
+        }
+
         $allevamenti_query = new WP_Query( $args );
         ?>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner" style="display:none;">
+            <div class="spinner"></div>
+            <p>Caricamento...</p>
+        </div>
 
         <!-- Results Count -->
         <div class="results-info">
@@ -57,7 +164,7 @@ get_header();
         <?php if ( $allevamenti_query->have_posts() ): ?>
 
             <!-- Allevamenti Grid -->
-            <div class="items-grid">
+            <div class="items-grid" id="items-grid">
 
                 <?php while ( $allevamenti_query->have_posts() ): $allevamenti_query->the_post(); ?>
 

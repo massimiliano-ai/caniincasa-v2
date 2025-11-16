@@ -57,12 +57,46 @@ get_header();
                         if ( ! empty( $razze ) && ! is_wp_error( $razze ) ) :
                         ?>
                             <div class="allevamento-single__razze">
-                                <h3>Razze Allevate</h3>
-                                <div class="razza-tags">
-                                    <?php foreach ( $razze as $razza ) : ?>
-                                        <a href="<?php echo esc_url( get_term_link( $razza ) ); ?>" class="razza-tag">
-                                            <?php echo esc_html( $razza->name ); ?>
-                                        </a>
+                                <h2>Razze Allevate</h2>
+                                <div class="razze-cards-grid">
+                                    <?php foreach ( $razze as $razza ) :
+                                        // Try to find corresponding razza_di_cani post
+                                        $razza_post = get_posts( array(
+                                            'post_type' => 'razze_di_cani',
+                                            'title' => $razza->name,
+                                            'posts_per_page' => 1,
+                                            'post_status' => 'publish',
+                                        ) );
+
+                                        $razza_link = ! empty( $razza_post ) ? get_permalink( $razza_post[0]->ID ) : get_term_link( $razza );
+                                        $razza_image = ! empty( $razza_post ) && has_post_thumbnail( $razza_post[0]->ID )
+                                            ? get_the_post_thumbnail_url( $razza_post[0]->ID, 'medium' )
+                                            : '';
+                                    ?>
+                                        <div class="razza-card">
+                                            <?php if ( $razza_image ) : ?>
+                                                <div class="razza-card__image">
+                                                    <a href="<?php echo esc_url( $razza_link ); ?>">
+                                                        <img src="<?php echo esc_url( $razza_image ); ?>" alt="<?php echo esc_attr( $razza->name ); ?>" loading="lazy">
+                                                    </a>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="razza-card__content">
+                                                <h3 class="razza-card__title">
+                                                    <a href="<?php echo esc_url( $razza_link ); ?>">
+                                                        <?php echo esc_html( $razza->name ); ?>
+                                                    </a>
+                                                </h3>
+                                                <?php if ( ! empty( $razza_post ) && $razza_post[0]->post_excerpt ) : ?>
+                                                    <p class="razza-card__excerpt">
+                                                        <?php echo esc_html( wp_trim_words( $razza_post[0]->post_excerpt, 15 ) ); ?>
+                                                    </p>
+                                                <?php endif; ?>
+                                                <a href="<?php echo esc_url( $razza_link ); ?>" class="razza-card__link">
+                                                    Scopri di più →
+                                                </a>
+                                            </div>
+                                        </div>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
@@ -140,7 +174,7 @@ get_header();
 
                         <!-- CTA Annuncio Cucciolata -->
                         <div class="cta-card cta-card--small">
-                            <h4>Hai una cucciolata disponibile?</h4>
+                            <h4>Hai un annuncio da pubblicare?</h4>
                             <p>Pubblica il tuo annuncio</p>
                             <a href="<?php echo esc_url( home_url( '/contattaci/' ) ); ?>" class="btn btn-sm">
                                 Invia Annuncio

@@ -915,3 +915,29 @@ function caniincasa_page_razze_template_scripts() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'caniincasa_page_razze_template_scripts' );
+
+/**
+ * Modify annunci archive query to support filters
+ */
+function caniincasa_filter_annunci_archive( $query ) {
+    // Only modify main query on annunci archive
+    if ( ! is_admin() && $query->is_main_query() && is_post_type_archive( 'annunci_cucciolate' ) ) {
+
+        $meta_query = array();
+
+        // Filter by ricerca_offerta
+        if ( ! empty( $_GET['ricerca_offerta'] ) ) {
+            $meta_query[] = array(
+                'key'     => 'ricerca_offerta',
+                'value'   => sanitize_text_field( $_GET['ricerca_offerta'] ),
+                'compare' => '=',
+            );
+        }
+
+        // Apply meta query if we have filters
+        if ( ! empty( $meta_query ) ) {
+            $query->set( 'meta_query', $meta_query );
+        }
+    }
+}
+add_action( 'pre_get_posts', 'caniincasa_filter_annunci_archive' );

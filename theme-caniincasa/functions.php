@@ -721,7 +721,7 @@ function caniincasa_ajax_filter_archive() {
 
     $args = array(
         'post_type'      => $post_type,
-        'posts_per_page' => 12,
+        'posts_per_page' => 24,
         'paged'          => $paged,
         'orderby'        => 'title',
         'order'          => 'ASC',

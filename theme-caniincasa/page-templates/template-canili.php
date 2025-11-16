@@ -78,7 +78,7 @@ get_header();
         $args = array(
             'post_type' => 'canili',
             'post_status' => 'publish',
-            'posts_per_page' => 12,
+            'posts_per_page' => 24,
             'paged' => $paged,
             'orderby' => 'title',
             'order' => 'ASC',

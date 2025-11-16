@@ -33,7 +33,7 @@ function caniincasa_ajax_filter_razze() {
     // Build query args
     $args = array(
         'post_type'      => 'razze_di_cani',
-        'posts_per_page' => 12,
+        'posts_per_page' => 24,
         'paged'          => $paged,
         'post_status'    => 'publish',
     );
@@ -246,7 +246,7 @@ function caniincasa_ajax_load_more() {
     // Build query
     $args = array(
         'post_type'      => $post_type,
-        'posts_per_page' => 12,
+        'posts_per_page' => 24,
         'paged'          => $paged,
     );
 

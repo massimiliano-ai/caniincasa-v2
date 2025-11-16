@@ -109,7 +109,7 @@ get_header();
         $args = array(
             'post_type' => $post_types,
             'post_status' => 'publish',
-            'posts_per_page' => 12,
+            'posts_per_page' => 24,
             'paged' => $paged,
             'orderby' => 'date',
             'order' => 'DESC',

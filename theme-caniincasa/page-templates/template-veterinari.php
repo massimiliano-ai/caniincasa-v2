@@ -28,14 +28,18 @@ get_header();
             <?php endif; ?>
         </div>
 
-        <!-- Filtri Zona -->
+        <!-- Filtri -->
         <div class="filters-wrapper">
-            <h3 class="filters-title">Filtra per zona</h3>
             <div class="filters-row">
+                <div class="filter-group filter-search">
+                    <label for="filter-search">Cerca:</label>
+                    <input type="text" id="filter-search" class="filter-input" placeholder="Cerca per nome..." data-post-type="struttureveterinarie">
+                </div>
+
                 <div class="filter-group">
                     <label for="filter-provincia">Provincia:</label>
                     <select id="filter-provincia" class="filter-select" data-post-type="struttureveterinarie">
-                        <option value="">Tutte le province</option>
+                        <option value="">Tutti</option>
                         <?php
                         // Get all unique province values from ACF field 'provincia_estesa'
                         global $wpdb;
@@ -58,6 +62,42 @@ get_header();
                         <?php endforeach; ?>
                     </select>
                 </div>
+
+                <div class="filter-group">
+                    <label for="filter-servizi">Servizi Offerti:</label>
+                    <select id="filter-servizi" class="filter-select">
+                        <option value="">Tutti</option>
+                        <?php
+                        // Get all unique services from ACF field 'servizi_offerti'
+                        $servizi_values = $wpdb->get_col( "
+                            SELECT DISTINCT meta_value
+                            FROM {$wpdb->postmeta} pm
+                            INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+                            WHERE pm.meta_key = 'servizi_offerti'
+                            AND pm.meta_value != ''
+                            AND p.post_type = 'struttureveterinarie'
+                            AND p.post_status = 'publish'
+                            ORDER BY pm.meta_value ASC
+                        " );
+
+                        // Split comma-separated services and get unique values
+                        $all_servizi = array();
+                        foreach ( $servizi_values as $servizi_string ) {
+                            $servizi_array = array_map( 'trim', explode( ',', $servizi_string ) );
+                            $all_servizi = array_merge( $all_servizi, $servizi_array );
+                        }
+                        $all_servizi = array_unique( array_filter( $all_servizi ) );
+                        sort( $all_servizi );
+
+                        foreach ( $all_servizi as $servizio ):
+                        ?>
+                            <option value="<?php echo esc_attr( $servizio ); ?>">
+                                <?php echo esc_html( $servizio ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
                 <button id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
             </div>
         </div>

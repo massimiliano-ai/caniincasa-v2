@@ -474,8 +474,10 @@ function caniincasa_ajax_filter_archive() {
     check_ajax_referer( 'caniincasa-nonce', 'nonce' );
 
     $post_type = isset( $_POST['post_type'] ) ? sanitize_text_field( $_POST['post_type'] ) : 'allevamenti';
+    $search_value = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
     $provincia_value = isset( $_POST['provincia'] ) ? sanitize_text_field( $_POST['provincia'] ) : '';
     $razza_value = isset( $_POST['razza'] ) ? sanitize_text_field( $_POST['razza'] ) : '';
+    $servizi_value = isset( $_POST['servizi'] ) ? sanitize_text_field( $_POST['servizi'] ) : '';
     $paged = isset( $_POST['paged'] ) ? absint( $_POST['paged'] ) : 1;
 
     $args = array(
@@ -485,6 +487,11 @@ function caniincasa_ajax_filter_archive() {
         'orderby'        => 'title',
         'order'          => 'ASC',
     );
+
+    // Add search parameter if provided
+    if ( ! empty( $search_value ) ) {
+        $args['s'] = $search_value;
+    }
 
     // Build meta query for ACF fields
     $meta_query = array( 'relation' => 'AND' );
@@ -537,6 +544,15 @@ function caniincasa_ajax_filter_archive() {
             );
         }
         $meta_query[] = $razza_meta_query;
+    }
+
+    // Filter by servizi for struttureveterinarie using ACF field 'servizi_offerti'
+    if ( ! empty( $servizi_value ) && $post_type === 'struttureveterinarie' ) {
+        $meta_query[] = array(
+            'key'     => 'servizi_offerti',
+            'value'   => $servizi_value,
+            'compare' => 'LIKE',
+        );
     }
 
     if ( count( $meta_query ) > 1 ) {

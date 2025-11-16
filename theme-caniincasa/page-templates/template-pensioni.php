@@ -12,21 +12,16 @@ get_header();
 
 <main id="main-content" class="site-main page-pensioni">
 
+    <?php
+    // Hero Section
+    caniincasa_page_hero( array(
+        'subtitle' => 'Pensioni per Cani',
+    ) );
+    ?>
+
     <div class="container">
 
         <?php caniincasa_breadcrumbs(); ?>
-
-        <!-- Hero Section -->
-        <div class="page-hero">
-            <h1 class="page-title">
-                <?php echo esc_html( get_the_title() ); ?>
-            </h1>
-            <?php if ( get_the_content() ): ?>
-                <div class="page-intro">
-                    <?php the_content(); ?>
-                </div>
-            <?php endif; ?>
-        </div>
 
         <!-- Filtri Zona -->
         <div class="filters-wrapper">

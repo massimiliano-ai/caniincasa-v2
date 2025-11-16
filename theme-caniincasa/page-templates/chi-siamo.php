@@ -15,16 +15,11 @@ get_header();
     <?php while ( have_posts() ) : the_post(); ?>
 
         <!-- Hero Section -->
-        <section class="page-hero about-hero">
-            <div class="container">
-                <div class="page-hero__content">
-                    <h1 class="page-hero__title"><?php the_title(); ?></h1>
-                    <?php if ( has_excerpt() ) : ?>
-                        <p class="page-hero__excerpt"><?php the_excerpt(); ?></p>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </section>
+        <?php
+        caniincasa_page_hero( array(
+            'use_excerpt' => true,
+        ) );
+        ?>
 
         <div class="container">
 

@@ -12,25 +12,23 @@ get_header();
 <main id="main-content" class="site-main">
     <?php while ( have_posts() ) : the_post(); ?>
 
+        <?php
+        // Hero Section
+        caniincasa_page_hero( array(
+            'subtitle' => 'Veterinario o Struttura Veterinaria',
+        ) );
+        ?>
+
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'veterinario-single' ); ?>>
 
-            <?php caniincasa_breadcrumbs(); ?>
-
             <div class="container">
+
+                <?php caniincasa_breadcrumbs(); ?>
+
                 <div class="veterinario-single__layout">
 
                     <!-- Main Content -->
                     <div class="veterinario-single__content">
-
-                        <!-- Category Label -->
-                        <div class="category-label">
-                            <?php esc_html_e( 'Veterinario o Struttura Veterinaria', 'caniincasa' ); ?>
-                        </div>
-
-                        <!-- Header -->
-                        <header class="veterinario-single__header">
-                            <h1 class="veterinario-single__title"><?php the_title(); ?></h1>
-                        </header>
 
                         <!-- Info Table -->
                         <div class="info-table">

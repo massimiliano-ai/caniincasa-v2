@@ -771,6 +771,9 @@ if ( file_exists( CANIINCASA_INC_DIR . '/custom-fields.php' ) ) {
 // Template Functions
 require_once CANIINCASA_INC_DIR . '/template-functions.php';
 
+// Page Hero Component
+require_once CANIINCASA_INC_DIR . '/page-hero.php';
+
 // Customizer
 require_once CANIINCASA_INC_DIR . '/customizer.php';
 

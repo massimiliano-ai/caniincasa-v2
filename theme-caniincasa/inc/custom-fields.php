@@ -479,3 +479,95 @@ function caniincasa_get_rating_label( $field_name, $value ) {
 
     return '';
 }
+
+/**
+ * Page Hero Settings
+ * Campi per configurare la barra del titolo delle pagine
+ */
+acf_add_local_field_group( array(
+    'key' => 'group_page_hero_settings',
+    'title' => 'Impostazioni Barra Titolo',
+    'fields' => array(
+        array(
+            'key' => 'field_page_subtitle',
+            'label' => 'Sottotitolo (H2)',
+            'name' => 'page_subtitle',
+            'type' => 'text',
+            'instructions' => 'Sottotitolo da visualizzare sotto il titolo principale nella barra hero. Lascia vuoto per usare il valore predefinito.',
+            'placeholder' => 'Es: Veterinari - Cliniche e Ambulatori',
+        ),
+        array(
+            'key' => 'field_hero_background_image',
+            'label' => 'Immagine di Sfondo Barra Titolo',
+            'name' => 'hero_background_image',
+            'type' => 'image',
+            'instructions' => 'Immagine di sfondo per la barra del titolo. Lascia vuoto per usare il gradiente predefinito o l\'immagine configurata nelle impostazioni tema.',
+            'return_format' => 'id',
+            'preview_size' => 'medium',
+            'library' => 'all',
+        ),
+    ),
+    'location' => array(
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'page',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'post',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'razze_di_cani',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'allevamenti',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'struttureveterinarie',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'canili',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'centri_cinofili',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'pensioni_per_cani',
+            ),
+        ),
+    ),
+    'menu_order' => 0,
+    'position' => 'side',
+    'style' => 'default',
+    'label_placement' => 'top',
+    'instruction_placement' => 'label',
+) );

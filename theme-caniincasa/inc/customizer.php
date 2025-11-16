@@ -779,6 +779,296 @@ function caniincasa_customizer_hero_settings( $wp_customize ) {
 add_action( 'customize_register', 'caniincasa_customizer_hero_settings' );
 
 /**
+ * Buttons Style Settings
+ */
+function caniincasa_customizer_buttons_settings( $wp_customize ) {
+
+    // Section: Pulsanti
+    $wp_customize->add_section( 'caniincasa_buttons', array(
+        'title'    => __( 'Stile Pulsanti', 'caniincasa' ),
+        'priority' => 40,
+    ) );
+
+    // Button Primary - Background Color
+    $wp_customize->add_setting( 'button_primary_bg_color', array(
+        'default'           => '#FF6B35',
+        'sanitize_callback' => 'sanitize_hex_color',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'button_primary_bg_color', array(
+        'label'    => __( 'Pulsante Primario - Colore Sfondo', 'caniincasa' ),
+        'section'  => 'caniincasa_buttons',
+        'settings' => 'button_primary_bg_color',
+    ) ) );
+
+    // Button Primary - Text Color
+    $wp_customize->add_setting( 'button_primary_text_color', array(
+        'default'           => '#ffffff',
+        'sanitize_callback' => 'sanitize_hex_color',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'button_primary_text_color', array(
+        'label'    => __( 'Pulsante Primario - Colore Testo', 'caniincasa' ),
+        'section'  => 'caniincasa_buttons',
+        'settings' => 'button_primary_text_color',
+    ) ) );
+
+    // Button Primary - Border Color
+    $wp_customize->add_setting( 'button_primary_border_color', array(
+        'default'           => '#FF6B35',
+        'sanitize_callback' => 'sanitize_hex_color',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'button_primary_border_color', array(
+        'label'    => __( 'Pulsante Primario - Colore Bordo', 'caniincasa' ),
+        'section'  => 'caniincasa_buttons',
+        'settings' => 'button_primary_border_color',
+    ) ) );
+
+    // Button Primary - Border Width
+    $wp_customize->add_setting( 'button_primary_border_width', array(
+        'default'           => '2',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'button_primary_border_width', array(
+        'label'       => __( 'Pulsante Primario - Spessore Bordo (px)', 'caniincasa' ),
+        'section'     => 'caniincasa_buttons',
+        'type'        => 'number',
+        'input_attrs' => array(
+            'min'  => 0,
+            'max'  => 10,
+            'step' => 1,
+        ),
+    ) );
+
+    // Button Primary - Border Radius
+    $wp_customize->add_setting( 'button_primary_border_radius', array(
+        'default'           => '6',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'button_primary_border_radius', array(
+        'label'       => __( 'Pulsante Primario - Arrotondamento (px)', 'caniincasa' ),
+        'section'     => 'caniincasa_buttons',
+        'type'        => 'number',
+        'input_attrs' => array(
+            'min'  => 0,
+            'max'  => 50,
+            'step' => 1,
+        ),
+    ) );
+
+    // Button Primary - Padding Vertical
+    $wp_customize->add_setting( 'button_primary_padding_vertical', array(
+        'default'           => '12',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'button_primary_padding_vertical', array(
+        'label'       => __( 'Pulsante Primario - Padding Verticale (px)', 'caniincasa' ),
+        'section'     => 'caniincasa_buttons',
+        'type'        => 'number',
+        'input_attrs' => array(
+            'min'  => 0,
+            'max'  => 50,
+            'step' => 1,
+        ),
+    ) );
+
+    // Button Primary - Padding Horizontal
+    $wp_customize->add_setting( 'button_primary_padding_horizontal', array(
+        'default'           => '24',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'button_primary_padding_horizontal', array(
+        'label'       => __( 'Pulsante Primario - Padding Orizzontale (px)', 'caniincasa' ),
+        'section'     => 'caniincasa_buttons',
+        'type'        => 'number',
+        'input_attrs' => array(
+            'min'  => 0,
+            'max'  => 100,
+            'step' => 1,
+        ),
+    ) );
+
+    // ---- BUTTON SECONDARY ----
+
+    // Button Secondary - Background Color
+    $wp_customize->add_setting( 'button_secondary_bg_color', array(
+        'default'           => 'transparent',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'button_secondary_bg_color', array(
+        'label'       => __( 'Pulsante Secondario - Colore Sfondo', 'caniincasa' ),
+        'section'     => 'caniincasa_buttons',
+        'type'        => 'text',
+        'description' => __( 'Usa "transparent" per sfondo trasparente o un colore HEX', 'caniincasa' ),
+    ) );
+
+    // Button Secondary - Text Color
+    $wp_customize->add_setting( 'button_secondary_text_color', array(
+        'default'           => '#FF6B35',
+        'sanitize_callback' => 'sanitize_hex_color',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'button_secondary_text_color', array(
+        'label'    => __( 'Pulsante Secondario - Colore Testo', 'caniincasa' ),
+        'section'  => 'caniincasa_buttons',
+        'settings' => 'button_secondary_text_color',
+    ) ) );
+
+    // Button Secondary - Border Color
+    $wp_customize->add_setting( 'button_secondary_border_color', array(
+        'default'           => '#FF6B35',
+        'sanitize_callback' => 'sanitize_hex_color',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'button_secondary_border_color', array(
+        'label'    => __( 'Pulsante Secondario - Colore Bordo', 'caniincasa' ),
+        'section'  => 'caniincasa_buttons',
+        'settings' => 'button_secondary_border_color',
+    ) ) );
+
+    // Button Secondary - Border Width
+    $wp_customize->add_setting( 'button_secondary_border_width', array(
+        'default'           => '2',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'button_secondary_border_width', array(
+        'label'       => __( 'Pulsante Secondario - Spessore Bordo (px)', 'caniincasa' ),
+        'section'     => 'caniincasa_buttons',
+        'type'        => 'number',
+        'input_attrs' => array(
+            'min'  => 0,
+            'max'  => 10,
+            'step' => 1,
+        ),
+    ) );
+
+    // Button Secondary - Border Radius
+    $wp_customize->add_setting( 'button_secondary_border_radius', array(
+        'default'           => '6',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'button_secondary_border_radius', array(
+        'label'       => __( 'Pulsante Secondario - Arrotondamento (px)', 'caniincasa' ),
+        'section'     => 'caniincasa_buttons',
+        'type'        => 'number',
+        'input_attrs' => array(
+            'min'  => 0,
+            'max'  => 50,
+            'step' => 1,
+        ),
+    ) );
+
+    // Button Secondary - Padding Vertical
+    $wp_customize->add_setting( 'button_secondary_padding_vertical', array(
+        'default'           => '12',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'button_secondary_padding_vertical', array(
+        'label'       => __( 'Pulsante Secondario - Padding Verticale (px)', 'caniincasa' ),
+        'section'     => 'caniincasa_buttons',
+        'type'        => 'number',
+        'input_attrs' => array(
+            'min'  => 0,
+            'max'  => 50,
+            'step' => 1,
+        ),
+    ) );
+
+    // Button Secondary - Padding Horizontal
+    $wp_customize->add_setting( 'button_secondary_padding_horizontal', array(
+        'default'           => '24',
+        'sanitize_callback' => 'absint',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'button_secondary_padding_horizontal', array(
+        'label'       => __( 'Pulsante Secondario - Padding Orizzontale (px)', 'caniincasa' ),
+        'section'     => 'caniincasa_buttons',
+        'type'        => 'number',
+        'input_attrs' => array(
+            'min'  => 0,
+            'max'  => 100,
+            'step' => 1,
+        ),
+    ) );
+}
+add_action( 'customize_register', 'caniincasa_customizer_buttons_settings' );
+
+/**
+ * Output Button Styles from Customizer
+ */
+function caniincasa_customizer_buttons_css() {
+    // Get customizer values
+    $primary_bg = get_theme_mod( 'button_primary_bg_color', '#FF6B35' );
+    $primary_text = get_theme_mod( 'button_primary_text_color', '#ffffff' );
+    $primary_border = get_theme_mod( 'button_primary_border_color', '#FF6B35' );
+    $primary_border_width = get_theme_mod( 'button_primary_border_width', '2' );
+    $primary_radius = get_theme_mod( 'button_primary_border_radius', '6' );
+    $primary_pad_v = get_theme_mod( 'button_primary_padding_vertical', '12' );
+    $primary_pad_h = get_theme_mod( 'button_primary_padding_horizontal', '24' );
+
+    $secondary_bg = get_theme_mod( 'button_secondary_bg_color', 'transparent' );
+    $secondary_text = get_theme_mod( 'button_secondary_text_color', '#FF6B35' );
+    $secondary_border = get_theme_mod( 'button_secondary_border_color', '#FF6B35' );
+    $secondary_border_width = get_theme_mod( 'button_secondary_border_width', '2' );
+    $secondary_radius = get_theme_mod( 'button_secondary_border_radius', '6' );
+    $secondary_pad_v = get_theme_mod( 'button_secondary_padding_vertical', '12' );
+    $secondary_pad_h = get_theme_mod( 'button_secondary_padding_horizontal', '24' );
+
+    // Output CSS
+    ?>
+    <style type="text/css">
+        /* Primary Buttons */
+        .btn-primary,
+        .btn.btn-primary,
+        button.btn-primary,
+        input[type="submit"],
+        .user-register.btn-primary {
+            background-color: <?php echo esc_attr( $primary_bg ); ?>;
+            color: <?php echo esc_attr( $primary_text ); ?>;
+            border: <?php echo esc_attr( $primary_border_width ); ?>px solid <?php echo esc_attr( $primary_border ); ?>;
+            border-radius: <?php echo esc_attr( $primary_radius ); ?>px;
+            padding: <?php echo esc_attr( $primary_pad_v ); ?>px <?php echo esc_attr( $primary_pad_h ); ?>px;
+        }
+
+        .btn-primary:hover,
+        .btn.btn-primary:hover,
+        button.btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        /* Secondary/Outline Buttons */
+        .btn-secondary,
+        .btn-outline,
+        .btn.btn-outline,
+        button.btn-outline {
+            background-color: <?php echo esc_attr( $secondary_bg ); ?>;
+            color: <?php echo esc_attr( $secondary_text ); ?>;
+            border: <?php echo esc_attr( $secondary_border_width ); ?>px solid <?php echo esc_attr( $secondary_border ); ?>;
+            border-radius: <?php echo esc_attr( $secondary_radius ); ?>px;
+            padding: <?php echo esc_attr( $secondary_pad_v ); ?>px <?php echo esc_attr( $secondary_pad_h ); ?>px;
+        }
+
+        .btn-secondary:hover,
+        .btn-outline:hover,
+        .btn.btn-outline:hover {
+            background-color: <?php echo esc_attr( $secondary_border ); ?>;
+            color: #ffffff;
+        }
+    </style>
+    <?php
+}
+add_action( 'wp_head', 'caniincasa_customizer_buttons_css' );
+
+/**
  * Customizer Live Preview
  */
 function caniincasa_customizer_live_preview() {

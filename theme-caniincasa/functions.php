@@ -1048,6 +1048,9 @@ require_once CANIINCASA_INC_DIR . '/page-hero.php';
 // Customizer
 require_once CANIINCASA_INC_DIR . '/customizer.php';
 
+// Page Custom CSS Metabox
+require_once CANIINCASA_INC_DIR . '/page-custom-css.php';
+
 // AJAX Handlers
 if ( file_exists( CANIINCASA_INC_DIR . '/ajax-handlers.php' ) ) {
     require_once CANIINCASA_INC_DIR . '/ajax-handlers.php';

@@ -96,7 +96,11 @@ get_header();
 
         <?php
         // Query per tutti gli allevamenti
-        $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+        // For page templates, use 'page' instead of 'paged'
+        $paged = ( get_query_var( 'page' ) ) ? get_query_var( 'page' ) : 1;
+        if ( $paged == 0 ) {
+            $paged = 1;
+        }
 
         $args = array(
             'post_type' => 'allevamenti',

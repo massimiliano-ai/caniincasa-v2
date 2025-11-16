@@ -12,6 +12,7 @@
     let currentStep = 1;
     const totalSteps = 9; // Reduced from 10 - removed taglia question
     const answers = {};
+    let currentResults = []; // Store results for email/PDF export
 
     /**
      * Initialize Quiz
@@ -90,6 +91,18 @@
             $('#quiz-form').show();
             showStep(1);
             updateProgress();
+        });
+
+        // Email results button (delegated event)
+        $(document).on('click', '#email-results-btn', function(e) {
+            e.preventDefault();
+            emailResults();
+        });
+
+        // Download PDF button (delegated event)
+        $(document).on('click', '#download-pdf-btn', function(e) {
+            e.preventDefault();
+            downloadPDF();
         });
 
         // Answer card selection visual feedback
@@ -330,6 +343,18 @@
      * ALWAYS includes "Meticcio" option
      */
     function displayResults(scoredBreeds) {
+        // Store results for export
+        currentResults = scoredBreeds.map(function(item) {
+            return {
+                name: item.breed.name,
+                percentage: item.percentage,
+                link: item.breed.link
+            };
+        });
+
+        // Track quiz completion (only for logged-in users)
+        trackQuizCompletion();
+
         let html = '<div class="results-grid">';
 
         // Display top breeds
@@ -425,6 +450,118 @@
     function capitalizeFirst(str) {
         if (!str) return '';
         return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    /**
+     * Track Quiz Completion
+     */
+    function trackQuizCompletion() {
+        // Only track if user is logged in (check by presence of user-specific element or global variable)
+        // This will fail silently for non-logged users
+        $.ajax({
+            url: canincasaAjax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'track_quiz_completion',
+                nonce: canincasaAjax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    console.log('Quiz completion tracked:', response.data.count);
+                }
+            },
+            error: function() {
+                // Fail silently
+                console.log('Quiz tracking not available (user may not be logged in)');
+            }
+        });
+    }
+
+    /**
+     * Email Results
+     */
+    function emailResults() {
+        if (currentResults.length === 0) {
+            alert('Nessun risultato da inviare');
+            return;
+        }
+
+        // Show loading
+        $('#email-results-btn').prop('disabled', true).text('Invio in corso...');
+
+        $.ajax({
+            url: canincasaAjax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'email_quiz_results',
+                nonce: canincasaAjax.nonce,
+                results: JSON.stringify(currentResults)
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('✅ ' + response.data.message);
+                } else {
+                    alert('❌ ' + response.data.message);
+                }
+            },
+            error: function() {
+                alert('❌ Errore nell\'invio dell\'email. Riprova più tardi.');
+            },
+            complete: function() {
+                $('#email-results-btn').prop('disabled', false).text('📧 Invia via Email');
+            }
+        });
+    }
+
+    /**
+     * Download PDF
+     */
+    function downloadPDF() {
+        if (currentResults.length === 0) {
+            alert('Nessun risultato da scaricare');
+            return;
+        }
+
+        // Show loading
+        $('#download-pdf-btn').prop('disabled', true).text('Generazione in corso...');
+
+        $.ajax({
+            url: canincasaAjax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'download_quiz_pdf',
+                nonce: canincasaAjax.nonce,
+                results: JSON.stringify(currentResults)
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Use browser print functionality to convert HTML to PDF
+                    const htmlContent = response.data.html;
+                    const filename = response.data.filename;
+
+                    // Create a new window with the HTML content
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(htmlContent);
+                    printWindow.document.close();
+
+                    // Wait for content to load, then trigger print dialog
+                    printWindow.onload = function() {
+                        printWindow.focus();
+                        printWindow.print();
+                    };
+
+                    alert('✅ Usa la finestra di stampa per salvare come PDF');
+                } else {
+                    alert('❌ ' + response.data.message);
+                }
+            },
+            error: function() {
+                alert('❌ Errore nella generazione del PDF. Riprova più tardi.');
+            },
+            complete: function() {
+                $('#download-pdf-btn').prop('disabled', false).text('📄 Scarica PDF');
+            }
+        });
     }
 
     /**

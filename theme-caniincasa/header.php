@@ -64,12 +64,10 @@
 
                 <!-- User Actions -->
                 <div class="header-user-actions">
-                    <?php if ( is_user_logged_in() ) :
-                        $current_user = wp_get_current_user();
-                    ?>
+                    <?php if ( is_user_logged_in() ) : ?>
                         <a href="<?php echo esc_url( home_url( '/dashboard/' ) ); ?>" class="user-link user-dashboard">
                             <span class="icon">👤</span>
-                            <span class="text"><?php echo esc_html( $current_user->display_name ); ?></span>
+                            <span class="text"><?php esc_html_e( 'Dashboard', 'caniincasa' ); ?></span>
                         </a>
                         <a href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>" class="user-link user-logout">
                             <span class="icon">🚪</span>

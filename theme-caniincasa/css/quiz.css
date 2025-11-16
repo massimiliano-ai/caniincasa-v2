@@ -294,6 +294,32 @@
     font-weight: 500;
 }
 
+/* Quiz Export Actions */
+.quiz-export-actions {
+    text-align: center;
+    padding: 2rem 0 1rem;
+    margin-top: 2rem;
+    border-top: 2px solid #e0e0e0;
+}
+
+.quiz-export-actions .export-intro {
+    font-size: 1.1rem;
+    color: var(--text-dark, #333);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.quiz-export-actions .export-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.quiz-export-actions .btn {
+    min-width: 180px;
+}
+
 /* Quiz Actions */
 .quiz-actions {
     text-align: center;

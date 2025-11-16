@@ -465,6 +465,224 @@ add_action( 'wp_ajax_get_breeds_for_quiz', 'caniincasa_ajax_get_breeds_for_quiz'
 add_action( 'wp_ajax_nopriv_get_breeds_for_quiz', 'caniincasa_ajax_get_breeds_for_quiz' );
 
 /**
+ * AJAX Handler: Track Quiz Completion
+ */
+function caniincasa_ajax_track_quiz_completion() {
+	check_ajax_referer( 'caniincasa-nonce', 'nonce' );
+
+	// Only track for logged-in users
+	if ( ! is_user_logged_in() ) {
+		wp_send_json_error( array( 'message' => 'User not logged in' ) );
+		return;
+	}
+
+	$user_id = get_current_user_id();
+
+	// Get current completion count
+	$completion_count = get_user_meta( $user_id, 'quiz_completion_count', true );
+	$completion_count = $completion_count ? intval( $completion_count ) : 0;
+
+	// Increment count
+	$completion_count++;
+	update_user_meta( $user_id, 'quiz_completion_count', $completion_count );
+
+	// Save last completion date
+	update_user_meta( $user_id, 'quiz_last_completion_date', current_time( 'mysql' ) );
+
+	wp_send_json_success( array(
+		'count' => $completion_count,
+		'message' => 'Quiz completion tracked successfully'
+	) );
+}
+add_action( 'wp_ajax_track_quiz_completion', 'caniincasa_ajax_track_quiz_completion' );
+
+/**
+ * AJAX Handler: Send Quiz Results via Email
+ */
+function caniincasa_ajax_email_quiz_results() {
+	check_ajax_referer( 'caniincasa-nonce', 'nonce' );
+
+	// Only for logged-in users
+	if ( ! is_user_logged_in() ) {
+		wp_send_json_error( array( 'message' => 'Devi essere loggato per inviare i risultati via email' ) );
+		return;
+	}
+
+	$user = wp_get_current_user();
+	$user_email = $user->user_email;
+	$user_name = $user->display_name;
+
+	// Get results data from AJAX
+	$results = isset( $_POST['results'] ) ? json_decode( stripslashes( $_POST['results'] ), true ) : array();
+
+	if ( empty( $results ) ) {
+		wp_send_json_error( array( 'message' => 'Nessun risultato da inviare' ) );
+		return;
+	}
+
+	// Build email content
+	$subject = 'I tuoi risultati del Quiz - Quale Razza di Cane fa per te?';
+
+	$message = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+	$message .= '<div style="max-width: 600px; margin: 0 auto; padding: 20px;">';
+	$message .= '<h1 style="color: #2c5aa0; text-align: center;">🐕 I Tuoi Risultati del Quiz</h1>';
+	$message .= '<p>Ciao ' . esc_html( $user_name ) . ',</p>';
+	$message .= '<p>Ecco le razze di cani più adatte a te in base alle tue risposte:</p>';
+
+	$message .= '<div style="margin: 20px 0;">';
+	foreach ( $results as $index => $breed ) {
+		$rank = $index + 1;
+		$name = isset( $breed['name'] ) ? esc_html( $breed['name'] ) : '';
+		$percentage = isset( $breed['percentage'] ) ? intval( $breed['percentage'] ) : 0;
+		$link = isset( $breed['link'] ) ? esc_url( $breed['link'] ) : '';
+
+		$message .= '<div style="background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px;">';
+		$message .= '<h3 style="margin: 0 0 10px 0; color: #2c5aa0;">#' . $rank . ' - ' . $name . '</h3>';
+		$message .= '<div style="background: #ddd; height: 20px; border-radius: 10px; overflow: hidden;">';
+		$message .= '<div style="background: #4CAF50; height: 100%; width: ' . $percentage . '%; border-radius: 10px;"></div>';
+		$message .= '</div>';
+		$message .= '<p style="margin: 5px 0;"><strong>' . $percentage . '% Match</strong></p>';
+		if ( $link ) {
+			$message .= '<p style="margin: 10px 0 0 0;"><a href="' . $link . '" style="color: #2c5aa0; text-decoration: none;">Scopri di più →</a></p>';
+		}
+		$message .= '</div>';
+	}
+	$message .= '</div>';
+
+	$message .= '<div style="margin-top: 30px; padding: 15px; background: #e8f4f8; border-radius: 5px;">';
+	$message .= '<h3 style="margin: 0 0 10px 0;">💖 Considera un Meticcio!</h3>';
+	$message .= '<p>I cani meticci sono unici, spesso più sani, e stanno aspettando una famiglia nei canili.</p>';
+	$message .= '<p><a href="' . home_url( '/canili/' ) . '" style="color: #2c5aa0;">Visita i Canili →</a></p>';
+	$message .= '</div>';
+
+	$message .= '<hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">';
+	$message .= '<p style="text-align: center; color: #666; font-size: 12px;">Grazie per aver usato CaninCasa<br>';
+	$message .= '<a href="' . home_url() . '" style="color: #2c5aa0;">www.caneincasa.it</a></p>';
+	$message .= '</div>';
+	$message .= '</body></html>';
+
+	// Email headers
+	$headers = array(
+		'Content-Type: text/html; charset=UTF-8',
+		'From: CaninCasa <noreply@caneincasa.it>',
+	);
+
+	// Send email
+	$sent = wp_mail( $user_email, $subject, $message, $headers );
+
+	if ( $sent ) {
+		wp_send_json_success( array( 'message' => 'Email inviata con successo a ' . $user_email ) );
+	} else {
+		wp_send_json_error( array( 'message' => 'Errore nell\'invio dell\'email' ) );
+	}
+}
+add_action( 'wp_ajax_email_quiz_results', 'caniincasa_ajax_email_quiz_results' );
+
+/**
+ * AJAX Handler: Download Quiz Results as PDF
+ */
+function caniincasa_ajax_download_quiz_pdf() {
+	check_ajax_referer( 'caniincasa-nonce', 'nonce' );
+
+	// Only for logged-in users
+	if ( ! is_user_logged_in() ) {
+		wp_send_json_error( array( 'message' => 'Devi essere loggato per scaricare il PDF' ) );
+		return;
+	}
+
+	$user = wp_get_current_user();
+	$user_name = $user->display_name;
+
+	// Get results data from AJAX
+	$results = isset( $_POST['results'] ) ? json_decode( stripslashes( $_POST['results'] ), true ) : array();
+
+	if ( empty( $results ) ) {
+		wp_send_json_error( array( 'message' => 'Nessun risultato da scaricare' ) );
+		return;
+	}
+
+	// Build HTML content for PDF
+	$html = '<!DOCTYPE html>';
+	$html .= '<html><head><meta charset="UTF-8">';
+	$html .= '<style>';
+	$html .= 'body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 40px; }';
+	$html .= 'h1 { color: #2c5aa0; text-align: center; margin-bottom: 10px; }';
+	$html .= '.subtitle { text-align: center; color: #666; margin-bottom: 30px; }';
+	$html .= '.breed { background: #f5f5f5; padding: 15px; margin: 15px 0; border-radius: 5px; page-break-inside: avoid; }';
+	$html .= '.breed h3 { margin: 0 0 10px 0; color: #2c5aa0; }';
+	$html .= '.match-bar { background: #ddd; height: 20px; border-radius: 10px; overflow: hidden; margin: 10px 0; }';
+	$html .= '.match-fill { background: #4CAF50; height: 100%; }';
+	$html .= '.meticcio { background: #e8f4f8; padding: 20px; margin-top: 30px; border-radius: 5px; }';
+	$html .= '.footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 12px; }';
+	$html .= '</style>';
+	$html .= '</head><body>';
+
+	$html .= '<h1>🐕 I Tuoi Risultati del Quiz</h1>';
+	$html .= '<div class="subtitle">Quale Razza di Cane fa per te?</div>';
+	$html .= '<p><strong>Utente:</strong> ' . esc_html( $user_name ) . '</p>';
+	$html .= '<p><strong>Data:</strong> ' . date_i18n( 'd/m/Y - H:i' ) . '</p>';
+
+	foreach ( $results as $index => $breed ) {
+		$rank = $index + 1;
+		$name = isset( $breed['name'] ) ? esc_html( $breed['name'] ) : '';
+		$percentage = isset( $breed['percentage'] ) ? intval( $breed['percentage'] ) : 0;
+
+		$html .= '<div class="breed">';
+		$html .= '<h3>#' . $rank . ' - ' . $name . '</h3>';
+		$html .= '<div class="match-bar">';
+		$html .= '<div class="match-fill" style="width: ' . $percentage . '%;"></div>';
+		$html .= '</div>';
+		$html .= '<p><strong>' . $percentage . '% Match</strong></p>';
+		$html .= '</div>';
+	}
+
+	$html .= '<div class="meticcio">';
+	$html .= '<h3>💖 Considera un Meticcio!</h3>';
+	$html .= '<p>I cani meticci sono unici, spesso più sani, e stanno aspettando una famiglia nei canili.</p>';
+	$html .= '<p>Visita: ' . home_url( '/canili/' ) . '</p>';
+	$html .= '</div>';
+
+	$html .= '<div class="footer">';
+	$html .= 'Generato da CaninCasa - www.caneincasa.it';
+	$html .= '</div>';
+
+	$html .= '</body></html>';
+
+	// Return HTML for PDF generation (client-side using jsPDF or similar)
+	wp_send_json_success( array(
+		'html' => $html,
+		'filename' => 'quiz-risultati-' . date( 'Y-m-d' ) . '.pdf'
+	) );
+}
+add_action( 'wp_ajax_download_quiz_pdf', 'caniincasa_ajax_download_quiz_pdf' );
+
+/**
+ * Display Quiz Completion Count in User Profile
+ */
+function caniincasa_show_quiz_completion_in_profile( $user ) {
+	$completion_count = get_user_meta( $user->ID, 'quiz_completion_count', true );
+	$last_completion = get_user_meta( $user->ID, 'quiz_last_completion_date', true );
+
+	$completion_count = $completion_count ? intval( $completion_count ) : 0;
+	?>
+	<h2>Statistiche Quiz</h2>
+	<table class="form-table">
+		<tr>
+			<th><label>Quiz Completati</label></th>
+			<td>
+				<strong style="font-size: 16px; color: #2c5aa0;"><?php echo esc_html( $completion_count ); ?></strong>
+				<?php if ( $last_completion ) : ?>
+					<p class="description">Ultimo completamento: <?php echo esc_html( date_i18n( 'd/m/Y - H:i', strtotime( $last_completion ) ) ); ?></p>
+				<?php endif; ?>
+			</td>
+		</tr>
+	</table>
+	<?php
+}
+add_action( 'show_user_profile', 'caniincasa_show_quiz_completion_in_profile' );
+add_action( 'edit_user_profile', 'caniincasa_show_quiz_completion_in_profile' );
+
+/**
  * AJAX Handler: Filter Archive by Provincia and Razza
  */
 function caniincasa_ajax_filter_archive() {

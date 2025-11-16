@@ -335,6 +335,20 @@ get_header();
                     <!-- Results will be inserted here via JavaScript -->
                 </div>
 
+                <?php if ( is_user_logged_in() ) : ?>
+                    <div class="quiz-export-actions">
+                        <p class="export-intro">Salva i tuoi risultati:</p>
+                        <div class="export-buttons">
+                            <button type="button" class="btn btn-secondary" id="email-results-btn">
+                                📧 Invia via Email
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="download-pdf-btn">
+                                📄 Scarica PDF
+                            </button>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <div class="quiz-actions">
                     <button type="button" class="btn btn-primary" id="restart-quiz">
                         🔄 Rifai il quiz

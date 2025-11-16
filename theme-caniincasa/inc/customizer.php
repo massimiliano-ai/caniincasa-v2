@@ -729,6 +729,56 @@ function caniincasa_enqueue_google_fonts() {
 add_action( 'wp_enqueue_scripts', 'caniincasa_enqueue_google_fonts' );
 
 /**
+ * Hero Settings for Post Types
+ */
+function caniincasa_customizer_hero_settings( $wp_customize ) {
+    // Add Hero Settings Section
+    $wp_customize->add_section( 'caniincasa_hero_settings', array(
+        'title'    => __( 'Impostazioni Barra Titolo', 'caniincasa' ),
+        'priority' => 35,
+    ) );
+
+    // Post Types to configure
+    $post_types = array(
+        'razze_di_cani' => 'Razze di Cani',
+        'allevamenti' => 'Allevamenti',
+        'struttureveterinarie' => 'Veterinari',
+        'canili' => 'Canili',
+        'centri_cinofili' => 'Centri Cinofili',
+        'pensioni_per_cani' => 'Pensioni',
+    );
+
+    foreach ( $post_types as $post_type => $label ) {
+        // Subtitle setting
+        $wp_customize->add_setting( 'hero_subtitle_' . $post_type, array(
+            'default'           => '',
+            'sanitize_callback' => 'sanitize_text_field',
+        ) );
+
+        $wp_customize->add_control( 'hero_subtitle_' . $post_type, array(
+            'label'       => sprintf( __( 'Sottotitolo %s', 'caniincasa' ), $label ),
+            'section'     => 'caniincasa_hero_settings',
+            'type'        => 'text',
+            'description' => sprintf( __( 'Sottotitolo predefinito per %s', 'caniincasa' ), $label ),
+        ) );
+
+        // Background Image setting
+        $wp_customize->add_setting( 'hero_image_' . $post_type, array(
+            'default'           => '',
+            'sanitize_callback' => 'absint',
+        ) );
+
+        $wp_customize->add_control( new WP_Customize_Media_Control( $wp_customize, 'hero_image_' . $post_type, array(
+            'label'       => sprintf( __( 'Immagine Sfondo %s', 'caniincasa' ), $label ),
+            'section'     => 'caniincasa_hero_settings',
+            'mime_type'   => 'image',
+            'description' => sprintf( __( 'Immagine di sfondo predefinita per %s', 'caniincasa' ), $label ),
+        ) ) );
+    }
+}
+add_action( 'customize_register', 'caniincasa_customizer_hero_settings' );
+
+/**
  * Customizer Live Preview
  */
 function caniincasa_customizer_live_preview() {

@@ -12,20 +12,56 @@ get_header();
 
 <main id="main-content" class="site-main page-canili">
 
+    <?php
+    // Hero Section
+    caniincasa_page_hero( array(
+        'subtitle' => 'Canili',
+    ) );
+    ?>
+
     <div class="container">
 
         <?php caniincasa_breadcrumbs(); ?>
 
-        <!-- Hero Section -->
-        <div class="page-hero">
-            <h1 class="page-title">
-                <?php echo esc_html( get_the_title() ); ?>
-            </h1>
-            <?php if ( get_the_content() ): ?>
-                <div class="page-intro">
-                    <?php the_content(); ?>
+        <!-- Filtri Zona -->
+        <div class="filters-wrapper">
+            <h3 class="filters-title">Filtra per zona</h3>
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="filter-provincia">Provincia:</label>
+                    <input
+                        type="text"
+                        id="filter-provincia"
+                        class="filter-search"
+                        list="province-list"
+                        placeholder="Cerca provincia..."
+                        data-post-type="canili"
+                        autocomplete="off"
+                    >
+                    <datalist id="province-list">
+                        <?php
+                        // Get all unique province values from ACF fields 'provincia_estesa' (fallback to 'provincia')
+                        global $wpdb;
+                        $province_values = $wpdb->get_col( "
+                            SELECT DISTINCT COALESCE(NULLIF(pm1.meta_value, ''), pm2.meta_value) as provincia
+                            FROM {$wpdb->posts} p
+                            LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'provincia_estesa'
+                            LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'provincia'
+                            WHERE p.post_type = 'canili'
+                            AND p.post_status = 'publish'
+                            AND (pm1.meta_value != '' OR pm2.meta_value != '')
+                            ORDER BY provincia ASC
+                        " );
+
+                        foreach ( $province_values as $provincia ):
+                            if ( ! empty( $provincia ) ):
+                        ?>
+                            <option value="<?php echo esc_attr( $provincia ); ?>">
+                        <?php endif; endforeach; ?>
+                    </datalist>
                 </div>
-            <?php endif; ?>
+                <button id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
+            </div>
         </div>
 
         <?php
@@ -44,6 +80,12 @@ get_header();
         $canili_query = new WP_Query( $args );
         ?>
 
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner" style="display:none;">
+            <div class="spinner"></div>
+            <p>Caricamento...</p>
+        </div>
+
         <!-- Results Count -->
         <div class="results-info">
             <p class="results-count">
@@ -57,7 +99,7 @@ get_header();
         <?php if ( $canili_query->have_posts() ): ?>
 
             <!-- Canili Grid -->
-            <div class="items-grid">
+            <div class="items-grid" id="items-grid">
 
                 <?php while ( $canili_query->have_posts() ): $canili_query->the_post(); ?>
 
@@ -85,21 +127,28 @@ get_header();
                             </h3>
 
                             <?php
-                            // Provincia
+                            // Provincia (try taxonomy first, then ACF field)
                             $province = wp_get_post_terms( get_the_ID(), 'provincia' );
+                            $provincia_text = get_field( 'provincia' ) ?: get_field( 'provincia_estesa' );
+
                             if ( ! empty( $province ) && ! is_wp_error( $province ) ):
                             ?>
                                 <div class="item-location">
                                     <span class="icon">📍</span>
                                     <span class="text"><?php echo esc_html( $province[0]->name ); ?></span>
                                 </div>
+                            <?php elseif ( $provincia_text ): ?>
+                                <div class="item-location">
+                                    <span class="icon">📍</span>
+                                    <span class="text"><?php echo esc_html( $provincia_text ); ?></span>
+                                </div>
                             <?php endif; ?>
 
                             <?php
-                            // Indirizzo
+                            // Indirizzo e Comune
                             $indirizzo = get_field( 'indirizzo' );
-                            $citta = get_field( 'citta' );
-                            if ( $indirizzo || $citta ):
+                            $comune = get_field( 'comune' );
+                            if ( $indirizzo || $comune ):
                             ?>
                                 <div class="item-address">
                                     <span class="icon">🏠</span>
@@ -107,9 +156,9 @@ get_header();
                                         <?php
                                         if ( $indirizzo ) {
                                             echo esc_html( $indirizzo );
-                                            if ( $citta ) echo ', ';
+                                            if ( $comune ) echo ', ';
                                         }
-                                        if ( $citta ) echo esc_html( $citta );
+                                        if ( $comune ) echo esc_html( $comune );
                                         ?>
                                     </span>
                                 </div>
@@ -125,38 +174,13 @@ get_header();
                             <?php endif; ?>
 
                             <?php
-                            // Contatti (protetti - solo per utenti registrati)
-                            $telefono = get_field( 'telefono_principale' ) ?: get_field( 'telefono' );
-                            $email = get_field( 'email' );
-                            $sito_web = get_field( 'sito_web' );
-
-                            if ( $telefono || $email || $sito_web ):
+                            // Riferimento
+                            $riferimento = get_field( 'riferimento' );
+                            if ( $riferimento ):
                             ?>
-                                <div class="item-contacts">
-                                    <?php if ( caniincasa_can_view_contacts() ): ?>
-                                        <?php if ( $telefono ): ?>
-                                            <a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $telefono ) ); ?>" class="contact-item" title="Telefono">
-                                                <span class="icon">📞</span>
-                                            </a>
-                                        <?php endif; ?>
-
-                                        <?php if ( $email ): ?>
-                                            <a href="mailto:<?php echo esc_attr( $email ); ?>" class="contact-item" title="Email">
-                                                <span class="icon">✉️</span>
-                                            </a>
-                                        <?php endif; ?>
-
-                                        <?php if ( $sito_web ): ?>
-                                            <a href="<?php echo esc_url( $sito_web ); ?>" target="_blank" rel="noopener" class="contact-item" title="Sito web">
-                                                <span class="icon">🌐</span>
-                                            </a>
-                                        <?php endif; ?>
-                                    <?php else: ?>
-                                        <div class="protected-contact-message">
-                                            <span class="icon">🔒</span>
-                                            <a href="<?php echo home_url( '/registrati/' ); ?>">Registrati per vedere i contatti</a>
-                                        </div>
-                                    <?php endif; ?>
+                                <div class="item-info">
+                                    <span class="icon">👤</span>
+                                    <span class="text"><strong>Riferimento:</strong> <?php echo esc_html( $riferimento ); ?></span>
                                 </div>
                             <?php endif; ?>
 
@@ -177,14 +201,9 @@ get_header();
             <?php if ( $canili_query->max_num_pages > 1 ): ?>
                 <div class="pagination-wrapper">
                     <?php
-                    echo paginate_links( array(
-                        'base' => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
-                        'format' => '?paged=%#%',
-                        'current' => max( 1, $paged ),
+                    echo caniincasa_get_pagination_with_filters( array(
                         'total' => $canili_query->max_num_pages,
-                        'prev_text' => '&laquo; Precedente',
-                        'next_text' => 'Successiva &raquo;',
-                        'type' => 'list',
+                        'current' => max( 1, $paged ),
                     ) );
                     ?>
                 </div>

@@ -117,7 +117,7 @@ get_header();
                         <span class="icon">✓</span>
                         <div>
                             <strong>Inserisci annunci</strong>
-                            <p>Pubblica cucciolate e annunci di adozione</p>
+                            <p>Pubblica annunci e adozioni</p>
                         </div>
                     </li>
                     <li>

@@ -401,22 +401,20 @@ function caniincasa_ajax_get_breeds_for_quiz() {
             $query->the_post();
             $post_id = get_the_ID();
 
-            // Get ACF fields
-            $taglia = get_field( 'taglia' );
-            $tipo_pelo = get_field( 'tipo_pelo' );
-            $livello_energia = get_field( 'livello_di_energia' );
-            $addestramento = get_field( 'facilita_addestramento' );
-            $bambini = get_field( 'adatto_ai_bambini' );
-            $temperamento = get_field( 'temperamento' );
-            $latrato = get_field( 'tendenza_al_latrato' );
-            $spazio = get_field( 'spazio_necessario' );
-            $cura = get_field( 'cura_necessaria' );
-            $adatto_principianti = get_field( 'adatto_principianti' );
-            $ipoallergenico = get_field( 'ipoallergenico' );
+            // Get ACF fields (using correct field names from ACF export)
+            $livello_energia = get_field( 'energia_e_livelli_di_attivita' );
+            $addestramento = get_field( 'facilita_di_addestramento' );
+            $bambini = get_field( 'compatibilita_con_i_bambini' );
+            $temperamento = get_field( 'temperamento_breve' );
+            $latrato = get_field( 'vocalita_e_predisposizione_ad_abbaiare' );
+            $spazio = get_field( 'adattabilita_appartamento' );
+            $cura = get_field( 'cura_e_perdita_pelo_' );
+            $esperienza = get_field( 'livello_esperienza_richiesto' );
+            $affettuosita = get_field( 'affettuosita' );
+            $tolleranza_estranei = get_field( 'tolleranza_estranei' );
 
-            // Normalize values to lowercase
-            $taglia = is_string( $taglia ) ? strtolower( $taglia ) : $taglia;
-            $tipo_pelo = is_string( $tipo_pelo ) ? strtolower( $tipo_pelo ) : $tipo_pelo;
+            // Normalize temperamento to lowercase if it's a string
+            $temperamento = is_string( $temperamento ) ? strtolower( $temperamento ) : $temperamento;
 
             // Build characteristics array
             $caratteristiche = array();
@@ -444,17 +442,16 @@ function caniincasa_ajax_get_breeds_for_quiz() {
                 'url'                     => get_permalink(),
                 'link'                    => get_permalink(), // Alias for JS
                 'image'                   => get_the_post_thumbnail_url( $post_id, 'medium' ),
-                'taglia'                  => $taglia ?: 'media',
-                'tipo_pelo'               => $tipo_pelo ?: 'medio',
-                'livello_energia'         => $livello_energia ?: 'medio',
-                'facilita_addestramento'  => $addestramento ?: 'media',
-                'adatto_bambini'          => $bambini ?: 'si',
-                'adatto_appartamento'     => $spazio ?: 'si',
-                'adatto_principianti'     => $adatto_principianti ?: 'si',
+                'livello_energia'         => $livello_energia ?: 3,
+                'facilita_addestramento'  => $addestramento ?: 3,
+                'compatibilita_bambini'   => $bambini ?: 3,
+                'adattabilita_appartamento' => $spazio ?: 3,
+                'livello_esperienza'      => $esperienza ?: 3,
                 'temperamento'            => $temperamento ?: 'equilibrato',
-                'tendenza_abbaio'         => $latrato ?: 'media',
-                'ipoallergenico'          => $ipoallergenico ?: 'no',
-                'cura'                    => $cura ?: 3,
+                'vocalita'                => $latrato ?: 3,
+                'perdita_pelo'            => $cura ?: 3,
+                'affettuosita'            => $affettuosita ?: 3,
+                'tolleranza_estranei'     => $tolleranza_estranei ?: 3,
                 'caratteristiche'         => $caratteristiche,
             );
         }

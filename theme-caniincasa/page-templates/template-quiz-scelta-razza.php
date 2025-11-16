@@ -29,7 +29,7 @@ get_header();
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 0%"></div>
                 </div>
-                <p class="progress-text">Domanda <span class="current">1</span> di <span class="total">10</span></p>
+                <p class="progress-text">Domanda <span class="current">1</span> di <span class="total">9</span></p>
             </div>
 
             <!-- Quiz Form -->
@@ -182,44 +182,9 @@ get_header();
                     </div>
                 </div>
 
-                <!-- Domanda 6: Taglia -->
+                <!-- Domanda 6: Pelo (Taglia question removed - field doesn't exist in ACF) -->
                 <div class="quiz-step" data-step="6">
-                    <h2 class="question-title">6. Che taglia preferisci?</h2>
-                    <div class="answers-grid">
-                        <label class="answer-card">
-                            <input type="radio" name="taglia" value="piccola" required>
-                            <div class="answer-content">
-                                <span class="answer-icon">🐕‍🦺</span>
-                                <span class="answer-text">Piccola (fino 10kg)</span>
-                            </div>
-                        </label>
-                        <label class="answer-card">
-                            <input type="radio" name="taglia" value="media">
-                            <div class="answer-content">
-                                <span class="answer-icon">🦮</span>
-                                <span class="answer-text">Media (10-25kg)</span>
-                            </div>
-                        </label>
-                        <label class="answer-card">
-                            <input type="radio" name="taglia" value="grande">
-                            <div class="answer-content">
-                                <span class="answer-icon">🐕</span>
-                                <span class="answer-text">Grande (25-45kg)</span>
-                            </div>
-                        </label>
-                        <label class="answer-card">
-                            <input type="radio" name="taglia" value="qualsiasi">
-                            <div class="answer-content">
-                                <span class="answer-icon">❓</span>
-                                <span class="answer-text">Qualsiasi</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Domanda 7: Pelo -->
-                <div class="quiz-step" data-step="7">
-                    <h2 class="question-title">7. Hai allergie o preferenze sul tipo di pelo?</h2>
+                    <h2 class="question-title">6. Hai allergie o preferenze sul tipo di pelo?</h2>
                     <div class="answers-grid">
                         <label class="answer-card">
                             <input type="radio" name="pelo" value="corto" required>
@@ -252,9 +217,9 @@ get_header();
                     </div>
                 </div>
 
-                <!-- Domanda 8: Carattere -->
-                <div class="quiz-step" data-step="8">
-                    <h2 class="question-title">8. Che carattere preferisci?</h2>
+                <!-- Domanda 7: Carattere -->
+                <div class="quiz-step" data-step="7">
+                    <h2 class="question-title">7. Che carattere preferisci?</h2>
                     <div class="answers-grid">
                         <label class="answer-card">
                             <input type="radio" name="carattere" value="calmo" required>
@@ -287,9 +252,9 @@ get_header();
                     </div>
                 </div>
 
-                <!-- Domanda 9: Latrato -->
-                <div class="quiz-step" data-step="9">
-                    <h2 class="question-title">9. Quanto puoi tollerare l'abbaio?</h2>
+                <!-- Domanda 8: Latrato -->
+                <div class="quiz-step" data-step="8">
+                    <h2 class="question-title">8. Quanto puoi tollerare l'abbaio?</h2>
                     <div class="answers-grid">
                         <label class="answer-card">
                             <input type="radio" name="latrato" value="poco" required>
@@ -315,9 +280,9 @@ get_header();
                     </div>
                 </div>
 
-                <!-- Domanda 10: Budget -->
-                <div class="quiz-step" data-step="10">
-                    <h2 class="question-title">10. Quanto puoi investire in spese veterinarie e cure?</h2>
+                <!-- Domanda 9: Budget -->
+                <div class="quiz-step" data-step="9">
+                    <h2 class="question-title">9. Quanto puoi investire in spese veterinarie e cure?</h2>
                     <div class="answers-grid">
                         <label class="answer-card">
                             <input type="radio" name="budget" value="basso" required>

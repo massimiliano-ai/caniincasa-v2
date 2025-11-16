@@ -10,7 +10,7 @@
     'use strict';
 
     let currentStep = 1;
-    const totalSteps = 10;
+    const totalSteps = 9; // Reduced from 10 - removed taglia question
     const answers = {};
 
     /**
@@ -179,87 +179,91 @@
             const normalize = (val) => val ? String(val).toLowerCase() : '';
 
             // 1. Esperienza (peso: 15)
-            const adattoPrinc = normalize(breed.adatto_principianti);
+            // livello_esperienza: 1-5 scale (1=beginner friendly, 5=requires expert)
             if (answers.esperienza === 'si') {
-                if (adattoPrinc === 'si' || adattoPrinc === 'alto' || adattoPrinc === '5') score += 15;
-                else if (adattoPrinc === 'medio' || adattoPrinc === '3') score += 8;
+                // First-time owner needs beginner-friendly breeds
+                if (breed.livello_esperienza <= 2) score += 15;
+                else if (breed.livello_esperienza <= 3) score += 8;
                 else score += 2; // Give some points anyway
             } else if (answers.esperienza === 'poca') {
-                if (adattoPrinc === 'si' || adattoPrinc === 'alto') score += 12;
-                else if (adattoPrinc === 'medio') score += 15;
+                // Some experience - can handle medium difficulty
+                if (breed.livello_esperienza <= 2) score += 12;
+                else if (breed.livello_esperienza <= 3) score += 15;
                 else score += 7;
             } else {
                 score += 15; // Esperti possono gestire qualsiasi razza
             }
 
             // 2. Spazio (peso: 15)
+            // adattabilita_appartamento: 1-5 scale (1=needs outdoor space, 5=perfect for apartment)
             if (answers.spazio === 'appartamento-piccolo') {
-                if (breed.adatto_appartamento === 'si') score += 15;
-                else if (breed.adatto_appartamento === 'medio') score += 8;
+                if (breed.adattabilita_appartamento >= 4) score += 15;
+                else if (breed.adattabilita_appartamento >= 3) score += 8;
                 else score += 0;
             } else if (answers.spazio === 'appartamento-grande') {
-                if (breed.adatto_appartamento === 'si' || breed.adatto_appartamento === 'medio') score += 15;
+                if (breed.adattabilita_appartamento >= 3) score += 15;
                 else score += 8;
             } else {
                 score += 15; // Casa/campagna ok per tutte
             }
 
             // 3. Bambini (peso: 15)
+            // compatibilita_bambini: 1-5 scale (1=not suitable, 5=excellent with kids)
             if (answers.bambini === 'si') {
-                if (breed.adatto_bambini === 'si') score += 15;
-                else if (breed.adatto_bambini === 'medio') score += 8;
+                if (breed.compatibilita_bambini >= 4) score += 15;
+                else if (breed.compatibilita_bambini >= 3) score += 8;
                 else score += 0;
             } else if (answers.bambini === 'adolescenti') {
-                if (breed.adatto_bambini === 'si' || breed.adatto_bambini === 'medio') score += 15;
+                if (breed.compatibilita_bambini >= 3) score += 15;
                 else score += 10;
             } else {
                 score += 15;
             }
 
             // 4. Esercizio (peso: 10)
+            // livello_energia: 1-5 scale (1=very low, 5=very high)
             if (answers.esercizio === 'poco') {
-                if (breed.livello_energia === 'basso') score += 10;
-                else if (breed.livello_energia === 'medio') score += 5;
+                if (breed.livello_energia <= 2) score += 10;
+                else if (breed.livello_energia <= 3) score += 5;
                 else score += 0;
             } else if (answers.esercizio === 'medio') {
-                if (breed.livello_energia === 'medio') score += 10;
+                if (breed.livello_energia >= 2 && breed.livello_energia <= 4) score += 10;
                 else score += 7;
             } else {
-                if (breed.livello_energia === 'alto') score += 10;
+                if (breed.livello_energia >= 4) score += 10;
                 else score += 5;
             }
 
             // 5. Addestramento (peso: 10)
+            // facilita_addestramento: 1-5 scale (1=difficult, 5=very easy)
             if (answers.addestramento === 'no') {
-                if (breed.facilita_addestramento === 'facile') score += 10;
-                else if (breed.facilita_addestramento === 'media') score += 5;
+                if (breed.facilita_addestramento >= 4) score += 10;
+                else if (breed.facilita_addestramento >= 3) score += 5;
                 else score += 0;
             } else if (answers.addestramento === 'base') {
-                if (breed.facilita_addestramento !== 'difficile') score += 10;
+                if (breed.facilita_addestramento >= 3) score += 10;
                 else score += 5;
             } else {
                 score += 10;
             }
 
-            // 6. Taglia (peso: 10)
-            if (answers.taglia !== 'qualsiasi') {
-                if (breed.taglia === answers.taglia) score += 10;
-                else score += 0;
-            } else {
-                score += 10;
-            }
+            // 6. Taglia - REMOVED (field doesn't exist in ACF)
+            // Skipping this criterion as 'taglia' field is not available
 
             // 7. Pelo (peso: 10)
+            // perdita_pelo: 1-5 scale (1=very low shedding, 5=heavy shedding)
             if (answers.pelo === 'allergie') {
-                if (breed.ipoallergenico === 'si') score += 10;
+                // Low shedding better for allergies
+                if (breed.perdita_pelo <= 2) score += 10;
+                else if (breed.perdita_pelo <= 3) score += 5;
                 else score += 0;
             } else if (answers.pelo === 'corto') {
-                if (breed.tipo_pelo === 'corto') score += 10;
-                else if (breed.tipo_pelo === 'medio') score += 7;
-                else score += 3;
+                // Prefer low-medium shedding for short coat preference
+                if (breed.perdita_pelo <= 3) score += 10;
+                else score += 5;
             } else if (answers.pelo === 'lungo') {
-                if (breed.tipo_pelo === 'lungo') score += 10;
-                else score += 7;
+                // Any shedding level OK for long coat preference
+                score += 10;
             } else {
                 score += 10;
             }
@@ -278,12 +282,13 @@
             }
 
             // 9. Latrato (peso: 5)
+            // vocalita: 1-5 scale (1=quiet, 5=very vocal)
             if (answers.latrato === 'poco') {
-                if (breed.tendenza_abbaio === 'bassa') score += 5;
-                else if (breed.tendenza_abbaio === 'media') score += 3;
+                if (breed.vocalita <= 2) score += 5;
+                else if (breed.vocalita <= 3) score += 3;
                 else score += 0;
             } else if (answers.latrato === 'medio') {
-                if (breed.tendenza_abbaio !== 'alta') score += 5;
+                if (breed.vocalita <= 4) score += 5;
                 else score += 3;
             } else {
                 score += 5;
@@ -365,9 +370,10 @@
 
             // Fallback traits based on breed data
             if (traits.length === 0) {
-                if (breed.taglia) traits.push('Taglia: ' + capitalizeFirst(breed.taglia));
-                if (breed.tipo_pelo) traits.push('Pelo: ' + capitalizeFirst(breed.tipo_pelo));
                 if (breed.temperamento) traits.push(capitalizeFirst(breed.temperamento));
+                if (breed.affettuosita >= 4) traits.push('Molto affettuoso');
+                if (breed.livello_energia >= 4) traits.push('Alta energia');
+                else if (breed.livello_energia <= 2) traits.push('Bassa energia');
             }
 
             // Display traits (max 3)

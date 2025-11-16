@@ -49,7 +49,7 @@ function caniincasa_register_post_types() {
         'show_in_nav_menus'   => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 20,
         'menu_icon'           => 'dashicons-pets',
@@ -84,7 +84,7 @@ function caniincasa_register_post_types() {
         'show_in_nav_menus'   => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 21,
         'menu_icon'           => 'dashicons-building',
@@ -117,7 +117,7 @@ function caniincasa_register_post_types() {
         'show_in_menu'        => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 22,
         'menu_icon'           => 'dashicons-welcome-learn-more',
@@ -150,7 +150,7 @@ function caniincasa_register_post_types() {
         'show_in_menu'        => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => false,
         'menu_position'       => 23,
         'menu_icon'           => 'dashicons-heart',
@@ -183,7 +183,7 @@ function caniincasa_register_post_types() {
         'show_in_menu'        => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 24,
         'menu_icon'           => 'dashicons-editor-help',
@@ -216,7 +216,7 @@ function caniincasa_register_post_types() {
         'show_in_menu'        => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 25,
         'menu_icon'           => 'dashicons-groups',
@@ -249,7 +249,7 @@ function caniincasa_register_post_types() {
         'show_in_menu'        => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 26,
         'menu_icon'           => 'dashicons-admin-post',
@@ -282,7 +282,7 @@ function caniincasa_register_post_types() {
         'show_in_menu'        => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 27,
         'menu_icon'           => 'dashicons-admin-home',
@@ -315,7 +315,7 @@ function caniincasa_register_post_types() {
         'show_in_menu'        => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 28,
         'menu_icon'           => 'dashicons-awards',
@@ -348,7 +348,7 @@ function caniincasa_register_post_types() {
         'show_in_menu'        => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 29,
         'menu_icon'           => 'dashicons-admin-multisite',
@@ -381,7 +381,7 @@ function caniincasa_register_post_types() {
         'show_in_menu'        => true,
         'show_in_rest'        => true,
         'query_var'           => true,
-        'has_archive'         => false,
+        'has_archive'         => true, // Abilitato per supportare archivi e paginazione
         'hierarchical'        => true,
         'menu_position'       => 30,
         'menu_icon'           => 'dashicons-art',
@@ -392,12 +392,13 @@ function caniincasa_register_post_types() {
     ) );
 
     /**
-     * Flush rewrite rules on theme activation
-     * Only runs once when theme is activated
+     * Flush rewrite rules on theme activation and when CPT settings change
+     * Force flush if has_archive was recently enabled
      */
-    if ( get_option( 'caniincasa_flush_rewrite_rules' ) !== 'done' ) {
+    $flush_version = 'v2_has_archive_enabled'; // Incrementa quando cambiano le rewrite rules
+    if ( get_option( 'caniincasa_flush_rewrite_rules' ) !== $flush_version ) {
         flush_rewrite_rules();
-        update_option( 'caniincasa_flush_rewrite_rules', 'done' );
+        update_option( 'caniincasa_flush_rewrite_rules', $flush_version );
     }
 }
 add_action( 'init', 'caniincasa_register_post_types' );

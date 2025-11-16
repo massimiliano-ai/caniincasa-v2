@@ -28,6 +28,69 @@ get_header();
             <?php endif; ?>
         </div>
 
+        <!-- Filtri Zona e Razze -->
+        <div class="filters-wrapper">
+            <h3 class="filters-title">Filtra allevamenti</h3>
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="filter-provincia">Provincia:</label>
+                    <select id="filter-provincia" class="filter-select" data-post-type="allevamenti">
+                        <option value="">Tutte le province</option>
+                        <?php
+                        // Get all unique province values from ACF field 'desprovincia' (fallback to 'provincia_')
+                        global $wpdb;
+                        $province_values = $wpdb->get_col( "
+                            SELECT DISTINCT COALESCE(NULLIF(pm1.meta_value, ''), pm2.meta_value) as provincia
+                            FROM {$wpdb->posts} p
+                            LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'desprovincia'
+                            LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'provincia_'
+                            WHERE p.post_type = 'allevamenti'
+                            AND p.post_status = 'publish'
+                            AND (pm1.meta_value != '' OR pm2.meta_value != '')
+                            ORDER BY provincia ASC
+                        " );
+
+                        foreach ( $province_values as $provincia ):
+                            if ( ! empty( $provincia ) ):
+                        ?>
+                            <option value="<?php echo esc_attr( $provincia ); ?>">
+                                <?php echo esc_html( $provincia ); ?>
+                            </option>
+                        <?php endif; endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-razza">Razza:</label>
+                    <select id="filter-razza" class="filter-select">
+                        <option value="">Tutte le razze</option>
+                        <?php
+                        // Get all unique race values from ACF fields (desrazza1, desrazza2, etc.)
+                        global $wpdb;
+                        $razze_values = $wpdb->get_col( "
+                            SELECT DISTINCT meta_value
+                            FROM {$wpdb->postmeta} pm
+                            INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+                            WHERE pm.meta_key LIKE 'desrazza%'
+                            AND pm.meta_value != ''
+                            AND p.post_type = 'allevamenti'
+                            AND p.post_status = 'publish'
+                            ORDER BY pm.meta_value ASC
+                        " );
+
+                        foreach ( $razze_values as $razza ):
+                        ?>
+                            <option value="<?php echo esc_attr( $razza ); ?>">
+                                <?php echo esc_html( $razza ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <button id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
+            </div>
+        </div>
+
         <?php
         // Query per tutti gli allevamenti
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
@@ -44,6 +107,12 @@ get_header();
         $allevamenti_query = new WP_Query( $args );
         ?>
 
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner" style="display:none;">
+            <div class="spinner"></div>
+            <p>Caricamento...</p>
+        </div>
+
         <!-- Results Count -->
         <div class="results-info">
             <p class="results-count">
@@ -57,7 +126,7 @@ get_header();
         <?php if ( $allevamenti_query->have_posts() ): ?>
 
             <!-- Allevamenti Grid -->
-            <div class="items-grid">
+            <div class="items-grid" id="items-grid">
 
                 <?php while ( $allevamenti_query->have_posts() ): $allevamenti_query->the_post(); ?>
 

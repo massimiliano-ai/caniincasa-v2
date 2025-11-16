@@ -169,3 +169,141 @@ function caniincasa_ajax_load_more() {
 }
 add_action( 'wp_ajax_load_more', 'caniincasa_ajax_load_more' );
 add_action( 'wp_ajax_nopriv_load_more', 'caniincasa_ajax_load_more' );
+
+/**
+ * AJAX Handler: Submit Struttura
+ */
+function caniincasa_ajax_submit_struttura() {
+    // Verify nonce
+    check_ajax_referer( 'caniincasa_submit_struttura', 'nonce' );
+
+    // Check if user is logged in
+    if ( ! is_user_logged_in() ) {
+        wp_send_json_error( array(
+            'message' => __( 'Devi essere autenticato per aggiungere una struttura.', 'caniincasa' ),
+        ) );
+    }
+
+    // Get data
+    $tipo_struttura = isset( $_POST['tipo_struttura'] ) ? sanitize_text_field( $_POST['tipo_struttura'] ) : '';
+    $titolo = isset( $_POST['titolo_struttura'] ) ? sanitize_text_field( $_POST['titolo_struttura'] ) : '';
+    $descrizione = isset( $_POST['descrizione_struttura'] ) ? sanitize_textarea_field( $_POST['descrizione_struttura'] ) : '';
+    $indirizzo = isset( $_POST['indirizzo'] ) ? sanitize_text_field( $_POST['indirizzo'] ) : '';
+    $comune = isset( $_POST['comune'] ) ? sanitize_text_field( $_POST['comune'] ) : '';
+    $provincia = isset( $_POST['provincia_struttura'] ) ? absint( $_POST['provincia_struttura'] ) : 0;
+    $cap = isset( $_POST['cap'] ) ? sanitize_text_field( $_POST['cap'] ) : '';
+    $telefono = isset( $_POST['telefono_struttura'] ) ? sanitize_text_field( $_POST['telefono_struttura'] ) : '';
+    $email = isset( $_POST['email_struttura'] ) ? sanitize_email( $_POST['email_struttura'] ) : '';
+    $sito_web = isset( $_POST['sito_web'] ) ? esc_url_raw( $_POST['sito_web'] ) : '';
+
+    // Validate required fields
+    if ( empty( $tipo_struttura ) || empty( $titolo ) || empty( $indirizzo ) || empty( $comune ) || empty( $provincia ) ) {
+        wp_send_json_error( array(
+            'message' => __( 'Compila tutti i campi obbligatori.', 'caniincasa' ),
+        ) );
+    }
+
+    // Validate post type
+    $allowed_types = array( 'allevamenti', 'struttureveterinarie', 'centri_cinofili', 'pensioni_per_cani', 'canili' );
+    if ( ! in_array( $tipo_struttura, $allowed_types ) ) {
+        wp_send_json_error( array(
+            'message' => __( 'Tipo di struttura non valido.', 'caniincasa' ),
+        ) );
+    }
+
+    // Create post
+    $post_data = array(
+        'post_title'   => $titolo,
+        'post_content' => $descrizione,
+        'post_type'    => $tipo_struttura,
+        'post_status'  => 'pending', // Pending moderation
+        'post_author'  => get_current_user_id(),
+    );
+
+    $post_id = wp_insert_post( $post_data );
+
+    if ( is_wp_error( $post_id ) ) {
+        wp_send_json_error( array(
+            'message' => __( 'Errore durante la creazione della struttura.', 'caniincasa' ),
+        ) );
+    }
+
+    // Save meta fields - Common fields
+    update_post_meta( $post_id, 'indirizzo', $indirizzo );
+    update_post_meta( $post_id, 'comune', $comune );
+    update_post_meta( $post_id, 'cap', $cap );
+    update_post_meta( $post_id, 'telefono', $telefono );
+    update_post_meta( $post_id, 'email', $email );
+    update_post_meta( $post_id, 'sito_web', $sito_web );
+
+    // Assign provincia taxonomy
+    if ( $provincia ) {
+        wp_set_post_terms( $post_id, array( $provincia ), 'provincia' );
+    }
+
+    // Save specific fields based on structure type
+    if ( $tipo_struttura === 'allevamenti' ) {
+        $affisso = isset( $_POST['affisso'] ) ? sanitize_text_field( $_POST['affisso'] ) : '';
+        $proprietario = isset( $_POST['proprietario'] ) ? sanitize_text_field( $_POST['proprietario'] ) : '';
+
+        update_post_meta( $post_id, 'desaffisso', $affisso );
+        update_post_meta( $post_id, 'proprietario', $proprietario );
+        update_post_meta( $post_id, 'localita', $comune );
+        update_post_meta( $post_id, 'provincia_', $provincia );
+
+    } elseif ( $tipo_struttura === 'struttureveterinarie' ) {
+        $tipologia = isset( $_POST['tipologia'] ) ? sanitize_text_field( $_POST['tipologia'] ) : '';
+        $direttore_sanitario = isset( $_POST['direttore_sanitario'] ) ? sanitize_text_field( $_POST['direttore_sanitario'] ) : '';
+        $pronto_soccorso = isset( $_POST['pronto_soccorso_h24'] ) ? sanitize_text_field( $_POST['pronto_soccorso_h24'] ) : '0';
+        $reperibilita = isset( $_POST['reperibilita_h24'] ) ? sanitize_text_field( $_POST['reperibilita_h24'] ) : '0';
+        $orari = isset( $_POST['orari_apertura'] ) ? sanitize_textarea_field( $_POST['orari_apertura'] ) : '';
+
+        update_post_meta( $post_id, 'tipologia', $tipologia );
+        update_post_meta( $post_id, 'direttore_sanitario', $direttore_sanitario );
+        update_post_meta( $post_id, 'pronto_soccorso_h24', $pronto_soccorso );
+        update_post_meta( $post_id, 'reperibilita_h24', $reperibilita );
+        update_post_meta( $post_id, 'orari_di_apertura', $orari );
+        update_post_meta( $post_id, 'localita', $comune );
+        update_post_meta( $post_id, 'provincia', $provincia );
+
+    } elseif ( $tipo_struttura === 'centri_cinofili' ) {
+        $servizi = isset( $_POST['servizi_offerti'] ) ? sanitize_textarea_field( $_POST['servizi_offerti'] ) : '';
+
+        update_post_meta( $post_id, 'servizi_offerti', $servizi );
+        update_post_meta( $post_id, 'comune', $comune );
+        update_post_meta( $post_id, 'provincia', $provincia );
+
+    } elseif ( $tipo_struttura === 'pensioni_per_cani' ) {
+        $servizi = isset( $_POST['servizi_pensione'] ) ? sanitize_textarea_field( $_POST['servizi_pensione'] ) : '';
+
+        update_post_meta( $post_id, 'servizi_pensione', $servizi );
+        update_post_meta( $post_id, 'comune', $comune );
+        update_post_meta( $post_id, 'provincia', $provincia );
+
+    } elseif ( $tipo_struttura === 'canili' ) {
+        $riferimento = isset( $_POST['riferimento'] ) ? sanitize_text_field( $_POST['riferimento'] ) : '';
+
+        update_post_meta( $post_id, 'riferimento', $riferimento );
+        update_post_meta( $post_id, 'comune', $comune );
+        update_post_meta( $post_id, 'provincia', $provincia );
+    }
+
+    // Send notification email to admin (optional)
+    $admin_email = get_option( 'admin_email' );
+    $subject = sprintf( __( 'Nuova struttura in attesa di approvazione: %s', 'caniincasa' ), $titolo );
+    $message = sprintf(
+        __( "Una nuova struttura è stata inviata e richiede approvazione.\n\nTipo: %s\nNome: %s\nAutore: %s\n\nVisualizza: %s", 'caniincasa' ),
+        $tipo_struttura,
+        $titolo,
+        wp_get_current_user()->display_name,
+        admin_url( 'post.php?post=' . $post_id . '&action=edit' )
+    );
+
+    wp_mail( $admin_email, $subject, $message );
+
+    wp_send_json_success( array(
+        'message' => __( 'Struttura inviata con successo! Sarà pubblicata dopo la moderazione.', 'caniincasa' ),
+        'post_id' => $post_id,
+    ) );
+}
+add_action( 'wp_ajax_caniincasa_submit_struttura', 'caniincasa_ajax_submit_struttura' );

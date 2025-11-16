@@ -360,4 +360,11 @@
         }
     }
 
+    /**
+     * Initialize on document ready
+     */
+    $(document).ready(function() {
+        init();
+    });
+
 })(jQuery);

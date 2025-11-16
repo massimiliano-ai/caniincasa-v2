@@ -80,6 +80,20 @@ get_header();
                             </div>
                         <?php endif; ?>
 
+                        <!-- Tipo Annuncio -->
+                        <div class="filter-group">
+                            <label for="filter-tipo"><?php esc_html_e( 'Tipo Annuncio', 'caniincasa' ); ?></label>
+                            <select id="filter-tipo" name="ricerca_offerta" class="form-control">
+                                <option value=""><?php esc_html_e( 'Tutti i tipi', 'caniincasa' ); ?></option>
+                                <option value="offerta" <?php selected( get_query_var( 'ricerca_offerta' ), 'offerta' ); ?>>
+                                    <?php esc_html_e( 'Offro cuccioli', 'caniincasa' ); ?>
+                                </option>
+                                <option value="ricerca" <?php selected( get_query_var( 'ricerca_offerta' ), 'ricerca' ); ?>>
+                                    <?php esc_html_e( 'Cerco cucciolo', 'caniincasa' ); ?>
+                                </option>
+                            </select>
+                        </div>
+
                         <!-- Disponibilità -->
                         <div class="filter-group">
                             <label><?php esc_html_e( 'Disponibilità cuccioli', 'caniincasa' ); ?></label>
@@ -243,9 +257,20 @@ get_header();
                                 <?php endif; ?>
 
                                 <div class="card-content">
-                                    <?php if ( get_field( 'cuccioli_disponibili' ) ) : ?>
-                                        <span class="badge badge--available">✓ Disponibili</span>
-                                    <?php endif; ?>
+                                    <div class="card-badges">
+                                        <?php
+                                        $ricerca_offerta = get_field( 'ricerca_offerta' );
+                                        if ( $ricerca_offerta === 'offerta' ) :
+                                        ?>
+                                            <span class="badge badge--offerta">Offerta</span>
+                                        <?php elseif ( $ricerca_offerta === 'ricerca' ) : ?>
+                                            <span class="badge badge--ricerca">Ricerca</span>
+                                        <?php endif; ?>
+
+                                        <?php if ( get_field( 'cuccioli_disponibili' ) ) : ?>
+                                            <span class="badge badge--available">✓ Disponibili</span>
+                                        <?php endif; ?>
+                                    </div>
 
                                     <h3 class="card-title">
                                         <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>

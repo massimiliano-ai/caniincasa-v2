@@ -512,6 +512,54 @@
 }
 
 /* ==========================================================================
+   Annunci Badges
+   ========================================================================== */
+
+.card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge--offerta {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.badge--ricerca {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.badge--available {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.annuncio-tipo-badge {
+    margin-bottom: 1rem;
+}
+
+.annuncio-tipo-badge .badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 

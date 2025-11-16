@@ -1297,6 +1297,10 @@ function caniincasa_get_pagination_with_filters( $args = array(), $preserve_para
         $preserve_params = array( 'search', 'provincia', 'filter_provincia', 'filter_razza', 'servizi', 'razza' );
     }
 
+    // Determine if we're on a page template or archive
+    $is_page_template = is_page();
+    $page_var = $is_page_template ? 'page' : 'paged';
+
     // Get current page URL
     $current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $current_url = strtok( $current_url, '?' ); // Remove existing query string
@@ -1317,17 +1321,23 @@ function caniincasa_get_pagination_with_filters( $args = array(), $preserve_para
         $format = '';
     } else {
         $base = $current_url . $query_string;
-        $format = '&paged=%#%';
+        $format = '&' . $page_var . '=%#%';
         if ( empty( $query_string ) ) {
-            $format = '?paged=%#%';
+            $format = '?' . $page_var . '=%#%';
         }
+    }
+
+    // Get current page number
+    $current_page = max( 1, get_query_var( $page_var ) );
+    if ( $current_page == 0 ) {
+        $current_page = isset( $_GET[ $page_var ] ) ? intval( $_GET[ $page_var ] ) : 1;
     }
 
     // Default pagination args
     $defaults = array(
         'base' => $base,
         'format' => $format,
-        'current' => max( 1, get_query_var( 'paged' ) ? get_query_var( 'paged' ) : ( isset( $_GET['paged'] ) ? intval( $_GET['paged'] ) : 1 ) ),
+        'current' => $current_page,
         'prev_text' => '&laquo; Precedente',
         'next_text' => 'Successiva &raquo;',
         'type' => 'list',

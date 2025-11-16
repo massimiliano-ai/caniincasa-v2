@@ -37,18 +37,26 @@ get_header();
                     <select id="filter-provincia" class="filter-select" data-post-type="canili">
                         <option value="">Tutte le province</option>
                         <?php
-                        $province = get_terms( array(
-                            'taxonomy' => 'provincia',
-                            'hide_empty' => true,
-                            'orderby' => 'name',
-                            'order' => 'ASC',
-                        ) );
-                        foreach ( $province as $provincia ):
+                        // Get all unique province values from ACF fields 'provincia_estesa' (fallback to 'provincia')
+                        global $wpdb;
+                        $province_values = $wpdb->get_col( "
+                            SELECT DISTINCT COALESCE(NULLIF(pm1.meta_value, ''), pm2.meta_value) as provincia
+                            FROM {$wpdb->posts} p
+                            LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'provincia_estesa'
+                            LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'provincia'
+                            WHERE p.post_type = 'canili'
+                            AND p.post_status = 'publish'
+                            AND (pm1.meta_value != '' OR pm2.meta_value != '')
+                            ORDER BY provincia ASC
+                        " );
+
+                        foreach ( $province_values as $provincia ):
+                            if ( ! empty( $provincia ) ):
                         ?>
-                            <option value="<?php echo $provincia->term_id; ?>">
-                                <?php echo esc_html( $provincia->name ); ?>
+                            <option value="<?php echo esc_attr( $provincia ); ?>">
+                                <?php echo esc_html( $provincia ); ?>
                             </option>
-                        <?php endforeach; ?>
+                        <?php endif; endforeach; ?>
                     </select>
                 </div>
                 <button id="reset-filters" class="btn btn-outline">Ripristina filtri</button>

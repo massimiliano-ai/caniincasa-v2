@@ -37,16 +37,23 @@ get_header();
                     <select id="filter-provincia" class="filter-select" data-post-type="centri_cinofili">
                         <option value="">Tutte le province</option>
                         <?php
-                        $province = get_terms( array(
-                            'taxonomy' => 'provincia',
-                            'hide_empty' => true,
-                            'orderby' => 'name',
-                            'order' => 'ASC',
-                        ) );
-                        foreach ( $province as $provincia ):
+                        // Get all unique province values from ACF field 'provincia'
+                        global $wpdb;
+                        $province_values = $wpdb->get_col( "
+                            SELECT DISTINCT meta_value
+                            FROM {$wpdb->postmeta} pm
+                            INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+                            WHERE pm.meta_key = 'provincia'
+                            AND pm.meta_value != ''
+                            AND p.post_type = 'centri_cinofili'
+                            AND p.post_status = 'publish'
+                            ORDER BY pm.meta_value ASC
+                        " );
+
+                        foreach ( $province_values as $provincia ):
                         ?>
-                            <option value="<?php echo $provincia->term_id; ?>">
-                                <?php echo esc_html( $provincia->name ); ?>
+                            <option value="<?php echo esc_attr( $provincia ); ?>">
+                                <?php echo esc_html( $provincia ); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

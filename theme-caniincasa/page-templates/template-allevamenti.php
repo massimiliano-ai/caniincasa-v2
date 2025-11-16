@@ -37,18 +37,26 @@ get_header();
                     <select id="filter-provincia" class="filter-select" data-post-type="allevamenti">
                         <option value="">Tutte le province</option>
                         <?php
-                        $province = get_terms( array(
-                            'taxonomy' => 'provincia',
-                            'hide_empty' => true,
-                            'orderby' => 'name',
-                            'order' => 'ASC',
-                        ) );
-                        foreach ( $province as $provincia ):
+                        // Get all unique province values from ACF field 'desprovincia' (fallback to 'provincia_')
+                        global $wpdb;
+                        $province_values = $wpdb->get_col( "
+                            SELECT DISTINCT COALESCE(NULLIF(pm1.meta_value, ''), pm2.meta_value) as provincia
+                            FROM {$wpdb->posts} p
+                            LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'desprovincia'
+                            LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'provincia_'
+                            WHERE p.post_type = 'allevamenti'
+                            AND p.post_status = 'publish'
+                            AND (pm1.meta_value != '' OR pm2.meta_value != '')
+                            ORDER BY provincia ASC
+                        " );
+
+                        foreach ( $province_values as $provincia ):
+                            if ( ! empty( $provincia ) ):
                         ?>
-                            <option value="<?php echo $provincia->term_id; ?>">
-                                <?php echo esc_html( $provincia->name ); ?>
+                            <option value="<?php echo esc_attr( $provincia ); ?>">
+                                <?php echo esc_html( $provincia ); ?>
                             </option>
-                        <?php endforeach; ?>
+                        <?php endif; endforeach; ?>
                     </select>
                 </div>
 
@@ -57,16 +65,23 @@ get_header();
                     <select id="filter-razza" class="filter-select">
                         <option value="">Tutte le razze</option>
                         <?php
-                        $razze = get_terms( array(
-                            'taxonomy' => 'razze_allevamenti',
-                            'hide_empty' => true,
-                            'orderby' => 'name',
-                            'order' => 'ASC',
-                        ) );
-                        foreach ( $razze as $razza ):
+                        // Get all unique race values from ACF fields (desrazza1, desrazza2, etc.)
+                        global $wpdb;
+                        $razze_values = $wpdb->get_col( "
+                            SELECT DISTINCT meta_value
+                            FROM {$wpdb->postmeta} pm
+                            INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+                            WHERE pm.meta_key LIKE 'desrazza%'
+                            AND pm.meta_value != ''
+                            AND p.post_type = 'allevamenti'
+                            AND p.post_status = 'publish'
+                            ORDER BY pm.meta_value ASC
+                        " );
+
+                        foreach ( $razze_values as $razza ):
                         ?>
-                            <option value="<?php echo $razza->term_id; ?>">
-                                <?php echo esc_html( $razza->name ); ?>
+                            <option value="<?php echo esc_attr( $razza ); ?>">
+                                <?php echo esc_html( $razza ); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

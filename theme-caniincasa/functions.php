@@ -245,7 +245,100 @@ function caniincasa_scripts() {
     wp_localize_script( 'caniincasa-main-js', 'canincasaAjax', array(
         'ajaxurl' => admin_url( 'admin-ajax.php' ),
         'nonce'   => wp_create_nonce( 'caniincasa-nonce' ),
+        'homeurl' => home_url(),
     ) );
+
+    // Enqueue richieste strutture JS (only on richieste page)
+    if ( is_page_template( 'page-templates/template-richieste-strutture.php' ) ) {
+        wp_enqueue_script(
+            'caniincasa-richieste',
+            CANIINCASA_THEME_URI . '/js/richieste-strutture.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+    }
+
+    // Enqueue quiz JS and CSS (only on quiz page)
+    if ( is_page_template( 'page-templates/template-quiz-scelta-razza.php' ) ) {
+        wp_enqueue_style(
+            'caniincasa-quiz',
+            CANIINCASA_THEME_URI . '/css/quiz.css',
+            array( 'caniincasa-main' ),
+            CANIINCASA_VERSION
+        );
+
+        wp_enqueue_script(
+            'caniincasa-quiz-js',
+            CANIINCASA_THEME_URI . '/js/quiz-scelta-razza.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+    }
+
+    // Enqueue auth pages CSS and JS (login and registration)
+    if ( is_page_template( 'page-templates/template-login.php' ) ||
+         is_page_template( 'page-templates/template-registrazione.php' ) ) {
+        wp_enqueue_style(
+            'caniincasa-auth-pages',
+            CANIINCASA_THEME_URI . '/css/auth-pages.css',
+            array( 'caniincasa-main' ),
+            CANIINCASA_VERSION
+        );
+
+        wp_enqueue_script(
+            'caniincasa-auth-forms',
+            CANIINCASA_THEME_URI . '/js/auth-forms.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+
+        wp_localize_script( 'caniincasa-auth-forms', 'caniincasaAuth', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'caniincasa-auth-nonce' ),
+        ) );
+    }
+
+    // Enqueue dashboard CSS
+    if ( is_page_template( 'page-templates/template-dashboard.php' ) ) {
+        wp_enqueue_style(
+            'caniincasa-dashboard',
+            CANIINCASA_THEME_URI . '/css/dashboard.css',
+            array( 'caniincasa-main' ),
+            CANIINCASA_VERSION
+        );
+    }
+
+    // Enqueue archive filters CSS and JS (for structure archive pages)
+    $archive_templates = array(
+        'page-templates/template-allevamenti.php',
+        'page-templates/template-veterinari.php',
+        'page-templates/template-centri-cinofili.php',
+        'page-templates/template-canili.php',
+        'page-templates/template-pensioni.php',
+    );
+
+    foreach ( $archive_templates as $template ) {
+        if ( is_page_template( $template ) ) {
+            wp_enqueue_style(
+                'caniincasa-archivi-filtri',
+                CANIINCASA_THEME_URI . '/css/archivi-filtri.css',
+                array( 'caniincasa-main' ),
+                CANIINCASA_VERSION
+            );
+
+            wp_enqueue_script(
+                'caniincasa-archivi-filtri-js',
+                CANIINCASA_THEME_URI . '/js/archivi-filtri.js',
+                array( 'jquery' ),
+                CANIINCASA_VERSION,
+                true
+            );
+            break;
+        }
+    }
 
     // Enqueue comment reply script if needed
     if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -253,6 +346,258 @@ function caniincasa_scripts() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'caniincasa_scripts' );
+
+/**
+ * Google Analytics GA4 Integration
+ */
+function caniincasa_google_analytics() {
+    $ga_measurement_id = get_theme_mod( 'ga_measurement_id', '' );
+
+    if ( empty( $ga_measurement_id ) ) {
+        return; // Skip if not configured
+    }
+
+    ?>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $ga_measurement_id ); ?>"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '<?php echo esc_js( $ga_measurement_id ); ?>', {
+            'anonymize_ip': true,
+            'cookie_flags': 'SameSite=None;Secure'
+        });
+
+        <?php if ( is_user_logged_in() ): ?>
+        // Track logged-in user type
+        gtag('set', 'user_properties', {
+            'user_type': 'logged_in'
+        });
+        <?php endif; ?>
+    </script>
+    <?php
+}
+add_action( 'wp_head', 'caniincasa_google_analytics', 10 );
+
+/**
+ * AJAX Handler: Get Breeds for Quiz
+ */
+function caniincasa_ajax_get_breeds_for_quiz() {
+    check_ajax_referer( 'caniincasa-nonce', 'nonce' );
+
+    $args = array(
+        'post_type'      => 'razze_di_cani',
+        'posts_per_page' => -1,
+        'orderby'        => 'title',
+        'order'          => 'ASC',
+    );
+
+    $query = new WP_Query( $args );
+    $breeds = array();
+
+    if ( $query->have_posts() ) {
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            $post_id = get_the_ID();
+
+            // Get ACF fields
+            $taglia = get_field( 'taglia' );
+            $tipo_pelo = get_field( 'tipo_pelo' );
+            $livello_energia = get_field( 'livello_di_energia' );
+            $addestramento = get_field( 'facilita_addestramento' );
+            $bambini = get_field( 'adatto_ai_bambini' );
+            $temperamento = get_field( 'temperamento' );
+            $latrato = get_field( 'tendenza_al_latrato' );
+            $spazio = get_field( 'spazio_necessario' );
+            $cura = get_field( 'cura_necessaria' );
+
+            // Normalize values to lowercase
+            $taglia = is_string( $taglia ) ? strtolower( $taglia ) : $taglia;
+            $tipo_pelo = is_string( $tipo_pelo ) ? strtolower( $tipo_pelo ) : $tipo_pelo;
+
+            // Build characteristics array
+            $caratteristiche = array();
+            $caratteristiche_raw = get_field( 'caratteristiche_principali' );
+
+            if ( ! empty( $caratteristiche_raw ) && is_array( $caratteristiche_raw ) ) {
+                $caratteristiche = array_filter( $caratteristiche_raw, function( $val ) {
+                    return ! empty( $val ) && $val !== null;
+                } );
+                $caratteristiche = array_values( $caratteristiche );
+            }
+
+            // Fallback: extract from excerpt if no characteristics
+            if ( empty( $caratteristiche ) ) {
+                $excerpt = get_the_excerpt();
+                if ( ! empty( $excerpt ) ) {
+                    $caratteristiche = array( wp_trim_words( $excerpt, 10, '...' ) );
+                }
+            }
+
+            $breeds[] = array(
+                'id'               => $post_id,
+                'title'            => get_the_title(),
+                'url'              => get_permalink(),
+                'image'            => get_the_post_thumbnail_url( $post_id, 'medium' ),
+                'taglia'           => $taglia ?: 'media',
+                'tipo_pelo'        => $tipo_pelo ?: 'medio',
+                'energia'          => $livello_energia ?: 3,
+                'addestramento'    => $addestramento ?: 3,
+                'bambini'          => $bambini ?: 3,
+                'temperamento'     => $temperamento ?: 'equilibrato',
+                'latrato'          => $latrato ?: 3,
+                'spazio'           => $spazio ?: 'medio',
+                'cura'             => $cura ?: 3,
+                'caratteristiche'  => $caratteristiche,
+            );
+        }
+    }
+
+    wp_reset_postdata();
+
+    wp_send_json_success( array( 'breeds' => $breeds ) );
+}
+add_action( 'wp_ajax_get_breeds_for_quiz', 'caniincasa_ajax_get_breeds_for_quiz' );
+add_action( 'wp_ajax_nopriv_get_breeds_for_quiz', 'caniincasa_ajax_get_breeds_for_quiz' );
+
+/**
+ * AJAX Handler: Filter Archive by Provincia and Razza
+ */
+function caniincasa_ajax_filter_archive() {
+    check_ajax_referer( 'caniincasa-nonce', 'nonce' );
+
+    $post_type = isset( $_POST['post_type'] ) ? sanitize_text_field( $_POST['post_type'] ) : 'allevamenti';
+    $provincia_slug = isset( $_POST['provincia'] ) ? sanitize_text_field( $_POST['provincia'] ) : '';
+    $razza_slug = isset( $_POST['razza'] ) ? sanitize_text_field( $_POST['razza'] ) : '';
+    $paged = isset( $_POST['paged'] ) ? absint( $_POST['paged'] ) : 1;
+
+    $args = array(
+        'post_type'      => $post_type,
+        'posts_per_page' => 12,
+        'paged'          => $paged,
+        'orderby'        => 'title',
+        'order'          => 'ASC',
+    );
+
+    // Build tax query
+    $tax_query = array( 'relation' => 'AND' );
+
+    if ( ! empty( $provincia_slug ) ) {
+        $tax_query[] = array(
+            'taxonomy' => 'provincia',
+            'field'    => 'slug',
+            'terms'    => $provincia_slug,
+        );
+    }
+
+    if ( ! empty( $razza_slug ) && $post_type === 'allevamenti' ) {
+        $tax_query[] = array(
+            'taxonomy' => 'razze_allevamenti',
+            'field'    => 'slug',
+            'terms'    => $razza_slug,
+        );
+    }
+
+    if ( count( $tax_query ) > 1 ) {
+        $args['tax_query'] = $tax_query;
+    }
+
+    $query = new WP_Query( $args );
+
+    ob_start();
+
+    if ( $query->have_posts() ) {
+        while ( $query->have_posts() ) {
+            $query->the_post();
+            ?>
+            <div class="card structure-card">
+                <?php if ( has_post_thumbnail() ): ?>
+                    <a href="<?php the_permalink(); ?>" class="card-image-link">
+                        <?php the_post_thumbnail( 'caniincasa-card', array( 'class' => 'card-image' ) ); ?>
+                    </a>
+                <?php endif; ?>
+
+                <div class="card-content">
+                    <h3 class="card-title">
+                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                    </h3>
+
+                    <?php
+                    $citta = get_field( 'comune' ) ?: get_field( 'citta' ) ?: get_field( 'localita' );
+                    $provincia_terms = get_the_terms( get_the_ID(), 'provincia' );
+                    if ( $citta || $provincia_terms ):
+                    ?>
+                        <div class="structure-location">
+                            <span class="icon">📍</span>
+                            <?php
+                            if ( $citta ) {
+                                echo esc_html( $citta );
+                            }
+                            if ( $provincia_terms && ! is_wp_error( $provincia_terms ) ) {
+                                echo ' (' . esc_html( $provincia_terms[0]->name ) . ')';
+                            }
+                            ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ( $post_type === 'allevamenti' ):
+                        $razze_terms = get_the_terms( get_the_ID(), 'razze_allevamenti' );
+                        if ( ! empty( $razze_terms ) && ! is_wp_error( $razze_terms ) ):
+                    ?>
+                        <div class="structure-breeds">
+                            <strong>Razze allevate:</strong>
+                            <div class="card-tags">
+                                <?php
+                                $count = 0;
+                                foreach ( $razze_terms as $razza_term ):
+                                    if ( $count < 3 ):
+                                        echo '<span class="tag">' . esc_html( $razza_term->name ) . '</span>';
+                                        $count++;
+                                    endif;
+                                endforeach;
+                                if ( count( $razze_terms ) > 3 ):
+                                    echo '<span class="tag tag--more">+' . ( count( $razze_terms ) - 3 ) . '</span>';
+                                endif;
+                                ?>
+                            </div>
+                        </div>
+                    <?php endif; endif; ?>
+
+                    <div class="card-excerpt">
+                        <?php echo wp_trim_words( get_the_excerpt(), 15 ); ?>
+                    </div>
+
+                    <div class="card-footer">
+                        <a href="<?php the_permalink(); ?>" class="btn btn-outline btn-block">
+                            Visualizza Dettagli
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+    } else {
+        ?>
+        <div class="no-results">
+            <div class="no-results__icon">🔍</div>
+            <h3>Nessun risultato</h3>
+            <p>Nessuna struttura trovata con i filtri selezionati.</p>
+        </div>
+        <?php
+    }
+
+    $html = ob_get_clean();
+    wp_reset_postdata();
+
+    wp_send_json_success( array(
+        'html'          => $html,
+        'found_posts'   => $query->found_posts,
+        'max_num_pages' => $query->max_num_pages,
+    ) );
+}
+add_action( 'wp_ajax_filter_archive_by_provincia', 'caniincasa_ajax_filter_archive' );
+add_action( 'wp_ajax_nopriv_filter_archive_by_provincia', 'caniincasa_ajax_filter_archive' );
 
 /**
  * Include Required Files

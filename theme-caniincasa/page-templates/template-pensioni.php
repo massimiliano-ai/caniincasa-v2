@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Veterinari - Griglia
+ * Template Name: Pensioni per Cani - Griglia
  * Template Post Type: page
  *
  * @package CaninCasa
@@ -10,7 +10,7 @@
 get_header();
 ?>
 
-<main id="main-content" class="site-main page-veterinari">
+<main id="main-content" class="site-main page-pensioni">
 
     <div class="container">
 
@@ -34,7 +34,7 @@ get_header();
             <div class="filters-row">
                 <div class="filter-group">
                     <label for="filter-provincia">Provincia:</label>
-                    <select id="filter-provincia" class="filter-select" data-post-type="struttureveterinarie">
+                    <select id="filter-provincia" class="filter-select">
                         <option value="">Tutte le province</option>
                         <?php
                         $province = get_terms( array(
@@ -56,11 +56,11 @@ get_header();
         </div>
 
         <?php
-        // Query per tutte le strutture veterinarie
+        // Query per tutte le pensioni
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
 
         $args = array(
-            'post_type' => 'struttureveterinarie',
+            'post_type' => 'pensioni_per_cani',
             'post_status' => 'publish',
             'posts_per_page' => 12,
             'paged' => $paged,
@@ -68,8 +68,18 @@ get_header();
             'order' => 'ASC',
         );
 
-        $veterinari_query = new WP_Query( $args );
+        $pensioni_query = new WP_Query( $args );
         ?>
+
+        <!-- Results Count -->
+        <div class="results-info">
+            <p class="results-count">
+                Trovate <strong><?php echo $pensioni_query->found_posts; ?></strong> pensioni
+                <?php if ( $pensioni_query->max_num_pages > 1 ): ?>
+                    (Pagina <?php echo $paged; ?> di <?php echo $pensioni_query->max_num_pages; ?>)
+                <?php endif; ?>
+            </p>
+        </div>
 
         <!-- Loading Spinner -->
         <div id="loading-spinner" class="loading-spinner" style="display:none;">
@@ -77,22 +87,12 @@ get_header();
             <p>Caricamento...</p>
         </div>
 
-        <!-- Results Count -->
-        <div class="results-info">
-            <p class="results-count">
-                Trovate <strong><?php echo $veterinari_query->found_posts; ?></strong> strutture veterinarie
-                <?php if ( $veterinari_query->max_num_pages > 1 ): ?>
-                    (Pagina <?php echo $paged; ?> di <?php echo $veterinari_query->max_num_pages; ?>)
-                <?php endif; ?>
-            </p>
-        </div>
+        <?php if ( $pensioni_query->have_posts() ): ?>
 
-        <?php if ( $veterinari_query->have_posts() ): ?>
-
-            <!-- Veterinari Grid -->
+            <!-- Pensioni Grid -->
             <div class="items-grid" id="items-grid">
 
-                <?php while ( $veterinari_query->have_posts() ): $veterinari_query->the_post(); ?>
+                <?php while ( $pensioni_query->have_posts() ): $pensioni_query->the_post(); ?>
 
                     <div class="item-card">
 
@@ -129,25 +129,6 @@ get_header();
                             <?php endif; ?>
 
                             <?php
-                            // Servizi veterinari
-                            $servizi = wp_get_post_terms( get_the_ID(), 'servizi_veterinari' );
-                            if ( ! empty( $servizi ) && ! is_wp_error( $servizi ) ):
-                            ?>
-                                <div class="item-services">
-                                    <span class="icon">🏥</span>
-                                    <span class="text">
-                                        <?php
-                                        $servizi_names = array_slice( array_map( function($s) { return $s->name; }, $servizi ), 0, 3 );
-                                        echo esc_html( implode( ', ', $servizi_names ) );
-                                        if ( count( $servizi ) > 3 ) {
-                                            echo ' +' . ( count( $servizi ) - 3 );
-                                        }
-                                        ?>
-                                    </span>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php
                             // Indirizzo
                             $indirizzo = get_field( 'indirizzo' );
                             $citta = get_field( 'citta' );
@@ -168,18 +149,11 @@ get_header();
                             <?php endif; ?>
 
                             <?php
-                            // Orari apertura badge
-                            $orari = get_field( 'orari_apertura' );
-                            $h24 = get_field( 'servizio_h24' );
-                            if ( $h24 ):
+                            // Excerpt
+                            if ( has_excerpt() ):
                             ?>
-                                <div class="item-badge">
-                                    <span class="badge badge-success">⏰ Aperto 24/7</span>
-                                </div>
-                            <?php elseif ( $orari ): ?>
-                                <div class="item-info">
-                                    <span class="icon">🕐</span>
-                                    <span class="text"><?php echo esc_html( wp_trim_words( $orari, 5, '...' ) ); ?></span>
+                                <div class="item-excerpt">
+                                    <?php echo wp_trim_words( get_the_excerpt(), 15, '...' ); ?>
                                 </div>
                             <?php endif; ?>
 
@@ -233,14 +207,14 @@ get_header();
             </div>
 
             <!-- Pagination -->
-            <?php if ( $veterinari_query->max_num_pages > 1 ): ?>
+            <?php if ( $pensioni_query->max_num_pages > 1 ): ?>
                 <div class="pagination-wrapper">
                     <?php
                     echo paginate_links( array(
                         'base' => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
                         'format' => '?paged=%#%',
                         'current' => max( 1, $paged ),
-                        'total' => $veterinari_query->max_num_pages,
+                        'total' => $pensioni_query->max_num_pages,
                         'prev_text' => '&laquo; Precedente',
                         'next_text' => 'Successiva &raquo;',
                         'type' => 'list',
@@ -252,10 +226,10 @@ get_header();
         <?php else: ?>
 
             <!-- No Results -->
-            <div class="no-items">
-                <div class="no-items-icon">🏥</div>
-                <h3>Nessuna struttura veterinaria trovata</h3>
-                <p>Non ci sono strutture veterinarie pubblicate al momento.</p>
+            <div class="no-items" id="no-items">
+                <div class="no-items-icon">🏨</div>
+                <h3>Nessuna pensione trovata</h3>
+                <p>Non ci sono pensioni pubblicate al momento.</p>
             </div>
 
         <?php endif; ?>

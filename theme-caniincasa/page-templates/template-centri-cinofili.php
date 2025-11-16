@@ -28,6 +28,33 @@ get_header();
             <?php endif; ?>
         </div>
 
+        <!-- Filtri Zona -->
+        <div class="filters-wrapper">
+            <h3 class="filters-title">Filtra per zona</h3>
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="filter-provincia">Provincia:</label>
+                    <select id="filter-provincia" class="filter-select" data-post-type="centri_cinofili">
+                        <option value="">Tutte le province</option>
+                        <?php
+                        $province = get_terms( array(
+                            'taxonomy' => 'provincia',
+                            'hide_empty' => true,
+                            'orderby' => 'name',
+                            'order' => 'ASC',
+                        ) );
+                        foreach ( $province as $provincia ):
+                        ?>
+                            <option value="<?php echo $provincia->term_id; ?>">
+                                <?php echo esc_html( $provincia->name ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <button id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
+            </div>
+        </div>
+
         <?php
         // Query per tutti i centri cinofili
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
@@ -44,6 +71,12 @@ get_header();
         $centri_query = new WP_Query( $args );
         ?>
 
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner" style="display:none;">
+            <div class="spinner"></div>
+            <p>Caricamento...</p>
+        </div>
+
         <!-- Results Count -->
         <div class="results-info">
             <p class="results-count">
@@ -57,7 +90,7 @@ get_header();
         <?php if ( $centri_query->have_posts() ): ?>
 
             <!-- Centri Cinofili Grid -->
-            <div class="items-grid">
+            <div class="items-grid" id="items-grid">
 
                 <?php while ( $centri_query->have_posts() ): $centri_query->the_post(); ?>
 

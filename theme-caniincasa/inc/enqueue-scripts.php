@@ -173,13 +173,14 @@ function caniincasa_enqueue_dashboard_scripts() {
 add_action( 'wp_enqueue_scripts', 'caniincasa_enqueue_dashboard_scripts', 20 );
 
 /**
- * Enqueue Page Templates Grid CSS
+ * Enqueue Page Templates Grid CSS and Archive Filters
  */
 function caniincasa_enqueue_page_templates_grid() {
     if ( is_page_template( 'page-templates/template-allevamenti.php' ) ||
          is_page_template( 'page-templates/template-canili.php' ) ||
          is_page_template( 'page-templates/template-veterinari.php' ) ||
-         is_page_template( 'page-templates/template-centri-cinofili.php' ) ) {
+         is_page_template( 'page-templates/template-centri-cinofili.php' ) ||
+         is_page_template( 'page-templates/template-pensioni.php' ) ) {
 
         // Page templates grid CSS
         wp_enqueue_style(
@@ -188,6 +189,29 @@ function caniincasa_enqueue_page_templates_grid() {
             array(),
             CANIINCASA_VERSION
         );
+
+        // Archive filters CSS
+        wp_enqueue_style(
+            'caniincasa-archivi-filtri',
+            CANIINCASA_THEME_URI . '/css/archivi-filtri.css',
+            array(),
+            CANIINCASA_VERSION
+        );
+
+        // Archive filters JavaScript
+        wp_enqueue_script(
+            'caniincasa-archivi-filtri',
+            CANIINCASA_THEME_URI . '/js/archivi-filtri.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+
+        // Localize script for AJAX
+        wp_localize_script( 'caniincasa-archivi-filtri', 'canincasaAjax', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'caniincasa-nonce' ),
+        ) );
     }
 }
 add_action( 'wp_enqueue_scripts', 'caniincasa_enqueue_page_templates_grid', 20 );
@@ -233,3 +257,60 @@ function caniincasa_enqueue_razze_archive_scripts() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'caniincasa_enqueue_razze_archive_scripts', 20 );
+
+/**
+ * Enqueue Quiz Scelta Razza Scripts and Styles
+ */
+function caniincasa_enqueue_quiz_scripts() {
+    if ( is_page_template( 'page-templates/template-quiz-scelta-razza.php' ) ) {
+
+        // Quiz CSS
+        wp_enqueue_style(
+            'caniincasa-quiz',
+            CANIINCASA_THEME_URI . '/css/quiz.css',
+            array(),
+            CANIINCASA_VERSION
+        );
+
+        // Quiz JavaScript
+        wp_enqueue_script(
+            'caniincasa-quiz-scelta-razza',
+            CANIINCASA_THEME_URI . '/js/quiz-scelta-razza.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+
+        // Localize script for AJAX
+        wp_localize_script( 'caniincasa-quiz-scelta-razza', 'canincasaAjax', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'caniincasa-nonce' ),
+            'homeurl' => home_url(),
+        ) );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'caniincasa_enqueue_quiz_scripts', 20 );
+
+/**
+ * Enqueue Richieste Strutture Scripts
+ */
+function caniincasa_enqueue_richieste_strutture_scripts() {
+    if ( is_page_template( 'page-templates/template-richieste-strutture.php' ) ) {
+
+        // Richieste Strutture JavaScript
+        wp_enqueue_script(
+            'caniincasa-richieste-strutture',
+            CANIINCASA_THEME_URI . '/js/richieste-strutture.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+
+        // Localize script for AJAX
+        wp_localize_script( 'caniincasa-richieste-strutture', 'caniincasaDashboard', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'caniincasa_dashboard_nonce' ),
+        ) );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'caniincasa_enqueue_richieste_strutture_scripts', 20 );

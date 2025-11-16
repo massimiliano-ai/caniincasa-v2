@@ -424,11 +424,129 @@
     }
 
     /**
+     * Struttura Form - Dynamic Fields
+     */
+    function initStrutturaForm() {
+        // Handle radio button change
+        $('input[name="tipo_struttura"]').on('change', function() {
+            const selectedType = $(this).val();
+
+            // Hide all specific fields
+            $('.specific-fields').hide();
+
+            // Show common fields
+            $('#common-fields').slideDown(300);
+
+            // Show specific fields for selected type
+            $('#' + selectedType + '-fields').slideDown(300);
+
+            // Show submit section
+            $('#submit-section').slideDown(300);
+        });
+
+        // Handle form submission
+        const $form = $('#struttura-form');
+
+        if (!$form.length) {
+            return;
+        }
+
+        $form.on('submit', function(e) {
+            e.preventDefault();
+
+            // Validate
+            if (!$('#terms_struttura').is(':checked')) {
+                showFormMessage($form, 'error', 'Devi accettare i Termini e Condizioni');
+                return;
+            }
+
+            const tipoStruttura = $('input[name="tipo_struttura"]:checked').val();
+            if (!tipoStruttura) {
+                showFormMessage($form, 'error', 'Seleziona il tipo di struttura');
+                return;
+            }
+
+            // Get form data
+            const formData = new FormData();
+            formData.append('action', 'caniincasa_submit_struttura');
+            formData.append('nonce', $form.find('input[name="struttura_nonce"]').val());
+            formData.append('tipo_struttura', tipoStruttura);
+            formData.append('titolo_struttura', $('#titolo_struttura').val().trim());
+            formData.append('descrizione_struttura', $('#descrizione_struttura').val().trim());
+            formData.append('indirizzo', $('#indirizzo').val().trim());
+            formData.append('comune', $('#comune').val().trim());
+            formData.append('provincia_struttura', $('#provincia_struttura').val());
+            formData.append('cap', $('#cap').val().trim());
+            formData.append('telefono_struttura', $('#telefono_struttura').val().trim());
+            formData.append('email_struttura', $('#email_struttura').val().trim());
+            formData.append('sito_web', $('#sito_web').val().trim());
+
+            // Add specific fields based on structure type
+            if (tipoStruttura === 'allevamenti') {
+                formData.append('affisso', $('#affisso').val().trim());
+                formData.append('proprietario', $('#proprietario').val().trim());
+            } else if (tipoStruttura === 'struttureveterinarie') {
+                formData.append('tipologia', $('#tipologia').val());
+                formData.append('direttore_sanitario', $('#direttore_sanitario').val().trim());
+                formData.append('pronto_soccorso_h24', $('input[name="pronto_soccorso_h24"]').is(':checked') ? '1' : '0');
+                formData.append('reperibilita_h24', $('input[name="reperibilita_h24"]').is(':checked') ? '1' : '0');
+                formData.append('orari_apertura', $('#orari_apertura').val().trim());
+            } else if (tipoStruttura === 'centri_cinofili') {
+                formData.append('servizi_offerti', $('#servizi_offerti').val().trim());
+            } else if (tipoStruttura === 'pensioni_per_cani') {
+                formData.append('servizi_pensione', $('#servizi_pensione').val().trim());
+            } else if (tipoStruttura === 'canili') {
+                formData.append('riferimento', $('#riferimento').val().trim());
+            }
+
+            // Show loading state
+            const $submitBtn = $form.find('button[type="submit"]');
+            const $btnText = $submitBtn.find('.btn-text');
+            const $btnLoading = $submitBtn.find('.btn-loading');
+
+            $submitBtn.prop('disabled', true);
+            $btnText.hide();
+            $btnLoading.show();
+
+            // AJAX request
+            $.ajax({
+                url: caniincasaDashboard.ajaxurl,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        showFormMessage($form, 'success', response.data.message);
+
+                        // Redirect after 2 seconds
+                        setTimeout(function() {
+                            window.location.href = '?tab=profilo';
+                        }, 2000);
+                    } else {
+                        showFormMessage($form, 'error', response.data.message);
+                        $submitBtn.prop('disabled', false);
+                        $btnText.show();
+                        $btnLoading.hide();
+                    }
+                },
+                error: function() {
+                    showFormMessage($form, 'error', 'Si è verificato un errore. Riprova.');
+                    $submitBtn.prop('disabled', false);
+                    $btnText.show();
+                    $btnLoading.hide();
+                }
+            });
+        });
+    }
+
+    /**
      * Initialize on document ready
      */
     $(document).ready(function() {
         initProfileForm();
         initCucciolataForm();
+        initStrutturaForm();
         initDeleteAnnuncio();
         initApprovePost();
         initRejectPost();

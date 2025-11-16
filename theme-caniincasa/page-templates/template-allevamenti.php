@@ -28,6 +28,54 @@ get_header();
             <?php endif; ?>
         </div>
 
+        <!-- Filtri Zona e Razze -->
+        <div class="filters-wrapper">
+            <h3 class="filters-title">Filtra allevamenti</h3>
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="filter-provincia">Provincia:</label>
+                    <select id="filter-provincia" class="filter-select" data-post-type="allevamenti">
+                        <option value="">Tutte le province</option>
+                        <?php
+                        $province = get_terms( array(
+                            'taxonomy' => 'provincia',
+                            'hide_empty' => true,
+                            'orderby' => 'name',
+                            'order' => 'ASC',
+                        ) );
+                        foreach ( $province as $provincia ):
+                        ?>
+                            <option value="<?php echo $provincia->term_id; ?>">
+                                <?php echo esc_html( $provincia->name ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-razza">Razza:</label>
+                    <select id="filter-razza" class="filter-select">
+                        <option value="">Tutte le razze</option>
+                        <?php
+                        $razze = get_terms( array(
+                            'taxonomy' => 'razze_allevamenti',
+                            'hide_empty' => true,
+                            'orderby' => 'name',
+                            'order' => 'ASC',
+                        ) );
+                        foreach ( $razze as $razza ):
+                        ?>
+                            <option value="<?php echo $razza->term_id; ?>">
+                                <?php echo esc_html( $razza->name ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <button id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
+            </div>
+        </div>
+
         <?php
         // Query per tutti gli allevamenti
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
@@ -44,6 +92,12 @@ get_header();
         $allevamenti_query = new WP_Query( $args );
         ?>
 
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner" style="display:none;">
+            <div class="spinner"></div>
+            <p>Caricamento...</p>
+        </div>
+
         <!-- Results Count -->
         <div class="results-info">
             <p class="results-count">
@@ -57,7 +111,7 @@ get_header();
         <?php if ( $allevamenti_query->have_posts() ): ?>
 
             <!-- Allevamenti Grid -->
-            <div class="items-grid">
+            <div class="items-grid" id="items-grid">
 
                 <?php while ( $allevamenti_query->have_posts() ): $allevamenti_query->the_post(); ?>
 

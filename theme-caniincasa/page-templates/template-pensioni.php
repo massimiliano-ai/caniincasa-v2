@@ -34,7 +34,7 @@ get_header();
             <div class="filters-row">
                 <div class="filter-group">
                     <label for="filter-provincia">Provincia:</label>
-                    <select id="filter-provincia" class="filter-select">
+                    <select id="filter-provincia" class="filter-select" data-post-type="pensioni_per_cani">
                         <option value="">Tutte le province</option>
                         <?php
                         $province = get_terms( array(

@@ -1007,3 +1007,45 @@ function caniincasa_filter_annunci_archive( $query ) {
     }
 }
 add_action( 'pre_get_posts', 'caniincasa_filter_annunci_archive' );
+
+/**
+ * Get Pagination Links with Filter Parameters Preserved
+ *
+ * Utility function to generate pagination links that preserve GET parameters
+ * from archive filters (provincia, search, razza, servizi, etc.)
+ *
+ * @param array $args Pagination arguments.
+ * @param array $preserve_params Array of GET parameter keys to preserve (optional).
+ * @return string Pagination HTML.
+ */
+function caniincasa_get_pagination_with_filters( $args = array(), $preserve_params = array() ) {
+    // Default parameters to preserve if none specified
+    if ( empty( $preserve_params ) ) {
+        $preserve_params = array( 'search', 'provincia', 'filter_provincia', 'filter_razza', 'servizi', 'razza' );
+    }
+
+    // Build pagination base URL preserving filter parameters
+    $base_url = get_pagenum_link( 999999999 );
+
+    // Add filter parameters to pagination links
+    foreach ( $preserve_params as $param ) {
+        if ( isset( $_GET[ $param ] ) && ! empty( $_GET[ $param ] ) ) {
+            $base_url = add_query_arg( $param, sanitize_text_field( $_GET[ $param ] ), $base_url );
+        }
+    }
+
+    // Default pagination args
+    $defaults = array(
+        'base' => str_replace( 999999999, '%#%', esc_url( $base_url ) ),
+        'format' => '?paged=%#%',
+        'current' => max( 1, get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1 ),
+        'prev_text' => '&laquo; Precedente',
+        'next_text' => 'Successiva &raquo;',
+        'type' => 'list',
+    );
+
+    // Merge with custom args
+    $args = wp_parse_args( $args, $defaults );
+
+    return paginate_links( $args );
+}

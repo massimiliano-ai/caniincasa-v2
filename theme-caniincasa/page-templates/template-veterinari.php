@@ -327,14 +327,9 @@ get_header();
             <?php if ( $veterinari_query->max_num_pages > 1 ): ?>
                 <div class="pagination-wrapper">
                     <?php
-                    echo paginate_links( array(
-                        'base' => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
-                        'format' => '?paged=%#%',
-                        'current' => max( 1, $paged ),
+                    echo caniincasa_get_pagination_with_filters( array(
                         'total' => $veterinari_query->max_num_pages,
-                        'prev_text' => '&laquo; Precedente',
-                        'next_text' => 'Successiva &raquo;',
-                        'type' => 'list',
+                        'current' => max( 1, $paged ),
                     ) );
                     ?>
                 </div>

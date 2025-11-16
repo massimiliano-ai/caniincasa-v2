@@ -112,6 +112,18 @@
         const apartment = parseFloat($('#filter-apartment').val());
         $('#apartment-value').text(apartment === 0 ? 'Tutti' : apartment.toFixed(1));
 
+        // Affection (Affettuosità)
+        const affection = parseFloat($('#filter-affection').val());
+        $('#affection-value').text(affection === 0 ? 'Tutti' : affection.toFixed(1));
+
+        // Strangers (Tolleranza Estranei)
+        const strangers = parseFloat($('#filter-strangers').val());
+        $('#strangers-value').text(strangers === 0 ? 'Tutti' : strangers.toFixed(1));
+
+        // Vocality (Vocalità)
+        const vocality = parseFloat($('#filter-vocality').val());
+        $('#vocality-value').text(vocality === 0 ? 'Tutti' : vocality.toFixed(1));
+
         // Kids
         const kids = parseFloat($('#filter-kids').val());
         $('#kids-value').text(kids === 0 ? 'Tutti' : kids.toFixed(1));
@@ -134,6 +146,9 @@
             sizes: [],
             energy: parseFloat($('#filter-energy').val()),
             apartment: parseFloat($('#filter-apartment').val()),
+            affection: parseFloat($('#filter-affection').val()),
+            strangers: parseFloat($('#filter-strangers').val()),
+            vocality: parseFloat($('#filter-vocality').val()),
             kids: parseFloat($('#filter-kids').val()),
             experience: parseFloat($('#filter-experience').val()),
             sort_by: $('#filter-sort').val() || 'name-asc',
@@ -326,6 +341,9 @@
         // Reset range sliders
         $('#filter-energy').val(0);
         $('#filter-apartment').val(0);
+        $('#filter-affection').val(0);
+        $('#filter-strangers').val(0);
+        $('#filter-vocality').val(0);
         $('#filter-kids').val(0);
         $('#filter-experience').val(5);
 

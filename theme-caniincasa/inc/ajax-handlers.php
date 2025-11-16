@@ -16,60 +16,172 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function caniincasa_ajax_filter_razze() {
     // Verify nonce
-    check_ajax_referer( 'caniincasa-nonce', 'nonce' );
+    check_ajax_referer( 'razze_filters_nonce', 'nonce' );
 
     // Get filter parameters
-    $taglia = isset( $_POST['taglia'] ) ? sanitize_text_field( $_POST['taglia'] ) : '';
-    $energia = isset( $_POST['energia'] ) ? absint( $_POST['energia'] ) : 0;
-    $paese = isset( $_POST['paese'] ) ? sanitize_text_field( $_POST['paese'] ) : '';
+    $search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
+    $sizes = isset( $_POST['sizes'] ) && is_array( $_POST['sizes'] ) ? array_map( 'sanitize_text_field', $_POST['sizes'] ) : array();
+    $energy = isset( $_POST['energy'] ) ? floatval( $_POST['energy'] ) : 0;
+    $apartment = isset( $_POST['apartment'] ) ? floatval( $_POST['apartment'] ) : 0;
+    $affection = isset( $_POST['affection'] ) ? floatval( $_POST['affection'] ) : 0;
+    $strangers = isset( $_POST['strangers'] ) ? floatval( $_POST['strangers'] ) : 0;
+    $vocality = isset( $_POST['vocality'] ) ? floatval( $_POST['vocality'] ) : 0;
+    $kids = isset( $_POST['kids'] ) ? floatval( $_POST['kids'] ) : 0;
+    $experience = isset( $_POST['experience'] ) ? floatval( $_POST['experience'] ) : 5;
+    $sort_by = isset( $_POST['sort_by'] ) ? sanitize_text_field( $_POST['sort_by'] ) : 'name-asc';
+    $paged = isset( $_POST['paged'] ) ? absint( $_POST['paged'] ) : 1;
 
     // Build query args
     $args = array(
         'post_type'      => 'razze_di_cani',
         'posts_per_page' => 12,
-        'paged'          => isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1,
+        'paged'          => $paged,
+        'post_status'    => 'publish',
     );
+
+    // Search by name
+    if ( ! empty( $search ) ) {
+        $args['s'] = $search;
+    }
 
     // Add meta query for custom fields
     $meta_query = array( 'relation' => 'AND' );
 
-    if ( $energia > 0 ) {
+    // Livello energia
+    if ( $energy > 0 ) {
         $meta_query[] = array(
             'key'     => 'livello_di_energia',
-            'value'   => $energia,
+            'value'   => $energy,
             'compare' => '>=',
             'type'    => 'NUMERIC',
         );
     }
 
-    if ( ! empty( $meta_query ) && count( $meta_query ) > 1 ) {
+    // Adattabilità appartamento
+    if ( $apartment > 0 ) {
+        $meta_query[] = array(
+            'key'     => 'adattabilita_appartamento',
+            'value'   => $apartment,
+            'compare' => '>=',
+            'type'    => 'NUMERIC',
+        );
+    }
+
+    // Affettuosità
+    if ( $affection > 0 ) {
+        $meta_query[] = array(
+            'key'     => 'affettuosita',
+            'value'   => $affection,
+            'compare' => '>=',
+            'type'    => 'NUMERIC',
+        );
+    }
+
+    // Tolleranza verso estranei
+    if ( $strangers > 0 ) {
+        $meta_query[] = array(
+            'key'     => 'tolleranza_estranei',
+            'value'   => $strangers,
+            'compare' => '>=',
+            'type'    => 'NUMERIC',
+        );
+    }
+
+    // Vocalità
+    if ( $vocality > 0 ) {
+        $meta_query[] = array(
+            'key'     => 'vocalita',
+            'value'   => $vocality,
+            'compare' => '>=',
+            'type'    => 'NUMERIC',
+        );
+    }
+
+    // Compatibilità con bambini
+    if ( $kids > 0 ) {
+        $meta_query[] = array(
+            'key'     => 'compatibilita_bambini',
+            'value'   => $kids,
+            'compare' => '>=',
+            'type'    => 'NUMERIC',
+        );
+    }
+
+    // Esperienza richiesta (inverted logic - lower is better for beginners)
+    if ( $experience < 5 ) {
+        $meta_query[] = array(
+            'key'     => 'esperienza_richiesta',
+            'value'   => $experience,
+            'compare' => '<=',
+            'type'    => 'NUMERIC',
+        );
+    }
+
+    if ( count( $meta_query ) > 1 ) {
         $args['meta_query'] = $meta_query;
+    }
+
+    // Filter by size (taxonomy or meta field)
+    if ( ! empty( $sizes ) ) {
+        // Try taxonomy first
+        $tax_query = array(
+            'taxonomy' => 'dimensione',
+            'field'    => 'slug',
+            'terms'    => $sizes,
+        );
+        $args['tax_query'] = array( $tax_query );
+    }
+
+    // Sorting
+    switch ( $sort_by ) {
+        case 'name-asc':
+            $args['orderby'] = 'title';
+            $args['order'] = 'ASC';
+            break;
+        case 'name-desc':
+            $args['orderby'] = 'title';
+            $args['order'] = 'DESC';
+            break;
+        case 'popular':
+            $args['orderby'] = 'meta_value_num';
+            $args['meta_key'] = 'view_count';
+            $args['order'] = 'DESC';
+            break;
+        default:
+            $args['orderby'] = 'title';
+            $args['order'] = 'ASC';
     }
 
     // Execute query
     $query = new WP_Query( $args );
 
-    // Prepare response
-    $response = array(
-        'success' => true,
-        'html'    => '',
-        'found'   => $query->found_posts,
-    );
-
+    // Prepare breeds data
+    $breeds = array();
     if ( $query->have_posts() ) {
-        ob_start();
         while ( $query->have_posts() ) {
             $query->the_post();
-            get_template_part( 'template-parts/content', 'razza-card' );
-        }
-        $response['html'] = ob_get_clean();
-    } else {
-        $response['html'] = '<p>' . esc_html__( 'Nessuna razza trovata con i filtri selezionati.', 'caniincasa' ) . '</p>';
-    }
 
+            $breeds[] = array(
+                'id'        => get_the_ID(),
+                'title'     => get_the_title(),
+                'link'      => get_permalink(),
+                'image'     => get_the_post_thumbnail_url( get_the_ID(), 'medium' ),
+                'energy'    => get_post_meta( get_the_ID(), 'livello_di_energia', true ),
+                'apartment' => get_post_meta( get_the_ID(), 'adattabilita_appartamento', true ),
+            );
+        }
+    }
     wp_reset_postdata();
 
-    wp_send_json( $response );
+    // Prepare response
+    $response = array(
+        'breeds'    => $breeds,
+        'total'     => $query->found_posts,
+        'has_more'  => $query->max_num_pages > $paged,
+        'max_pages' => $query->max_num_pages,
+    );
+
+    wp_send_json_success( $response );
 }
 add_action( 'wp_ajax_filter_razze', 'caniincasa_ajax_filter_razze' );
 add_action( 'wp_ajax_nopriv_filter_razze', 'caniincasa_ajax_filter_razze' );

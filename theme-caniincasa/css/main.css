@@ -512,6 +512,134 @@
 }
 
 /* ==========================================================================
+   Archive Layouts
+   ========================================================================== */
+
+.archive-layout {
+    display: block;
+}
+
+.archive-layout--with-filters {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.archive-filters {
+    position: sticky;
+    top: 20px;
+}
+
+.filters-sticky {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filters-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 1.25rem 0;
+    color: var(--text);
+}
+
+.archive-content {
+    min-width: 0; /* Prevents grid blowout */
+}
+
+/* Responsive: Stack on mobile */
+@media (max-width: 991px) {
+    .archive-layout--with-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .archive-filters {
+        position: static;
+        margin-bottom: 2rem;
+    }
+}
+
+/* ==========================================================================
+   Single Post Layouts
+   ========================================================================== */
+
+/* Generic layout for all single post types */
+.cucciolata-single__layout,
+.allevamento-single__layout,
+.dogsitter-single__layout,
+.canile-single__layout,
+.centro-single__layout,
+.pensione-single__layout,
+.veterinario-single__layout,
+.patologia-single__layout,
+.blog-single__layout,
+.razza-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+.cucciolata-single__content,
+.allevamento-single__content,
+.dogsitter-single__content,
+.canile-single__content,
+.centro-single__content,
+.pensione-single__content,
+.veterinario-single__content,
+.patologia-single__content,
+.blog-single__content,
+.razza-content {
+    min-width: 0; /* Prevents grid blowout */
+}
+
+.cucciolata-single__sidebar,
+.allevamento-single__sidebar,
+.dogsitter-single__sidebar,
+.canile-single__sidebar,
+.centro-single__sidebar,
+.pensione-single__sidebar,
+.veterinario-single__sidebar,
+.patologia-single__sidebar,
+.blog-single__sidebar,
+.razza-sidebar {
+    position: sticky;
+    top: 20px;
+}
+
+/* Responsive: Stack on tablet and mobile */
+@media (max-width: 991px) {
+    .cucciolata-single__layout,
+    .allevamento-single__layout,
+    .dogsitter-single__layout,
+    .canile-single__layout,
+    .centro-single__layout,
+    .pensione-single__layout,
+    .veterinario-single__layout,
+    .patologia-single__layout,
+    .blog-single__layout,
+    .razza-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .cucciolata-single__sidebar,
+    .allevamento-single__sidebar,
+    .dogsitter-single__sidebar,
+    .canile-single__sidebar,
+    .centro-single__sidebar,
+    .pensione-single__sidebar,
+    .veterinario-single__sidebar,
+    .patologia-single__sidebar,
+    .blog-single__sidebar,
+    .razza-sidebar {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+/* ==========================================================================
    Annunci Badges
    ========================================================================== */
 

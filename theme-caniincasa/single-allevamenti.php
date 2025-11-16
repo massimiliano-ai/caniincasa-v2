@@ -41,6 +41,7 @@ get_header();
                             $indirizzo = get_post_meta( get_the_ID(), 'indirizzo', true );
                             $localita = get_post_meta( get_the_ID(), 'localita', true );
                             $provincia = get_post_meta( get_the_ID(), 'provincia_', true );
+                            $regione = get_post_meta( get_the_ID(), 'regione', true );
                             $telefono = get_post_meta( get_the_ID(), 'telefono', true );
                             $email = get_post_meta( get_the_ID(), 'email', true );
                             $sito_web = get_post_meta( get_the_ID(), 'sito_web', true );
@@ -74,17 +75,23 @@ get_header();
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ( $localita || $provincia ) : ?>
+                            <?php if ( $localita || $provincia || $regione ) : ?>
                                 <div class="info-row">
                                     <div class="info-label">Località</div>
                                     <div class="info-value">
                                         <?php
-                                        if ( $localita && $provincia ) {
-                                            echo esc_html( $localita ) . ' - ' . esc_html( $provincia );
-                                        } elseif ( $localita ) {
-                                            echo esc_html( $localita );
-                                        } else {
-                                            echo esc_html( $provincia );
+                                        $location_parts = array();
+                                        if ( $localita ) {
+                                            $location_parts[] = esc_html( $localita );
+                                        }
+                                        if ( $provincia ) {
+                                            $location_parts[] = '(' . esc_html( $provincia ) . ')';
+                                        }
+                                        echo implode( ' ', $location_parts );
+
+                                        // Add regione on same line if exists
+                                        if ( $regione ) {
+                                            echo ' <span class="regione">' . esc_html( $regione ) . '</span>';
                                         }
                                         ?>
                                     </div>
@@ -103,9 +110,7 @@ get_header();
                             <?php if ( $email ) : ?>
                                 <div class="info-row">
                                     <div class="info-label">Email</div>
-                                    <div class="info-value">
-                                        <a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
-                                    </div>
+                                    <div class="info-value"><?php echo esc_html( $email ); ?></div>
                                 </div>
                             <?php endif; ?>
 
@@ -194,67 +199,6 @@ get_header();
                     <!-- Sidebar -->
                     <aside class="allevamento-single__sidebar">
 
-                        <!-- Contact Box -->
-                        <div class="sidebar-box">
-                            <h3>Contatti</h3>
-                            <div class="contact-list">
-                                <?php if ( $telefono ) : ?>
-                                    <div class="contact-item">
-                                        <span class="contact-icon">📞</span>
-                                        <a href="tel:<?php echo esc_attr( $telefono ); ?>" class="contact-link">
-                                            <?php echo esc_html( $telefono ); ?>
-                                        </a>
-                                    </div>
-                                <?php endif; ?>
-
-                                <?php if ( $email ) : ?>
-                                    <div class="contact-item">
-                                        <span class="contact-icon">✉️</span>
-                                        <a href="mailto:<?php echo esc_attr( $email ); ?>" class="contact-link">
-                                            <?php echo esc_html( $email ); ?>
-                                        </a>
-                                    </div>
-                                <?php endif; ?>
-
-                                <?php if ( $sito_web ) : ?>
-                                    <div class="contact-item">
-                                        <span class="contact-icon">🌐</span>
-                                        <a href="<?php echo esc_url( $sito_web ); ?>" class="contact-link" target="_blank" rel="noopener noreferrer">
-                                            Visita sito web
-                                        </a>
-                                    </div>
-                                <?php endif; ?>
-
-                                <?php if ( $localita || $provincia ) : ?>
-                                    <div class="contact-item">
-                                        <span class="contact-icon">📍</span>
-                                        <span class="contact-text">
-                                            <?php
-                                            if ( $indirizzo ) {
-                                                echo esc_html( $indirizzo ) . '<br>';
-                                            }
-                                            if ( $localita && $provincia ) {
-                                                echo esc_html( $localita ) . ' - ' . esc_html( $provincia );
-                                            } elseif ( $localita ) {
-                                                echo esc_html( $localita );
-                                            } else {
-                                                echo esc_html( $provincia );
-                                            }
-                                            ?>
-                                        </span>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
-                        <!-- Cerca altro allevamento -->
-                        <div class="sidebar-box">
-                            <h3>Cerca altro allevamento</h3>
-                            <a href="<?php echo esc_url( home_url( '/allevamenti/' ) ); ?>" class="btn btn-primary btn-block">
-                                Vai all'elenco
-                            </a>
-                        </div>
-
                         <!-- CTA per proprietari -->
                         <div class="cta-card">
                             <h4>Sei il proprietario?</h4>
@@ -262,12 +206,6 @@ get_header();
                             <a href="<?php echo esc_url( home_url( '/contattaci/' ) ); ?>" class="btn btn-secondary btn-block">
                                 Contattaci
                             </a>
-                        </div>
-
-                        <!-- CTA Annuncio Cucciolata -->
-                        <div class="sidebar-box sidebar-box--secondary">
-                            <h4>Vuoi proporre una cucciolata o un'adozione?</h4>
-                            <p>Scrivici!</p>
                         </div>
 
                     </aside><!-- .allevamento-single__sidebar -->

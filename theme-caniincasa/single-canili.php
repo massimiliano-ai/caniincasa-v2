@@ -154,9 +154,7 @@ get_header();
                                 ?>
                                     <li class="contact-email">
                                         <i class="icon-email">✉️</i>
-                                        <a href="<?php echo esc_url( 'mailto:' . $email ); ?>">
-                                            <?php echo esc_html( $email ); ?>
-                                        </a>
+                                        <?php echo esc_html( $email ); ?>
                                     </li>
                                 <?php endif; ?>
 

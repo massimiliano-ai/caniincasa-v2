@@ -1258,26 +1258,44 @@ add_action( 'pre_get_posts', 'caniincasa_filter_annunci_archive' );
  * @return string Pagination HTML.
  */
 function caniincasa_get_pagination_with_filters( $args = array(), $preserve_params = array() ) {
+    global $wp_rewrite;
+
     // Default parameters to preserve if none specified
     if ( empty( $preserve_params ) ) {
         $preserve_params = array( 'search', 'provincia', 'filter_provincia', 'filter_razza', 'servizi', 'razza' );
     }
 
-    // Build pagination base URL preserving filter parameters
-    $base_url = get_pagenum_link( 999999999 );
+    // Get current page URL
+    $current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $current_url = strtok( $current_url, '?' ); // Remove existing query string
+    $current_url = preg_replace( '/\/page\/\d+\/?/', '/', $current_url ); // Remove existing pagination
 
-    // Add filter parameters to pagination links
+    // Build query string for filter parameters
+    $query_params = array();
     foreach ( $preserve_params as $param ) {
         if ( isset( $_GET[ $param ] ) && ! empty( $_GET[ $param ] ) ) {
-            $base_url = add_query_arg( $param, sanitize_text_field( $_GET[ $param ] ), $base_url );
+            $query_params[ $param ] = sanitize_text_field( $_GET[ $param ] );
+        }
+    }
+    $query_string = ! empty( $query_params ) ? '?' . http_build_query( $query_params ) : '';
+
+    // Determine pagination format based on permalink structure
+    if ( $wp_rewrite->using_permalinks() ) {
+        $base = trailingslashit( $current_url ) . 'page/%#%/' . $query_string;
+        $format = '';
+    } else {
+        $base = $current_url . $query_string;
+        $format = '&paged=%#%';
+        if ( empty( $query_string ) ) {
+            $format = '?paged=%#%';
         }
     }
 
     // Default pagination args
     $defaults = array(
-        'base' => str_replace( 999999999, '%#%', esc_url( $base_url ) ),
-        'format' => '?paged=%#%',
-        'current' => max( 1, get_query_var( 'paged' ) ? get_query_var( 'paged' ) : 1 ),
+        'base' => $base,
+        'format' => $format,
+        'current' => max( 1, get_query_var( 'paged' ) ? get_query_var( 'paged' ) : ( isset( $_GET['paged'] ) ? intval( $_GET['paged'] ) : 1 ) ),
         'prev_text' => '&laquo; Precedente',
         'next_text' => 'Successiva &raquo;',
         'type' => 'list',

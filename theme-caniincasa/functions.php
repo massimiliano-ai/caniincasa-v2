@@ -592,10 +592,10 @@ function caniincasa_ajax_filter_archive() {
                     <?php endif; endif; ?>
 
                     <?php
-                    // Indirizzo
+                    // Indirizzo e Località/Comune
                     $indirizzo = get_field( 'indirizzo' );
-                    $citta = get_field( 'citta' );
-                    if ( $indirizzo || $citta ):
+                    $localita = get_field( 'localita' ) ?: get_field( 'comune' );
+                    if ( $indirizzo || $localita ):
                     ?>
                         <div class="item-address">
                             <span class="icon">🏠</span>
@@ -603,9 +603,9 @@ function caniincasa_ajax_filter_archive() {
                                 <?php
                                 if ( $indirizzo ) {
                                     echo esc_html( wp_trim_words( $indirizzo, 5, '' ) );
-                                    if ( $citta ) echo ', ';
+                                    if ( $localita ) echo ', ';
                                 }
-                                if ( $citta ) echo esc_html( $citta );
+                                if ( $localita ) echo esc_html( $localita );
                                 ?>
                             </span>
                         </div>

@@ -129,10 +129,10 @@ get_header();
                             <?php endif; ?>
 
                             <?php
-                            // Indirizzo
+                            // Indirizzo e Comune
                             $indirizzo = get_field( 'indirizzo' );
-                            $citta = get_field( 'citta' );
-                            if ( $indirizzo || $citta ):
+                            $comune = get_field( 'comune' );
+                            if ( $indirizzo || $comune ):
                             ?>
                                 <div class="item-address">
                                     <span class="icon">🏠</span>
@@ -140,9 +140,9 @@ get_header();
                                         <?php
                                         if ( $indirizzo ) {
                                             echo esc_html( $indirizzo );
-                                            if ( $citta ) echo ', ';
+                                            if ( $comune ) echo ', ';
                                         }
-                                        if ( $citta ) echo esc_html( $citta );
+                                        if ( $comune ) echo esc_html( $comune );
                                         ?>
                                     </span>
                                 </div>

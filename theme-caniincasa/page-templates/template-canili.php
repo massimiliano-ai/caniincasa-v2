@@ -118,21 +118,28 @@ get_header();
                             </h3>
 
                             <?php
-                            // Provincia
+                            // Provincia (try taxonomy first, then ACF field)
                             $province = wp_get_post_terms( get_the_ID(), 'provincia' );
+                            $provincia_text = get_field( 'provincia' ) ?: get_field( 'provincia_estesa' );
+
                             if ( ! empty( $province ) && ! is_wp_error( $province ) ):
                             ?>
                                 <div class="item-location">
                                     <span class="icon">📍</span>
                                     <span class="text"><?php echo esc_html( $province[0]->name ); ?></span>
                                 </div>
+                            <?php elseif ( $provincia_text ): ?>
+                                <div class="item-location">
+                                    <span class="icon">📍</span>
+                                    <span class="text"><?php echo esc_html( $provincia_text ); ?></span>
+                                </div>
                             <?php endif; ?>
 
                             <?php
-                            // Indirizzo
+                            // Indirizzo e Comune
                             $indirizzo = get_field( 'indirizzo' );
-                            $citta = get_field( 'citta' );
-                            if ( $indirizzo || $citta ):
+                            $comune = get_field( 'comune' );
+                            if ( $indirizzo || $comune ):
                             ?>
                                 <div class="item-address">
                                     <span class="icon">🏠</span>
@@ -140,9 +147,9 @@ get_header();
                                         <?php
                                         if ( $indirizzo ) {
                                             echo esc_html( $indirizzo );
-                                            if ( $citta ) echo ', ';
+                                            if ( $comune ) echo ', ';
                                         }
-                                        if ( $citta ) echo esc_html( $citta );
+                                        if ( $comune ) echo esc_html( $comune );
                                         ?>
                                     </span>
                                 </div>
@@ -154,6 +161,17 @@ get_header();
                             ?>
                                 <div class="item-excerpt">
                                     <?php echo wp_trim_words( get_the_excerpt(), 15, '...' ); ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php
+                            // Riferimento
+                            $riferimento = get_field( 'riferimento' );
+                            if ( $riferimento ):
+                            ?>
+                                <div class="item-info">
+                                    <span class="icon">👤</span>
+                                    <span class="text"><strong>Riferimento:</strong> <?php echo esc_html( $riferimento ); ?></span>
                                 </div>
                             <?php endif; ?>
 

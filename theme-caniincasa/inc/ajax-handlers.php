@@ -20,7 +20,6 @@ function caniincasa_ajax_filter_razze() {
 
     // Get filter parameters
     $search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
-    $sizes = isset( $_POST['sizes'] ) && is_array( $_POST['sizes'] ) ? array_map( 'sanitize_text_field', $_POST['sizes'] ) : array();
     $energy = isset( $_POST['energy'] ) ? floatval( $_POST['energy'] ) : 0;
     $apartment = isset( $_POST['apartment'] ) ? floatval( $_POST['apartment'] ) : 0;
     $affection = isset( $_POST['affection'] ) ? floatval( $_POST['affection'] ) : 0;
@@ -47,10 +46,10 @@ function caniincasa_ajax_filter_razze() {
     // Add meta query for custom fields
     $meta_query = array( 'relation' => 'AND' );
 
-    // Livello energia
+    // Livello energia (campo corretto: energia_e_livelli_di_attivita)
     if ( $energy > 0 ) {
         $meta_query[] = array(
-            'key'     => 'livello_di_energia',
+            'key'     => 'energia_e_livelli_di_attivita',
             'value'   => $energy,
             'compare' => '>=',
             'type'    => 'NUMERIC',
@@ -87,30 +86,31 @@ function caniincasa_ajax_filter_razze() {
         );
     }
 
-    // Vocalità
+    // Vocalità (campo corretto: vocalita_e_predisposizione_ad_abbaiare)
     if ( $vocality > 0 ) {
         $meta_query[] = array(
-            'key'     => 'vocalita',
+            'key'     => 'vocalita_e_predisposizione_ad_abbaiare',
             'value'   => $vocality,
             'compare' => '>=',
             'type'    => 'NUMERIC',
         );
     }
 
-    // Compatibilità con bambini
+    // Compatibilità con bambini (campo corretto: compatibilita_con_i_bambini)
     if ( $kids > 0 ) {
         $meta_query[] = array(
-            'key'     => 'compatibilita_bambini',
+            'key'     => 'compatibilita_con_i_bambini',
             'value'   => $kids,
             'compare' => '>=',
             'type'    => 'NUMERIC',
         );
     }
 
-    // Esperienza richiesta (inverted logic - lower is better for beginners)
+    // Esperienza richiesta (campo corretto: livello_esperienza_richiesto)
+    // Inverted logic - lower is better for beginners
     if ( $experience < 5 ) {
         $meta_query[] = array(
-            'key'     => 'esperienza_richiesta',
+            'key'     => 'livello_esperienza_richiesto',
             'value'   => $experience,
             'compare' => '<=',
             'type'    => 'NUMERIC',
@@ -119,17 +119,6 @@ function caniincasa_ajax_filter_razze() {
 
     if ( count( $meta_query ) > 1 ) {
         $args['meta_query'] = $meta_query;
-    }
-
-    // Filter by size (taxonomy or meta field)
-    if ( ! empty( $sizes ) ) {
-        // Try taxonomy first
-        $tax_query = array(
-            'taxonomy' => 'dimensione',
-            'field'    => 'slug',
-            'terms'    => $sizes,
-        );
-        $args['tax_query'] = array( $tax_query );
     }
 
     // Sorting
@@ -166,7 +155,7 @@ function caniincasa_ajax_filter_razze() {
                 'title'     => get_the_title(),
                 'link'      => get_permalink(),
                 'image'     => get_the_post_thumbnail_url( get_the_ID(), 'medium' ),
-                'energy'    => get_post_meta( get_the_ID(), 'livello_di_energia', true ),
+                'energy'    => get_post_meta( get_the_ID(), 'energia_e_livelli_di_attivita', true ),
                 'apartment' => get_post_meta( get_the_ID(), 'adattabilita_appartamento', true ),
             );
         }

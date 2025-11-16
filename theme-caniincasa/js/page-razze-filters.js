@@ -64,12 +64,6 @@
             }, 500);
         });
 
-        // Checkboxes dimensione
-        $('.filter-input[type="checkbox"]').on('change', function() {
-            currentPage = 1;
-            applyFilters();
-        });
-
         // Range sliders - update display
         $('.range-slider').on('input', function() {
             updateRangeDisplays();
@@ -143,7 +137,6 @@
     function collectFilters() {
         const filters = {
             search: $('#search-breed').val(),
-            sizes: [],
             energy: parseFloat($('#filter-energy').val()),
             apartment: parseFloat($('#filter-apartment').val()),
             affection: parseFloat($('#filter-affection').val()),
@@ -156,11 +149,6 @@
             action: 'filter_razze',
             nonce: razzeFilters.nonce
         };
-
-        // Collect selected sizes
-        $('.filter-input[name="size"]:checked').each(function() {
-            filters.sizes.push($(this).val());
-        });
 
         return filters;
     }
@@ -334,9 +322,6 @@
     function resetFilters() {
         // Clear search
         $('#search-breed').val('');
-
-        // Uncheck all sizes
-        $('.filter-input[name="size"]').prop('checked', false);
 
         // Reset range sliders
         $('#filter-energy').val(0);

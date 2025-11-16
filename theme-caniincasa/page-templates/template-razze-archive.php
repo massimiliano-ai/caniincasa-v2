@@ -56,36 +56,6 @@ get_header();
                     >
                 </div>
 
-                <!-- Size Filter -->
-                <div class="filter-group">
-                    <label class="filter-label">
-                        <span class="label-icon">📏</span>
-                        Dimensione
-                    </label>
-                    <div class="filter-options">
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="size" value="piccola" class="filter-input">
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-label">Piccola</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="size" value="media" class="filter-input">
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-label">Media</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="size" value="grande" class="filter-input">
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-label">Grande</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="size" value="gigante" class="filter-input">
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-label">Gigante</span>
-                        </label>
-                    </div>
-                </div>
-
                 <!-- Energy Level Filter -->
                 <div class="filter-group">
                     <label class="filter-label">

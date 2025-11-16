@@ -1338,3 +1338,143 @@ function caniincasa_get_pagination_with_filters( $args = array(), $preserve_para
 
     return paginate_links( $args );
 }
+
+/**
+ * AJAX Handler: Submit Annuncio Cucciolata
+ */
+function caniincasa_ajax_submit_annuncio_cucciolata() {
+    // Check nonce
+    check_ajax_referer( 'submit_annuncio_cucciolata', 'nonce' );
+
+    // Check if user is logged in
+    if ( ! is_user_logged_in() ) {
+        wp_send_json_error( array( 'message' => 'Devi essere loggato per pubblicare un annuncio' ) );
+        return;
+    }
+
+    // Validate required fields
+    $required_fields = array( 'titolo', 'ricerca_offerta', 'razza', 'provincia', 'descrizione', 'telefono', 'email' );
+    foreach ( $required_fields as $field ) {
+        if ( empty( $_POST[ $field ] ) ) {
+            wp_send_json_error( array( 'message' => 'Tutti i campi obbligatori devono essere compilati' ) );
+            return;
+        }
+    }
+
+    // Create post
+    $post_data = array(
+        'post_title'   => sanitize_text_field( $_POST['titolo'] ),
+        'post_content' => wp_kses_post( $_POST['descrizione'] ),
+        'post_type'    => 'annunci_cucciolate',
+        'post_status'  => 'pending', // Requires approval
+        'post_author'  => get_current_user_id(),
+    );
+
+    $post_id = wp_insert_post( $post_data );
+
+    if ( is_wp_error( $post_id ) ) {
+        wp_send_json_error( array( 'message' => 'Errore nella creazione dell\'annuncio' ) );
+        return;
+    }
+
+    // Save ACF fields
+    update_field( 'ricerca_offerta', sanitize_text_field( $_POST['ricerca_offerta'] ), $post_id );
+    update_field( 'razza', intval( $_POST['razza'] ), $post_id );
+    update_field( 'telefono', sanitize_text_field( $_POST['telefono'] ), $post_id );
+    update_field( 'email', sanitize_email( $_POST['email'] ), $post_id );
+
+    if ( ! empty( $_POST['prezzo'] ) ) {
+        update_field( 'prezzo', floatval( $_POST['prezzo'] ), $post_id );
+    }
+
+    // Set provincia taxonomy
+    wp_set_object_terms( $post_id, intval( $_POST['provincia'] ), 'provincia' );
+
+    // Handle image upload
+    if ( ! empty( $_FILES['immagine']['name'] ) ) {
+        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+        $attachment_id = media_handle_upload( 'immagine', $post_id );
+
+        if ( ! is_wp_error( $attachment_id ) ) {
+            set_post_thumbnail( $post_id, $attachment_id );
+        }
+    }
+
+    wp_send_json_success( array(
+        'message' => 'Annuncio inviato con successo! Sarà visibile dopo l\'approvazione.',
+        'post_id' => $post_id
+    ) );
+}
+add_action( 'wp_ajax_submit_annuncio_cucciolata', 'caniincasa_ajax_submit_annuncio_cucciolata' );
+
+/**
+ * AJAX Handler: Submit Annuncio Dogsitter
+ */
+function caniincasa_ajax_submit_annuncio_dogsitter() {
+    // Check nonce
+    check_ajax_referer( 'submit_annuncio_dogsitter', 'nonce' );
+
+    // Check if user is logged in
+    if ( ! is_user_logged_in() ) {
+        wp_send_json_error( array( 'message' => 'Devi essere loggato per pubblicare un annuncio' ) );
+        return;
+    }
+
+    // Validate required fields
+    $required_fields = array( 'titolo', 'provincia', 'descrizione', 'telefono', 'email' );
+    foreach ( $required_fields as $field ) {
+        if ( empty( $_POST[ $field ] ) ) {
+            wp_send_json_error( array( 'message' => 'Tutti i campi obbligatori devono essere compilati' ) );
+            return;
+        }
+    }
+
+    // Create post
+    $post_data = array(
+        'post_title'   => sanitize_text_field( $_POST['titolo'] ),
+        'post_content' => wp_kses_post( $_POST['descrizione'] ),
+        'post_type'    => 'annunci_dogsitter',
+        'post_status'  => 'pending', // Requires approval
+        'post_author'  => get_current_user_id(),
+    );
+
+    $post_id = wp_insert_post( $post_data );
+
+    if ( is_wp_error( $post_id ) ) {
+        wp_send_json_error( array( 'message' => 'Errore nella creazione dell\'annuncio' ) );
+        return;
+    }
+
+    // Save ACF fields
+    update_field( 'telefono', sanitize_text_field( $_POST['telefono'] ), $post_id );
+    update_field( 'email', sanitize_email( $_POST['email'] ), $post_id );
+
+    if ( ! empty( $_POST['zona_disponibilita'] ) ) {
+        update_field( 'zona_disponibilita', sanitize_text_field( $_POST['zona_disponibilita'] ), $post_id );
+    }
+
+    // Set provincia taxonomy
+    wp_set_object_terms( $post_id, intval( $_POST['provincia'] ), 'provincia' );
+
+    // Handle image upload
+    if ( ! empty( $_FILES['immagine']['name'] ) ) {
+        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+        $attachment_id = media_handle_upload( 'immagine', $post_id );
+
+        if ( ! is_wp_error( $attachment_id ) ) {
+            set_post_thumbnail( $post_id, $attachment_id );
+        }
+    }
+
+    wp_send_json_success( array(
+        'message' => 'Annuncio inviato con successo! Sarà visibile dopo l\'approvazione.',
+        'post_id' => $post_id
+    ) );
+}
+add_action( 'wp_ajax_submit_annuncio_dogsitter', 'caniincasa_ajax_submit_annuncio_dogsitter' );

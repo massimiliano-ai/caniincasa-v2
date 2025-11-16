@@ -12,6 +12,13 @@ get_header();
 <main id="main-content" class="site-main">
     <?php while ( have_posts() ) : the_post(); ?>
 
+        <?php
+        // Hero Section
+        caniincasa_page_hero( array(
+            'subtitle' => 'Annuncio Cucciolata',
+        ) );
+        ?>
+
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'cucciolata-single' ); ?>>
 
             <?php caniincasa_breadcrumbs(); ?>

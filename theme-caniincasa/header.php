@@ -64,6 +64,17 @@
 
                 <!-- User Actions -->
                 <div class="header-user-actions">
+                    <?php
+                    // Pulsante Crea Annuncio
+                    $annuncio_url = is_user_logged_in()
+                        ? home_url( '/inserisci-annuncio/' )
+                        : home_url( '/login/' );
+                    ?>
+                    <a href="<?php echo esc_url( $annuncio_url ); ?>" class="user-link btn-create-ad">
+                        <span class="icon">📝</span>
+                        <span class="text"><?php esc_html_e( 'Crea Annuncio', 'caniincasa' ); ?></span>
+                    </a>
+
                     <?php if ( is_user_logged_in() ) : ?>
                         <a href="<?php echo esc_url( home_url( '/dashboard/' ) ); ?>" class="user-link user-dashboard">
                             <span class="icon">👤</span>

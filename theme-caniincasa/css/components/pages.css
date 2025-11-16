@@ -18,6 +18,40 @@
     max-width: 100%;
 }
 
+/* Fix lists overflow - ensure numbers/bullets stay inside box */
+.page-content ol,
+.page-content ul,
+.blog-single__content-area ol,
+.blog-single__content-area ul,
+article ol,
+article ul {
+    margin: 1rem 0;
+    padding-left: 2rem;
+    list-style-position: inside;
+}
+
+.page-content ol li,
+.page-content ul li,
+.blog-single__content-area ol li,
+.blog-single__content-area ul li,
+article ol li,
+article ul li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.page-content ol,
+.blog-single__content-area ol,
+article ol {
+    list-style-type: decimal;
+}
+
+.page-content ul,
+.blog-single__content-area ul,
+article ul {
+    list-style-type: disc;
+}
+
 .page-header {
     margin-bottom: var(--spacing-xl);
     padding-bottom: var(--spacing-lg);

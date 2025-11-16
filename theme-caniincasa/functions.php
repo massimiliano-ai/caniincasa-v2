@@ -683,6 +683,27 @@ add_action( 'show_user_profile', 'caniincasa_show_quiz_completion_in_profile' );
 add_action( 'edit_user_profile', 'caniincasa_show_quiz_completion_in_profile' );
 
 /**
+ * Hide Dashboard menu item for logged-out users
+ */
+function caniincasa_hide_dashboard_for_logged_out( $items, $args ) {
+	// Only apply to primary menu
+	if ( isset( $args->theme_location ) && $args->theme_location === 'primary' ) {
+		// If user is not logged in, hide dashboard links
+		if ( ! is_user_logged_in() ) {
+			foreach ( $items as $key => $item ) {
+				// Check if menu item URL contains /dashboard/
+				if ( strpos( $item->url, '/dashboard/' ) !== false ||
+				     strpos( strtolower( $item->title ), 'dashboard' ) !== false ) {
+					unset( $items[ $key ] );
+				}
+			}
+		}
+	}
+	return $items;
+}
+add_filter( 'wp_nav_menu_objects', 'caniincasa_hide_dashboard_for_logged_out', 10, 2 );
+
+/**
  * AJAX Handler: Filter Archive by Provincia and Razza
  */
 function caniincasa_ajax_filter_archive() {

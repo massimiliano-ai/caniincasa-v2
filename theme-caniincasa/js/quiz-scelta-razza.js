@@ -458,6 +458,11 @@
     function trackQuizCompletion() {
         // Only track if user is logged in (check by presence of user-specific element or global variable)
         // This will fail silently for non-logged users
+        if (typeof canincasaAjax === 'undefined') {
+            console.log('canincasaAjax not defined');
+            return;
+        }
+
         $.ajax({
             url: canincasaAjax.ajaxurl,
             type: 'POST',
@@ -481,6 +486,11 @@
      * Email Results
      */
     function emailResults() {
+        if (typeof canincasaAjax === 'undefined') {
+            alert('❌ Errore: configurazione mancante. Ricarica la pagina.');
+            return;
+        }
+
         if (currentResults.length === 0) {
             alert('Nessun risultato da inviare');
             return;
@@ -517,6 +527,11 @@
      * Download PDF
      */
     function downloadPDF() {
+        if (typeof canincasaAjax === 'undefined') {
+            alert('❌ Errore: configurazione mancante. Ricarica la pagina.');
+            return;
+        }
+
         if (currentResults.length === 0) {
             alert('Nessun risultato da scaricare');
             return;

@@ -80,7 +80,7 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
 }
 
 .primary-menu li {
@@ -166,19 +166,110 @@
     }
 }
 
+/* Header User Actions */
+.header-user-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.user-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--text);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-base);
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
+.user-link .icon {
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+.user-link:hover {
+    color: var(--primary);
+    background-color: var(--bg-secondary);
+}
+
+.user-link.user-register {
+    background-color: var(--primary);
+    color: white;
+    font-weight: 600;
+}
+
+.user-link.user-register:hover {
+    background-color: var(--primary-dark);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.user-link.user-dashboard {
+    background-color: var(--bg-secondary);
+}
+
+.user-link.user-logout {
+    color: var(--text-light);
+}
+
+.user-link.user-logout:hover {
+    color: var(--danger, #dc3545);
+}
+
+/* Responsive User Actions */
+@media (max-width: 767px) {
+    .header-user-actions {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: 0;
+        flex-direction: column;
+        background-color: var(--bg);
+        box-shadow: var(--shadow-lg);
+        padding: var(--spacing-md);
+        margin-top: var(--spacing-sm);
+        display: none;
+        z-index: 999;
+    }
+
+    .header-user-actions.active {
+        display: flex;
+    }
+
+    .user-link {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 991px) {
+    .user-link .text {
+        display: none;
+    }
+
+    .user-link .icon {
+        font-size: 1.5em;
+    }
+}
+
+@media (min-width: 992px) {
+    .user-link .icon {
+        font-size: 1.1em;
+    }
+}
+
 /* ==========================================================================
    Main Content
    ========================================================================== */
 
 .site-main {
-    padding: var(--spacing-3xl) 0;
+    padding: 0 0 var(--spacing-3xl) 0;
     min-height: 60vh;
-}
-
-/* Remove top padding on homepage */
-.home .site-main,
-.page-template-default.home .site-main {
-    padding-top: 0;
 }
 
 .content-area {
@@ -412,6 +503,182 @@
     background-color: #d1ecf1;
     border: 1px solid #bee5eb;
     color: #0c5460;
+}
+
+/* ==========================================================================
+   Archive Layouts
+   ========================================================================== */
+
+.archive-layout {
+    display: block;
+}
+
+.archive-layout--with-filters {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.archive-filters {
+    position: sticky;
+    top: 20px;
+}
+
+.filters-sticky {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filters-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 1.25rem 0;
+    color: var(--text);
+}
+
+.archive-content {
+    min-width: 0; /* Prevents grid blowout */
+}
+
+/* Responsive: Stack on mobile */
+@media (max-width: 991px) {
+    .archive-layout--with-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .archive-filters {
+        position: static;
+        margin-bottom: 2rem;
+    }
+}
+
+/* ==========================================================================
+   Single Post Layouts
+   ========================================================================== */
+
+/* Generic layout for all single post types */
+.cucciolata-single__layout,
+.allevamento-single__layout,
+.dogsitter-single__layout,
+.canile-single__layout,
+.centro-single__layout,
+.pensione-single__layout,
+.veterinario-single__layout,
+.patologia-single__layout,
+.blog-single__layout,
+.razza-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+.cucciolata-single__content,
+.allevamento-single__content,
+.dogsitter-single__content,
+.canile-single__content,
+.centro-single__content,
+.pensione-single__content,
+.veterinario-single__content,
+.patologia-single__content,
+.blog-single__content,
+.razza-content {
+    min-width: 0; /* Prevents grid blowout */
+}
+
+.cucciolata-single__sidebar,
+.allevamento-single__sidebar,
+.dogsitter-single__sidebar,
+.canile-single__sidebar,
+.centro-single__sidebar,
+.pensione-single__sidebar,
+.veterinario-single__sidebar,
+.patologia-single__sidebar,
+.blog-single__sidebar,
+.razza-sidebar {
+    position: sticky;
+    top: 20px;
+}
+
+/* Responsive: Stack on mobile only (768px and below) */
+@media (max-width: 768px) {
+    .cucciolata-single__layout,
+    .allevamento-single__layout,
+    .dogsitter-single__layout,
+    .canile-single__layout,
+    .centro-single__layout,
+    .pensione-single__layout,
+    .veterinario-single__layout,
+    .patologia-single__layout,
+    .blog-single__layout,
+    .razza-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .cucciolata-single__sidebar,
+    .allevamento-single__sidebar,
+    .dogsitter-single__sidebar,
+    .canile-single__sidebar,
+    .centro-single__sidebar,
+    .pensione-single__sidebar,
+    .veterinario-single__sidebar,
+    .patologia-single__sidebar,
+    .blog-single__sidebar,
+    .razza-sidebar {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+/* ==========================================================================
+   Annunci Badges
+   ========================================================================== */
+
+.card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge--offerta {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.badge--ricerca {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.badge--available {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.annuncio-tipo-badge {
+    margin-bottom: 1rem;
+}
+
+.annuncio-tipo-badge .badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
 }
 
 /* ==========================================================================

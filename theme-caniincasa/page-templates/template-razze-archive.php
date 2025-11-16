@@ -12,21 +12,16 @@ get_header();
 
 <main id="main-content" class="site-main page-razze-archive">
 
+    <?php
+    // Hero Section
+    caniincasa_page_hero( array(
+        'subtitle' => 'Razze di Cani',
+    ) );
+    ?>
+
     <div class="container">
 
         <?php caniincasa_breadcrumbs(); ?>
-
-        <!-- Hero Section -->
-        <div class="razze-hero">
-            <h1 class="page-title">
-                <?php echo esc_html( get_the_title() ); ?>
-            </h1>
-            <?php if ( get_the_content() ): ?>
-                <div class="page-intro">
-                    <?php the_content(); ?>
-                </div>
-            <?php endif; ?>
-        </div>
 
         <!-- Filters & Results Layout -->
         <div class="razze-layout">
@@ -56,59 +51,20 @@ get_header();
                     >
                 </div>
 
-                <!-- Size Filter -->
-                <div class="filter-group">
-                    <label class="filter-label">
-                        <span class="label-icon">📏</span>
-                        Dimensione
-                    </label>
-                    <div class="filter-options">
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="size" value="piccola" class="filter-input">
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-label">Piccola</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="size" value="media" class="filter-input">
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-label">Media</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="size" value="grande" class="filter-input">
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-label">Grande</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" name="size" value="gigante" class="filter-input">
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-label">Gigante</span>
-                        </label>
-                    </div>
-                </div>
-
                 <!-- Energy Level Filter -->
                 <div class="filter-group">
                     <label class="filter-label">
                         <span class="label-icon">⚡</span>
                         Livello di Energia
                     </label>
-                    <div class="filter-range">
-                        <input
-                            type="range"
-                            id="filter-energy"
-                            name="energia"
-                            min="0"
-                            max="5"
-                            step="0.5"
-                            value="0"
-                            class="range-slider"
-                        >
-                        <div class="range-labels">
-                            <span class="range-min">Basso</span>
-                            <span class="range-value" id="energy-value">Tutti</span>
-                            <span class="range-max">Alto</span>
-                        </div>
-                    </div>
+                    <select id="filter-energy" name="energia" class="filter-select">
+                        <option value="0">Tutti</option>
+                        <option value="1">Basso</option>
+                        <option value="2">Scarso</option>
+                        <option value="3">Medio</option>
+                        <option value="4">Buono</option>
+                        <option value="5">Ottimo</option>
+                    </select>
                 </div>
 
                 <!-- Apartment Friendly Filter -->
@@ -117,23 +73,62 @@ get_header();
                         <span class="label-icon">🏠</span>
                         Adatto ad Appartamento
                     </label>
-                    <div class="filter-range">
-                        <input
-                            type="range"
-                            id="filter-apartment"
-                            name="appartamento"
-                            min="0"
-                            max="5"
-                            step="0.5"
-                            value="0"
-                            class="range-slider"
-                        >
-                        <div class="range-labels">
-                            <span class="range-min">No</span>
-                            <span class="range-value" id="apartment-value">Tutti</span>
-                            <span class="range-max">Ideale</span>
-                        </div>
-                    </div>
+                    <select id="filter-apartment" name="appartamento" class="filter-select">
+                        <option value="0">Tutti</option>
+                        <option value="1">Basso</option>
+                        <option value="2">Scarso</option>
+                        <option value="3">Medio</option>
+                        <option value="4">Buono</option>
+                        <option value="5">Ottimo</option>
+                    </select>
+                </div>
+
+                <!-- Affettuosità Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <span class="label-icon">❤️</span>
+                        Affettuosità
+                    </label>
+                    <select id="filter-affection" name="affettuosita" class="filter-select">
+                        <option value="0">Tutti</option>
+                        <option value="1">Basso</option>
+                        <option value="2">Scarso</option>
+                        <option value="3">Medio</option>
+                        <option value="4">Buono</option>
+                        <option value="5">Ottimo</option>
+                    </select>
+                </div>
+
+                <!-- Tolleranza verso Estranei Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <span class="label-icon">👥</span>
+                        Tolleranza verso Estranei
+                    </label>
+                    <select id="filter-strangers" name="tolleranza_estranei" class="filter-select">
+                        <option value="0">Tutti</option>
+                        <option value="1">Basso</option>
+                        <option value="2">Scarso</option>
+                        <option value="3">Medio</option>
+                        <option value="4">Buono</option>
+                        <option value="5">Ottimo</option>
+                    </select>
+                </div>
+
+                <!-- Vocalità Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <span class="label-icon">🔊</span>
+                        Vocalità
+                    </label>
+                    <select id="filter-vocality" name="vocalita" class="filter-select">
+                        <option value="0">Tutti</option>
+                        <option value="1">Basso</option>
+                        <option value="2">Scarso</option>
+                        <option value="3">Medio</option>
+                        <option value="4">Buono</option>
+                        <option value="5">Ottimo</option>
+                    </select>
                 </div>
 
                 <!-- Kids Friendly Filter -->
@@ -142,23 +137,14 @@ get_header();
                         <span class="label-icon">👶</span>
                         Compatibile con Bambini
                     </label>
-                    <div class="filter-range">
-                        <input
-                            type="range"
-                            id="filter-kids"
-                            name="bambini"
-                            min="0"
-                            max="5"
-                            step="0.5"
-                            value="0"
-                            class="range-slider"
-                        >
-                        <div class="range-labels">
-                            <span class="range-min">No</span>
-                            <span class="range-value" id="kids-value">Tutti</span>
-                            <span class="range-max">Ottimo</span>
-                        </div>
-                    </div>
+                    <select id="filter-kids" name="bambini" class="filter-select">
+                        <option value="0">Tutti</option>
+                        <option value="1">Basso</option>
+                        <option value="2">Scarso</option>
+                        <option value="3">Medio</option>
+                        <option value="4">Buono</option>
+                        <option value="5">Ottimo</option>
+                    </select>
                 </div>
 
                 <!-- Experience Level Filter -->
@@ -167,23 +153,14 @@ get_header();
                         <span class="label-icon">🎓</span>
                         Esperienza Richiesta
                     </label>
-                    <div class="filter-range">
-                        <input
-                            type="range"
-                            id="filter-experience"
-                            name="esperienza"
-                            min="0"
-                            max="5"
-                            step="0.5"
-                            value="5"
-                            class="range-slider"
-                        >
-                        <div class="range-labels">
-                            <span class="range-min">Principiante</span>
-                            <span class="range-value" id="experience-value">Tutti</span>
-                            <span class="range-max">Esperto</span>
-                        </div>
-                    </div>
+                    <select id="filter-experience" name="esperienza" class="filter-select">
+                        <option value="5">Tutti</option>
+                        <option value="1">Basso</option>
+                        <option value="2">Scarso</option>
+                        <option value="3">Medio</option>
+                        <option value="4">Buono</option>
+                        <option value="0">Ottimo</option>
+                    </select>
                 </div>
 
                 <!-- Sort Order -->

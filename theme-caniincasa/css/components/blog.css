@@ -11,7 +11,7 @@
    ========================================================================== */
 
 .single .site-main {
-    padding: var(--spacing-xl) 0;
+    padding: 0 0 var(--spacing-xl) 0;
 }
 
 .single-layout {
@@ -389,7 +389,7 @@
 
 .archive .site-main,
 .search .site-main {
-    padding: var(--spacing-xl) 0;
+    padding: 0 0 var(--spacing-xl) 0;
 }
 
 .archive-header,

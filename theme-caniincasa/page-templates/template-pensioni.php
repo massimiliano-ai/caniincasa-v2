@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Canili - Griglia
+ * Template Name: Pensioni per Cani - Griglia
  * Template Post Type: page
  *
  * @package CaninCasa
@@ -10,12 +10,12 @@
 get_header();
 ?>
 
-<main id="main-content" class="site-main page-canili">
+<main id="main-content" class="site-main page-pensioni">
 
     <?php
     // Hero Section
     caniincasa_page_hero( array(
-        'subtitle' => 'Canili',
+        'subtitle' => 'Pensioni per Cani',
     ) );
     ?>
 
@@ -29,43 +29,36 @@ get_header();
             <div class="filters-row">
                 <div class="filter-group">
                     <label for="filter-provincia">Provincia:</label>
-                    <input
-                        type="text"
-                        id="filter-provincia"
-                        class="filter-search"
-                        list="province-list"
-                        placeholder="Cerca provincia..."
-                        data-post-type="canili"
-                        autocomplete="off"
-                    >
-                    <datalist id="province-list">
+                    <select id="filter-provincia" class="filter-select" data-post-type="pensioni_per_cani">
+                        <option value="">Tutte le province</option>
                         <?php
-                        // Get all unique province values from ACF fields 'provincia_estesa' (fallback to 'provincia')
+                        // Get all unique province values from ACF field 'provincia'
                         global $wpdb;
                         $province_values = $wpdb->get_col( "
-                            SELECT DISTINCT COALESCE(NULLIF(pm1.meta_value, ''), pm2.meta_value) as provincia
-                            FROM {$wpdb->posts} p
-                            LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'provincia_estesa'
-                            LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'provincia'
-                            WHERE p.post_type = 'canili'
+                            SELECT DISTINCT meta_value
+                            FROM {$wpdb->postmeta} pm
+                            INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+                            WHERE pm.meta_key = 'provincia'
+                            AND pm.meta_value != ''
+                            AND p.post_type = 'pensioni_per_cani'
                             AND p.post_status = 'publish'
-                            AND (pm1.meta_value != '' OR pm2.meta_value != '')
-                            ORDER BY provincia ASC
+                            ORDER BY pm.meta_value ASC
                         " );
 
                         foreach ( $province_values as $provincia ):
-                            if ( ! empty( $provincia ) ):
                         ?>
                             <option value="<?php echo esc_attr( $provincia ); ?>">
-                        <?php endif; endforeach; ?>
-                    </datalist>
+                                <?php echo esc_html( $provincia ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <button id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
             </div>
         </div>
 
         <?php
-        // Query per tutti i canili
+        // Query per tutte le pensioni
         // For page templates, check both 'paged' and 'page' query vars
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
         if ( $paged < 1 ) {
@@ -76,7 +69,7 @@ get_header();
         }
 
         $args = array(
-            'post_type' => 'canili',
+            'post_type' => 'pensioni_per_cani',
             'post_status' => 'publish',
             'posts_per_page' => 12,
             'paged' => $paged,
@@ -84,8 +77,18 @@ get_header();
             'order' => 'ASC',
         );
 
-        $canili_query = new WP_Query( $args );
+        $pensioni_query = new WP_Query( $args );
         ?>
+
+        <!-- Results Count -->
+        <div class="results-info">
+            <p class="results-count">
+                Trovate <strong><?php echo $pensioni_query->found_posts; ?></strong> pensioni
+                <?php if ( $pensioni_query->max_num_pages > 1 ): ?>
+                    (Pagina <?php echo $paged; ?> di <?php echo $pensioni_query->max_num_pages; ?>)
+                <?php endif; ?>
+            </p>
+        </div>
 
         <!-- Loading Spinner -->
         <div id="loading-spinner" class="loading-spinner" style="display:none;">
@@ -93,22 +96,12 @@ get_header();
             <p>Caricamento...</p>
         </div>
 
-        <!-- Results Count -->
-        <div class="results-info">
-            <p class="results-count">
-                Trovati <strong><?php echo $canili_query->found_posts; ?></strong> canili
-                <?php if ( $canili_query->max_num_pages > 1 ): ?>
-                    (Pagina <?php echo $paged; ?> di <?php echo $canili_query->max_num_pages; ?>)
-                <?php endif; ?>
-            </p>
-        </div>
+        <?php if ( $pensioni_query->have_posts() ): ?>
 
-        <?php if ( $canili_query->have_posts() ): ?>
-
-            <!-- Canili Grid -->
+            <!-- Pensioni Grid -->
             <div class="items-grid" id="items-grid">
 
-                <?php while ( $canili_query->have_posts() ): $canili_query->the_post(); ?>
+                <?php while ( $pensioni_query->have_posts() ): $pensioni_query->the_post(); ?>
 
                     <div class="item-card">
 
@@ -134,20 +127,13 @@ get_header();
                             </h3>
 
                             <?php
-                            // Provincia (try taxonomy first, then ACF field)
+                            // Provincia
                             $province = wp_get_post_terms( get_the_ID(), 'provincia' );
-                            $provincia_text = get_field( 'provincia' ) ?: get_field( 'provincia_estesa' );
-
                             if ( ! empty( $province ) && ! is_wp_error( $province ) ):
                             ?>
                                 <div class="item-location">
                                     <span class="icon">📍</span>
                                     <span class="text"><?php echo esc_html( $province[0]->name ); ?></span>
-                                </div>
-                            <?php elseif ( $provincia_text ): ?>
-                                <div class="item-location">
-                                    <span class="icon">📍</span>
-                                    <span class="text"><?php echo esc_html( $provincia_text ); ?></span>
                                 </div>
                             <?php endif; ?>
 
@@ -180,17 +166,6 @@ get_header();
                                 </div>
                             <?php endif; ?>
 
-                            <?php
-                            // Riferimento
-                            $riferimento = get_field( 'riferimento' );
-                            if ( $riferimento ):
-                            ?>
-                                <div class="item-info">
-                                    <span class="icon">👤</span>
-                                    <span class="text"><strong>Riferimento:</strong> <?php echo esc_html( $riferimento ); ?></span>
-                                </div>
-                            <?php endif; ?>
-
                             <!-- View More Button -->
                             <a href="<?php the_permalink(); ?>" class="btn-view-more">
                                 Visualizza dettagli
@@ -205,11 +180,11 @@ get_header();
             </div>
 
             <!-- Pagination -->
-            <?php if ( $canili_query->max_num_pages > 1 ): ?>
+            <?php if ( $pensioni_query->max_num_pages > 1 ): ?>
                 <div class="pagination-wrapper">
                     <?php
                     echo caniincasa_get_pagination_with_filters( array(
-                        'total' => $canili_query->max_num_pages,
+                        'total' => $pensioni_query->max_num_pages,
                         'current' => max( 1, $paged ),
                     ) );
                     ?>
@@ -219,10 +194,10 @@ get_header();
         <?php else: ?>
 
             <!-- No Results -->
-            <div class="no-items">
-                <div class="no-items-icon">🏠</div>
-                <h3>Nessun canile trovato</h3>
-                <p>Non ci sono canili pubblicati al momento.</p>
+            <div class="no-items" id="no-items">
+                <div class="no-items-icon">🏨</div>
+                <h3>Nessuna pensione trovata</h3>
+                <p>Non ci sono pensioni pubblicate al momento.</p>
             </div>
 
         <?php endif; ?>

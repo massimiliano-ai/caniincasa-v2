@@ -10,17 +10,21 @@ get_header();
 ?>
 
 <main id="main-content" class="site-main">
-    <div class="container">
 
-        <?php caniincasa_breadcrumbs(); ?>
+    <?php while ( have_posts() ) : the_post(); ?>
 
-        <?php while ( have_posts() ) : the_post(); ?>
+        <?php
+        // Hero Section
+        caniincasa_page_hero( array(
+            'use_excerpt' => true,
+        ) );
+        ?>
+
+        <div class="container">
+
+            <?php caniincasa_breadcrumbs(); ?>
 
             <article id="post-<?php the_ID(); ?>" <?php post_class( 'page-content' ); ?>>
-
-                <header class="page-header">
-                    <h1 class="page-title"><?php the_title(); ?></h1>
-                </header>
 
                 <?php if ( has_post_thumbnail() ) : ?>
                     <div class="page-featured-image">
@@ -47,9 +51,10 @@ get_header();
 
             </article>
 
-        <?php endwhile; ?>
+        </div>
 
-    </div>
+    <?php endwhile; ?>
+
 </main>
 
 <?php get_footer(); ?>

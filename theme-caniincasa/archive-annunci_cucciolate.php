@@ -16,7 +16,7 @@ get_header();
 
         <header class="archive-header">
             <h1 class="archive-title">
-                <?php esc_html_e( 'Annunci Cucciolate', 'caniincasa' ); ?>
+                <?php esc_html_e( 'Annunci', 'caniincasa' ); ?>
             </h1>
             <p class="archive-description">
                 <?php esc_html_e( 'Trova cuccioli disponibili da allevamenti certificati. Scegli la razza e la zona che preferisci.', 'caniincasa' ); ?>
@@ -79,6 +79,20 @@ get_header();
                                 </select>
                             </div>
                         <?php endif; ?>
+
+                        <!-- Tipo Annuncio -->
+                        <div class="filter-group">
+                            <label for="filter-tipo"><?php esc_html_e( 'Tipo Annuncio', 'caniincasa' ); ?></label>
+                            <select id="filter-tipo" name="ricerca_offerta" class="form-control">
+                                <option value=""><?php esc_html_e( 'Tutti i tipi', 'caniincasa' ); ?></option>
+                                <option value="offerta" <?php selected( get_query_var( 'ricerca_offerta' ), 'offerta' ); ?>>
+                                    <?php esc_html_e( 'Offro cuccioli', 'caniincasa' ); ?>
+                                </option>
+                                <option value="ricerca" <?php selected( get_query_var( 'ricerca_offerta' ), 'ricerca' ); ?>>
+                                    <?php esc_html_e( 'Cerco cucciolo', 'caniincasa' ); ?>
+                                </option>
+                            </select>
+                        </div>
 
                         <!-- Disponibilità -->
                         <div class="filter-group">
@@ -209,7 +223,7 @@ get_header();
                             <?php
                             global $wp_query;
                             printf(
-                                esc_html( _n( '%d cucciolata trovata', '%d cucciolate trovate', $wp_query->found_posts, 'caniincasa' ) ),
+                                esc_html( _n( '%d annuncio trovato', '%d annunci trovati', $wp_query->found_posts, 'caniincasa' ) ),
                                 number_format_i18n( $wp_query->found_posts )
                             );
                             ?>
@@ -243,9 +257,20 @@ get_header();
                                 <?php endif; ?>
 
                                 <div class="card-content">
-                                    <?php if ( get_field( 'cuccioli_disponibili' ) ) : ?>
-                                        <span class="badge badge--available">✓ Disponibili</span>
-                                    <?php endif; ?>
+                                    <div class="card-badges">
+                                        <?php
+                                        $ricerca_offerta = get_field( 'ricerca_offerta' );
+                                        if ( $ricerca_offerta === 'offerta' ) :
+                                        ?>
+                                            <span class="badge badge--offerta">Offerta</span>
+                                        <?php elseif ( $ricerca_offerta === 'ricerca' ) : ?>
+                                            <span class="badge badge--ricerca">Ricerca</span>
+                                        <?php endif; ?>
+
+                                        <?php if ( get_field( 'cuccioli_disponibili' ) ) : ?>
+                                            <span class="badge badge--available">✓ Disponibili</span>
+                                        <?php endif; ?>
+                                    </div>
 
                                     <h3 class="card-title">
                                         <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
@@ -336,7 +361,7 @@ get_header();
 
                     <div class="no-results">
                         <div class="no-results__icon">🐶</div>
-                        <h2><?php esc_html_e( 'Nessuna cucciolata trovata', 'caniincasa' ); ?></h2>
+                        <h2><?php esc_html_e( 'Nessun annuncio trovato', 'caniincasa' ); ?></h2>
                         <p><?php esc_html_e( 'Prova a modificare i filtri o a cercare un\'altra razza o zona.', 'caniincasa' ); ?></p>
                     </div>
 

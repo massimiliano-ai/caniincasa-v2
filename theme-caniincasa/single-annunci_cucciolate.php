@@ -12,6 +12,13 @@ get_header();
 <main id="main-content" class="site-main">
     <?php while ( have_posts() ) : the_post(); ?>
 
+        <?php
+        // Hero Section
+        caniincasa_page_hero( array(
+            'subtitle' => 'Annuncio Cucciolata',
+        ) );
+        ?>
+
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'cucciolata-single' ); ?>>
 
             <?php caniincasa_breadcrumbs(); ?>
@@ -24,6 +31,20 @@ get_header();
 
                         <!-- Header -->
                         <header class="cucciolata-single__header">
+                            <?php
+                            // Tipo annuncio badge
+                            $ricerca_offerta = get_field( 'ricerca_offerta' );
+                            if ( $ricerca_offerta ) :
+                            ?>
+                                <div class="annuncio-tipo-badge">
+                                    <?php if ( $ricerca_offerta === 'offerta' ) : ?>
+                                        <span class="badge badge--offerta">Offro Cuccioli</span>
+                                    <?php else : ?>
+                                        <span class="badge badge--ricerca">Cerco Cucciolo</span>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+
                             <h1 class="cucciolata-single__title"><?php the_title(); ?></h1>
 
                             <?php
@@ -49,14 +70,18 @@ get_header();
                         <!-- Informazioni Cucciolata -->
                         <div class="cucciolata-info-grid">
                             <?php
+                            $ricerca_offerta = get_field( 'ricerca_offerta' );
                             $data_nascita = get_field( 'data_nascita' );
                             $numero_cuccioli = get_field( 'numero_cuccioli' );
+                            $numero_maschi = get_field( 'numero_maschi' );
+                            $numero_femmine = get_field( 'numero_femmine' );
                             $disponibilita_maschi = get_field( 'disponibilita_maschi' );
                             $disponibilita_femmine = get_field( 'disponibilita_femmine' );
                             $prezzo = get_field( 'prezzo' );
+                            $pedigree = get_field( 'pedigree' );
                             ?>
 
-                            <?php if ( $data_nascita ) : ?>
+                            <?php if ( $ricerca_offerta === 'offerta' && $data_nascita ) : ?>
                                 <div class="info-card">
                                     <div class="info-card__icon">📅</div>
                                     <div class="info-card__content">
@@ -66,37 +91,39 @@ get_header();
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ( $numero_cuccioli ) : ?>
+                            <?php if ( $ricerca_offerta === 'offerta' && ( $numero_maschi || $numero_femmine ) ) : ?>
                                 <div class="info-card">
                                     <div class="info-card__icon">🐕</div>
                                     <div class="info-card__content">
-                                        <div class="info-card__label"><?php esc_html_e( 'Numero Cuccioli', 'caniincasa' ); ?></div>
-                                        <div class="info-card__value"><?php echo esc_html( $numero_cuccioli ); ?></div>
+                                        <div class="info-card__label"><?php esc_html_e( 'Cuccioli', 'caniincasa' ); ?></div>
+                                        <div class="info-card__value">
+                                            <?php
+                                            $total = ( $numero_maschi ? $numero_maschi : 0 ) + ( $numero_femmine ? $numero_femmine : 0 );
+                                            echo esc_html( $total );
+                                            if ( $numero_maschi && $numero_femmine ) {
+                                                echo ' (' . $numero_maschi . '♂ / ' . $numero_femmine . '♀)';
+                                            } elseif ( $numero_maschi ) {
+                                                echo ' (' . $numero_maschi . '♂)';
+                                            } elseif ( $numero_femmine ) {
+                                                echo ' (' . $numero_femmine . '♀)';
+                                            }
+                                            ?>
+                                        </div>
                                     </div>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ( $disponibilita_maschi ) : ?>
+                            <?php if ( $ricerca_offerta === 'offerta' && $pedigree ) : ?>
                                 <div class="info-card">
-                                    <div class="info-card__icon">♂️</div>
+                                    <div class="info-card__icon">📄</div>
                                     <div class="info-card__content">
-                                        <div class="info-card__label"><?php esc_html_e( 'Maschi Disponibili', 'caniincasa' ); ?></div>
-                                        <div class="info-card__value"><?php echo esc_html( $disponibilita_maschi ); ?></div>
+                                        <div class="info-card__label"><?php esc_html_e( 'Pedigree', 'caniincasa' ); ?></div>
+                                        <div class="info-card__value"><?php echo esc_html( $pedigree === 'si' ? 'Sì' : 'No' ); ?></div>
                                     </div>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ( $disponibilita_femmine ) : ?>
-                                <div class="info-card">
-                                    <div class="info-card__icon">♀️</div>
-                                    <div class="info-card__content">
-                                        <div class="info-card__label"><?php esc_html_e( 'Femmine Disponibili', 'caniincasa' ); ?></div>
-                                        <div class="info-card__value"><?php echo esc_html( $disponibilita_femmine ); ?></div>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ( $prezzo ) : ?>
+                            <?php if ( $ricerca_offerta === 'offerta' && $prezzo ) : ?>
                                 <div class="info-card info-card--highlight">
                                     <div class="info-card__icon">💰</div>
                                     <div class="info-card__content">
@@ -209,7 +236,7 @@ get_header();
 
                         <!-- CTA Pubblica Annuncio -->
                         <div class="cta-card cta-card--small">
-                            <h4><?php esc_html_e( 'Hai una cucciolata?', 'caniincasa' ); ?></h4>
+                            <h4><?php esc_html_e( 'Hai un annuncio da pubblicare?', 'caniincasa' ); ?></h4>
                             <p><?php esc_html_e( 'Pubblica il tuo annuncio gratuitamente', 'caniincasa' ); ?></p>
                             <a href="<?php echo esc_url( home_url( '/contattaci/' ) ); ?>" class="btn btn-sm">
                                 <?php esc_html_e( 'Pubblica Annuncio', 'caniincasa' ); ?>
@@ -236,7 +263,7 @@ get_header();
                 ?>
                     <div class="related-posts">
                         <h2 class="related-posts__title">
-                            <?php esc_html_e( 'Altri Annunci di Cucciolate', 'caniincasa' ); ?>
+                            <?php esc_html_e( 'Altri Annunci', 'caniincasa' ); ?>
                         </h2>
                         <div class="grid grid-3">
                             <?php

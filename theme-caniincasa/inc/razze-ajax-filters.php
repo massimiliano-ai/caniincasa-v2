@@ -75,6 +75,9 @@ function caniincasa_filter_razze() {
     $sizes = isset( $_POST['sizes'] ) ? array_map( 'sanitize_text_field', $_POST['sizes'] ) : array();
     $energy = isset( $_POST['energy'] ) ? floatval( $_POST['energy'] ) : 0;
     $apartment = isset( $_POST['apartment'] ) ? floatval( $_POST['apartment'] ) : 0;
+    $affection = isset( $_POST['affection'] ) ? floatval( $_POST['affection'] ) : 0;
+    $strangers = isset( $_POST['strangers'] ) ? floatval( $_POST['strangers'] ) : 0;
+    $vocality = isset( $_POST['vocality'] ) ? floatval( $_POST['vocality'] ) : 0;
     $kids = isset( $_POST['kids'] ) ? floatval( $_POST['kids'] ) : 0;
     $experience = isset( $_POST['experience'] ) ? floatval( $_POST['experience'] ) : 0;
     $sort_by = isset( $_POST['sort_by'] ) ? sanitize_text_field( $_POST['sort_by'] ) : 'name-asc';
@@ -112,6 +115,36 @@ function caniincasa_filter_razze() {
         $meta_query[] = array(
             'key' => 'adattabilita_appartamento',
             'value' => $apartment,
+            'compare' => '>=',
+            'type' => 'DECIMAL',
+        );
+    }
+
+    // Filtro affettuosità
+    if ( $affection > 0 ) {
+        $meta_query[] = array(
+            'key' => 'affettuosita',
+            'value' => $affection,
+            'compare' => '>=',
+            'type' => 'DECIMAL',
+        );
+    }
+
+    // Filtro tolleranza verso estranei
+    if ( $strangers > 0 ) {
+        $meta_query[] = array(
+            'key' => 'tolleranza_estranei',
+            'value' => $strangers,
+            'compare' => '>=',
+            'type' => 'DECIMAL',
+        );
+    }
+
+    // Filtro vocalità
+    if ( $vocality > 0 ) {
+        $meta_query[] = array(
+            'key' => 'vocalita_e_predisposizione_ad_abbaiare',
+            'value' => $vocality,
             'compare' => '>=',
             'type' => 'DECIMAL',
         );

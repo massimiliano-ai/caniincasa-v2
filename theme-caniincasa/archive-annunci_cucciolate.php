@@ -75,7 +75,16 @@ get_header();
 
                             <!-- Badge Tipo Annuncio -->
                             <div class="annuncio-type-badge">
-                                <span class="badge badge-cucciolate">🐶 Cucciolata</span>
+                                <?php
+                                $ricerca_offerta = get_field( 'ricerca_offerta' );
+                                if ( $ricerca_offerta === 'offerta' ) :
+                                ?>
+                                    <span class="badge badge-offerta">💼 Offro Cuccioli</span>
+                                <?php elseif ( $ricerca_offerta === 'ricerca' ) : ?>
+                                    <span class="badge badge-ricerca">🔍 Cerco Cucciolo</span>
+                                <?php else : ?>
+                                    <span class="badge badge-cucciolate">🐶 Cucciolata</span>
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -128,10 +137,11 @@ get_header();
                                 // Razza
                                 $razza = get_field( 'razza' );
                                 if ( $razza ):
+                                    $razza_nome = is_object( $razza ) ? $razza->post_title : $razza;
                                 ?>
                                     <span class="meta-item">
                                         <span class="icon">🐕</span>
-                                        <span class="text"><?php echo esc_html( $razza ); ?></span>
+                                        <span class="text"><?php echo esc_html( $razza_nome ); ?></span>
                                     </span>
                                 <?php endif; ?>
                             </div>

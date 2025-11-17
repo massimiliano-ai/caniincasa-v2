@@ -21,9 +21,12 @@ get_header();
 
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'dogsitter-single' ); ?>>
 
-            <?php caniincasa_breadcrumbs(); ?>
-
             <div class="container">
+
+                <!-- Breadcrumbs Boxed -->
+                <div class="breadcrumbs-box">
+                    <?php caniincasa_breadcrumbs(); ?>
+                </div>
                 <div class="dogsitter-single__layout">
 
                     <!-- Main Content -->
@@ -44,58 +47,166 @@ get_header();
 
                         <div class="dogsitter-info-grid">
                             <?php
-                            $tariffa = get_field( 'tariffa_oraria' );
+                            $tariffe = get_field( 'tariffe' );
                             $esperienza = get_field( 'esperienza' );
-                            $disponibilita = get_field( 'disponibilita_oraria' );
+                            $disponibilita = get_field( 'disponibilita' );
+                            $servizi = get_field( 'servizi' );
+                            $taglie = get_field( 'taglie' );
+                            $comune = get_field( 'comune' );
+                            $zona = get_field( 'zona_disponibilita' );
+                            $province = wp_get_post_terms( get_the_ID(), 'provincia' );
+
+                            // Map esperienza labels
+                            $esperienza_labels = array(
+                                'meno-1' => 'Meno di 1 anno',
+                                '1-3' => '1-3 anni',
+                                '3-5' => '3-5 anni',
+                                '5-10' => '5-10 anni',
+                                'oltre-10' => 'Oltre 10 anni',
+                            );
                             ?>
 
-                            <?php if ( $tariffa ) : ?>
+                            <!-- Tariffa Oraria -->
+                            <?php if ( $tariffe ) : ?>
                                 <div class="info-card info-card--highlight">
                                     <div class="info-card__icon">💰</div>
                                     <div class="info-card__content">
                                         <div class="info-card__label"><?php esc_html_e( 'Tariffa Oraria', 'caniincasa' ); ?></div>
-                                        <div class="info-card__value"><?php echo '€ ' . esc_html( $tariffa ); ?>/h</div>
+                                        <div class="info-card__value"><?php echo '€ ' . esc_html( $tariffe ) . '/h'; ?></div>
                                     </div>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ( $disponibilita ) : ?>
+                            <!-- Esperienza -->
+                            <?php if ( $esperienza ) : ?>
                                 <div class="info-card">
-                                    <div class="info-card__icon">📅</div>
+                                    <div class="info-card__icon">⭐</div>
                                     <div class="info-card__content">
-                                        <div class="info-card__label"><?php esc_html_e( 'Disponibilità', 'caniincasa' ); ?></div>
-                                        <div class="info-card__value"><?php echo esc_html( $disponibilita ); ?></div>
+                                        <div class="info-card__label"><?php esc_html_e( 'Esperienza', 'caniincasa' ); ?></div>
+                                        <div class="info-card__value">
+                                            <?php echo esc_html( isset( $esperienza_labels[$esperienza] ) ? $esperienza_labels[$esperienza] : $esperienza ); ?>
+                                        </div>
                                     </div>
                                 </div>
                             <?php endif; ?>
+
+                            <!-- Comune -->
+                            <?php if ( $comune ) : ?>
+                                <div class="info-card">
+                                    <div class="info-card__icon">📍</div>
+                                    <div class="info-card__content">
+                                        <div class="info-card__label"><?php esc_html_e( 'Comune', 'caniincasa' ); ?></div>
+                                        <div class="info-card__value"><?php echo esc_html( $comune ); ?></div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Provincia -->
+                            <?php if ( ! empty( $province ) && ! is_wp_error( $province ) ) : ?>
+                                <div class="info-card">
+                                    <div class="info-card__icon">🗺️</div>
+                                    <div class="info-card__content">
+                                        <div class="info-card__label"><?php esc_html_e( 'Provincia', 'caniincasa' ); ?></div>
+                                        <div class="info-card__value"><?php echo esc_html( $province[0]->name ); ?></div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Zona Disponibilità -->
+                            <?php if ( $zona ) : ?>
+                                <div class="info-card">
+                                    <div class="info-card__icon">🌍</div>
+                                    <div class="info-card__content">
+                                        <div class="info-card__label"><?php esc_html_e( 'Zona di Servizio', 'caniincasa' ); ?></div>
+                                        <div class="info-card__value"><?php echo esc_html( $zona ); ?></div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Data Pubblicazione -->
+                            <div class="info-card">
+                                <div class="info-card__icon">📆</div>
+                                <div class="info-card__content">
+                                    <div class="info-card__label"><?php esc_html_e( 'Pubblicato il', 'caniincasa' ); ?></div>
+                                    <div class="info-card__value"><?php echo get_the_date( 'd/m/Y' ); ?></div>
+                                </div>
+                            </div>
                         </div>
 
-                        <?php if ( $esperienza ) : ?>
+                        <!-- Disponibilità Oraria -->
+                        <?php if ( $disponibilita && is_array( $disponibilita ) && ! empty( $disponibilita ) ) : ?>
                             <div class="dogsitter-section">
-                                <h2><?php esc_html_e( 'Esperienza', 'caniincasa' ); ?></h2>
-                                <div class="dogsitter-content">
-                                    <?php echo wpautop( esc_html( $esperienza ) ); ?>
+                                <h2><?php esc_html_e( 'Disponibilità Oraria', 'caniincasa' ); ?></h2>
+                                <div class="badges-list">
+                                    <?php
+                                    $disp_labels = array(
+                                        'mattina' => '🌅 Mattina',
+                                        'pomeriggio' => '☀️ Pomeriggio',
+                                        'sera' => '🌆 Sera',
+                                        'weekend' => '📅 Weekend',
+                                        'notturno' => '🌙 Notturno',
+                                    );
+                                    foreach ( $disponibilita as $disp ) :
+                                    ?>
+                                        <span class="badge badge-info">
+                                            <?php echo esc_html( isset( $disp_labels[$disp] ) ? $disp_labels[$disp] : $disp ); ?>
+                                        </span>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
                         <?php endif; ?>
 
-                        <div class="dogsitter-single__description">
-                            <?php the_content(); ?>
-                        </div>
-
-                        <?php
-                        $servizi = get_field( 'servizi_offerti' );
-                        if ( $servizi && is_array( $servizi ) ) :
-                        ?>
+                        <!-- Servizi Offerti -->
+                        <?php if ( $servizi && is_array( $servizi ) && ! empty( $servizi ) ) : ?>
                             <div class="servizi-section">
                                 <h2><?php esc_html_e( 'Servizi Offerti', 'caniincasa' ); ?></h2>
                                 <ul class="servizi-list">
-                                    <?php foreach ( $servizi as $servizio ) : ?>
-                                        <li><span class="checkmark">✓</span> <?php echo esc_html( $servizio ); ?></li>
+                                    <?php
+                                    $servizi_labels = array(
+                                        'passeggiate' => 'Passeggiate',
+                                        'pensione' => 'Pensione a casa mia',
+                                        'domicilio' => 'Assistenza a domicilio',
+                                        'toelettatura' => 'Toelettatura base',
+                                        'trasporto' => 'Trasporto',
+                                        'addestramento' => 'Addestramento base',
+                                    );
+                                    foreach ( $servizi as $servizio ) :
+                                    ?>
+                                        <li>
+                                            <span class="checkmark">✓</span>
+                                            <?php echo esc_html( isset( $servizi_labels[$servizio] ) ? $servizi_labels[$servizio] : $servizio ); ?>
+                                        </li>
                                     <?php endforeach; ?>
                                 </ul>
                             </div>
                         <?php endif; ?>
+
+                        <!-- Taglie Accettate -->
+                        <?php if ( $taglie && is_array( $taglie ) && ! empty( $taglie ) ) : ?>
+                            <div class="dogsitter-section">
+                                <h2><?php esc_html_e( 'Taglie Accettate', 'caniincasa' ); ?></h2>
+                                <div class="badges-list">
+                                    <?php
+                                    $taglie_labels = array(
+                                        'piccola' => '🐕 Piccola (fino a 10kg)',
+                                        'media' => '🐕 Media (10-25kg)',
+                                        'grande' => '🐕 Grande (25-45kg)',
+                                        'gigante' => '🐕 Gigante (oltre 45kg)',
+                                    );
+                                    foreach ( $taglie as $taglia ) :
+                                    ?>
+                                        <span class="badge badge-success">
+                                            <?php echo esc_html( isset( $taglie_labels[$taglia] ) ? $taglie_labels[$taglia] : $taglia ); ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Descrizione -->
+                        <div class="dogsitter-single__description">
+                            <?php the_content(); ?>
+                        </div>
 
                     </div><!-- .dogsitter-single__content -->
 

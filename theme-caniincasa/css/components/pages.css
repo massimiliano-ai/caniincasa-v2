@@ -481,3 +481,223 @@ article ul {
         width: 100%;
     }
 }
+
+/* ==========================================================================
+   Breadcrumbs Box - Annunci Single Pages
+   ========================================================================== */
+
+.breadcrumbs-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.breadcrumbs-box .breadcrumbs {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Badge Styles for Annunci
+   ========================================================================== */
+
+.badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.badge-offerta {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.badge-ricerca {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.badge-cucciolate {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.badge-dogsitter {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.badge-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+/* Badge Lists */
+.badges-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.badges-list .badge {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Info Cards - Enhanced for All Data
+   ========================================================================== */
+
+.cucciolata-info-grid,
+.dogsitter-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+    margin: 2rem 0;
+}
+
+.info-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-color: #d1d5db;
+}
+
+.info-card__icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.info-card__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.info-card__label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.35rem;
+}
+
+.info-card__value {
+    font-size: 1.1rem;
+    color: #111827;
+    font-weight: 600;
+    word-wrap: break-word;
+}
+
+.info-card__value a {
+    color: #3b82f6;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.info-card__value a:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.info-card--highlight {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-color: #fbbf24;
+}
+
+.info-card--highlight .info-card__value {
+    color: #92400e;
+    font-size: 1.35rem;
+}
+
+/* Dogsitter Sections */
+.dogsitter-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.dogsitter-section h2 {
+    font-size: 1.25rem;
+    color: #111827;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* Services List */
+.servizi-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.servizi-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.servizi-list .checkmark {
+    color: #10b981;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cucciolata-info-grid,
+    .dogsitter-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .badges-list {
+        flex-direction: column;
+    }
+
+    .servizi-list {
+        grid-template-columns: 1fr;
+    }
+}

@@ -190,19 +190,19 @@ get_header();
 
                                     <!-- Location -->
                                     <?php
-                                    $des_localita = get_field( 'DesLocalita' );
-                                    $cod_provincia = get_field( 'CodProvincia' );
+                                    $localita = get_post_meta( get_the_ID(), 'localita', true );
+                                    $provincia = get_post_meta( get_the_ID(), 'provincia_', true );
 
                                     $location_parts = array();
 
-                                    // DesLocalita
-                                    if ( $des_localita ) {
-                                        $location_parts[] = $des_localita;
+                                    // Localita
+                                    if ( $localita ) {
+                                        $location_parts[] = $localita;
                                     }
 
-                                    // CodProvincia
-                                    if ( $cod_provincia ) {
-                                        $location_parts[] = '(' . $cod_provincia . ')';
+                                    // Provincia
+                                    if ( $provincia ) {
+                                        $location_parts[] = '(' . $provincia . ')';
                                     }
 
                                     if ( ! empty( $location_parts ) ) :

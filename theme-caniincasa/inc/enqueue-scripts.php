@@ -181,7 +181,9 @@ function caniincasa_enqueue_page_templates_grid() {
          is_page_template( 'page-templates/template-veterinari.php' ) ||
          is_page_template( 'page-templates/template-centri-cinofili.php' ) ||
          is_page_template( 'page-templates/template-pensioni.php' ) ||
-         is_page_template( 'page-templates/template-annunci.php' ) ) {
+         is_page_template( 'page-templates/template-annunci.php' ) ||
+         is_post_type_archive( 'annunci_cucciolate' ) ||
+         is_post_type_archive( 'annunci_dogsitter' ) ) {
 
         // Page templates grid CSS
         wp_enqueue_style(

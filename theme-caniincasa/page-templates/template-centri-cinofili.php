@@ -98,6 +98,13 @@ get_header();
 
         <?php if ( $centri_query->have_posts() ): ?>
 
+            <?php
+            // Pre-load caches for better performance
+            $post_ids = wp_list_pluck( $centri_query->posts, 'ID' );
+            update_post_caches( $centri_query->posts, 'centri_cinofili', true, true );
+            update_object_term_cache( $post_ids, 'centri_cinofili' );
+            ?>
+
             <!-- Centri Cinofili Grid -->
             <div class="items-grid" id="items-grid">
 

@@ -105,6 +105,13 @@ get_header();
 
         <?php if ( $canili_query->have_posts() ): ?>
 
+            <?php
+            // Pre-load caches for better performance
+            $post_ids = wp_list_pluck( $canili_query->posts, 'ID' );
+            update_post_caches( $canili_query->posts, 'canili', true, true );
+            update_object_term_cache( $post_ids, 'canili' );
+            ?>
+
             <!-- Canili Grid -->
             <div class="items-grid" id="items-grid">
 

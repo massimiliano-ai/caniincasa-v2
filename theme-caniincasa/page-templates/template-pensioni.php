@@ -98,6 +98,13 @@ get_header();
 
         <?php if ( $pensioni_query->have_posts() ): ?>
 
+            <?php
+            // Pre-load caches for better performance
+            $post_ids = wp_list_pluck( $pensioni_query->posts, 'ID' );
+            update_post_caches( $pensioni_query->posts, 'pensioni_per_cani', true, true );
+            update_object_term_cache( $post_ids, 'pensioni_per_cani' );
+            ?>
+
             <!-- Pensioni Grid -->
             <div class="items-grid" id="items-grid">
 

@@ -182,6 +182,13 @@ get_header();
 
         <?php if ( $veterinari_query->have_posts() ): ?>
 
+            <?php
+            // Pre-load caches for better performance
+            $post_ids = wp_list_pluck( $veterinari_query->posts, 'ID' );
+            update_post_caches( $veterinari_query->posts, 'struttureveterinarie', true, true );
+            update_object_term_cache( $post_ids, 'struttureveterinarie' );
+            ?>
+
             <!-- Veterinari Grid -->
             <div class="items-grid" id="items-grid">
 

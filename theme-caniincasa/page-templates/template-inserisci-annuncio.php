@@ -115,17 +115,31 @@ get_header();
                             </label>
                             <select id="ricerca-offerta" name="ricerca_offerta" class="form-control" required>
                                 <option value="">Seleziona...</option>
-                                <option value="offerta">Offro cuccioli</option>
-                                <option value="ricerca">Cerco cucciolo</option>
+                                <option value="cerco-cucciolo">Cerco cucciolo</option>
+                                <option value="offro-cucciolo">Offro cucciolo</option>
+                                <option value="cerco-adulto">Cerco adulto</option>
+                                <option value="offro-adulto">Offro adulto</option>
                             </select>
                         </div>
 
-                        <!-- Razza -->
+                        <!-- Tipo Cane (Meticcio/Razza) -->
                         <div class="form-group">
+                            <label for="tipo-cane">
+                                Tipo Cane <span class="required">*</span>
+                            </label>
+                            <select id="tipo-cane" name="tipo_cane" class="form-control" required>
+                                <option value="">Seleziona...</option>
+                                <option value="meticcio">Meticcio</option>
+                                <option value="razza">Razza</option>
+                            </select>
+                        </div>
+
+                        <!-- Razza (mostra solo se selezionato "Razza") -->
+                        <div class="form-group" id="razza-group" style="display: none;">
                             <label for="razza-cucciolata">
                                 Razza <span class="required">*</span>
                             </label>
-                            <select id="razza-cucciolata" name="razza" class="form-control" required>
+                            <select id="razza-cucciolata" name="razza" class="form-control">
                                 <option value="">Seleziona razza...</option>
                                 <?php
                                 // Get all razze
@@ -184,23 +198,6 @@ get_header();
                                 placeholder="Descrivi i cuccioli, le caratteristiche, i genitori, eventuali certificazioni, ecc."
                                 required
                             ></textarea>
-                        </div>
-
-                        <!-- Prezzo -->
-                        <div class="form-group">
-                            <label for="prezzo-cucciolata">
-                                Prezzo (€)
-                            </label>
-                            <input
-                                type="number"
-                                id="prezzo-cucciolata"
-                                name="prezzo"
-                                class="form-control"
-                                min="0"
-                                step="10"
-                                placeholder="Es: 800"
-                            >
-                            <small class="form-text">Lascia vuoto se da concordare</small>
                         </div>
 
                         <!-- Immagine -->
@@ -438,6 +435,22 @@ jQuery(document).ready(function($) {
         $('.annuncio-form').fadeOut(300, function() {
             $('.tipo-annuncio-selector').fadeIn(300);
         });
+    });
+
+    // Mostra/nascondi campo razza in base alla selezione meticcio/razza
+    $('#tipo-cane').on('change', function() {
+        var tipoValue = $(this).val();
+        var $razzaGroup = $('#razza-group');
+        var $razzaSelect = $('#razza-cucciolata');
+
+        if (tipoValue === 'razza') {
+            $razzaGroup.slideDown(300);
+            $razzaSelect.prop('required', true);
+        } else {
+            $razzaGroup.slideUp(300);
+            $razzaSelect.prop('required', false);
+            $razzaSelect.val('');
+        }
     });
 
     // Submit Cucciolata

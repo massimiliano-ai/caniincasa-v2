@@ -23,68 +23,6 @@ get_header();
 
         <?php caniincasa_breadcrumbs(); ?>
 
-        <!-- Filtri -->
-        <div class="filters-wrapper">
-            <h3 class="filters-title">Filtra annunci</h3>
-            <form id="filtri-annunci-form" method="GET">
-                <div class="filters-row">
-                    <!-- Tipo Annuncio -->
-                    <div class="filter-group">
-                        <label for="filter-tipo">Tipo:</label>
-                        <select id="filter-tipo" name="filter_tipo" class="filter-select">
-                            <option value="">Tutti gli annunci</option>
-                            <option value="cucciolate" <?php selected( isset( $_GET['filter_tipo'] ) ? $_GET['filter_tipo'] : '', 'cucciolate' ); ?>>
-                                Cucciolate
-                            </option>
-                            <option value="dogsitter" <?php selected( isset( $_GET['filter_tipo'] ) ? $_GET['filter_tipo'] : '', 'dogsitter' ); ?>>
-                                Dogsitter
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Provincia -->
-                    <div class="filter-group">
-                        <label for="filter-provincia">Provincia:</label>
-                        <input
-                            type="text"
-                            id="filter-provincia"
-                            name="filter_provincia"
-                            class="filter-search"
-                            list="province-list-annunci"
-                            placeholder="Cerca provincia..."
-                            value="<?php echo esc_attr( isset( $_GET['filter_provincia'] ) ? $_GET['filter_provincia'] : '' ); ?>"
-                            autocomplete="off"
-                        >
-                        <datalist id="province-list-annunci">
-                            <?php
-                            // Get all unique provinces from both post types
-                            $province_terms = get_terms( array(
-                                'taxonomy' => 'provincia',
-                                'hide_empty' => true,
-                                'orderby' => 'name',
-                                'order' => 'ASC',
-                            ) );
-
-                            if ( ! empty( $province_terms ) && ! is_wp_error( $province_terms ) ):
-                                foreach ( $province_terms as $provincia ):
-                            ?>
-                                <option value="<?php echo esc_attr( $provincia->name ); ?>">
-                            <?php endforeach; endif; ?>
-                        </datalist>
-                    </div>
-
-                    <!-- Pulsanti -->
-                    <div class="filter-group">
-                        <button type="submit" class="btn btn-primary">Filtra</button>
-                    </div>
-
-                    <div class="filter-group">
-                        <button type="button" id="reset-filters" class="btn btn-outline">Ripristina filtri</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
         <?php
         // Query per tutti gli annunci
         // For page templates, check both 'paged' and 'page' query vars
@@ -96,15 +34,8 @@ get_header();
             $paged = 1;
         }
 
-        // Determine post types based on filter
+        // Query per tutti i tipi di annunci
         $post_types = array( 'annunci_cucciolate', 'annunci_dogsitter' );
-        if ( isset( $_GET['filter_tipo'] ) && ! empty( $_GET['filter_tipo'] ) ) {
-            if ( $_GET['filter_tipo'] === 'cucciolate' ) {
-                $post_types = array( 'annunci_cucciolate' );
-            } elseif ( $_GET['filter_tipo'] === 'dogsitter' ) {
-                $post_types = array( 'annunci_dogsitter' );
-            }
-        }
 
         $args = array(
             'post_type' => $post_types,
@@ -114,22 +45,6 @@ get_header();
             'orderby' => 'date',
             'order' => 'DESC',
         );
-
-        // Apply filters
-        $tax_query = array();
-
-        // Filter by provincia (taxonomy)
-        if ( isset( $_GET['filter_provincia'] ) && ! empty( $_GET['filter_provincia'] ) ) {
-            $tax_query[] = array(
-                'taxonomy' => 'provincia',
-                'field' => 'name',
-                'terms' => sanitize_text_field( $_GET['filter_provincia'] )
-            );
-        }
-
-        if ( ! empty( $tax_query ) ) {
-            $args['tax_query'] = $tax_query;
-        }
 
         $annunci_query = new WP_Query( $args );
 
@@ -269,7 +184,7 @@ get_header();
                     echo caniincasa_get_pagination_with_filters( array(
                         'total' => $annunci_query->max_num_pages,
                         'current' => max( 1, $paged ),
-                    ), array( 'filter_tipo', 'filter_provincia' ) );
+                    ), array() );
                     ?>
                 </div>
             <?php endif; ?>

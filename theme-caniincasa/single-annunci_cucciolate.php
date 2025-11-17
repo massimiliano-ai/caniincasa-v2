@@ -271,6 +271,52 @@ get_header();
                             </div>
                         <?php endif; ?>
 
+                        <!-- Form Contatto -->
+                        <?php if ( is_user_logged_in() && get_the_author_meta( 'ID' ) != get_current_user_id() ) : ?>
+                            <div class="annuncio-contact-section">
+                                <h2 class="section-title">💬 Contatta il Proprietario</h2>
+                                <p class="contact-intro">Sei interessato? Invia un messaggio al proprietario dell'annuncio.</p>
+
+                                <form id="contact-annuncio-form" class="contact-form">
+                                    <?php wp_nonce_field( 'caniincasa_send_message', 'message_nonce' ); ?>
+                                    <input type="hidden" name="annuncio_id" value="<?php echo get_the_ID(); ?>">
+                                    <input type="hidden" name="tipo_annuncio" value="annunci_cucciolate">
+
+                                    <div class="form-group">
+                                        <label for="messaggio">Il Tuo Messaggio *</label>
+                                        <textarea id="messaggio" name="messaggio" rows="6" required
+                                                  placeholder="Scrivi qui il tuo messaggio..."></textarea>
+                                        <small class="form-help">Descrivi il tuo interesse e fai le tue domande</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="telefono">Telefono di Contatto (opzionale)</label>
+                                        <input type="tel" id="telefono" name="telefono"
+                                               placeholder="Es: 333 1234567">
+                                        <small class="form-help">Se vuoi essere ricontattato telefonicamente</small>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            📤 Invia Messaggio
+                                        </button>
+                                    </div>
+
+                                    <div id="contact-response" class="form-response"></div>
+                                </form>
+                            </div>
+                        <?php elseif ( ! is_user_logged_in() ) : ?>
+                            <div class="annuncio-contact-section">
+                                <div class="login-prompt">
+                                    <h3>💬 Vuoi contattare il proprietario?</h3>
+                                    <p>Per inviare un messaggio devi essere registrato e loggato.</p>
+                                    <a href="<?php echo wp_login_url( get_permalink() ); ?>" class="btn btn-primary">
+                                        Accedi o Registrati
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
                     </div><!-- .cucciolata-single__content -->
 
                     <!-- Sidebar -->

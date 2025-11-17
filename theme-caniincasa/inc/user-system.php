@@ -926,3 +926,103 @@ function caniincasa_ajax_submit_segnalazione() {
 
     wp_send_json_success( array( 'message' => 'Segnalazione inviata con successo' ) );
 }
+
+/**
+ * Invia Messaggio su Annuncio AJAX
+ */
+add_action( 'wp_ajax_caniincasa_send_message', 'caniincasa_ajax_send_message' );
+
+function caniincasa_ajax_send_message() {
+    check_ajax_referer( 'caniincasa_send_message', 'nonce' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_send_json_error( array( 'message' => 'Devi essere loggato per inviare messaggi' ) );
+    }
+
+    $user_id = get_current_user_id();
+    $user = wp_get_current_user();
+
+    // Sanitize input
+    $annuncio_id = intval( $_POST['annuncio_id'] );
+    $tipo_annuncio = sanitize_text_field( $_POST['tipo_annuncio'] );
+    $messaggio = wp_kses_post( $_POST['messaggio'] );
+    $telefono = ! empty( $_POST['telefono'] ) ? sanitize_text_field( $_POST['telefono'] ) : '';
+
+    // Validate
+    if ( empty( $annuncio_id ) || empty( $tipo_annuncio ) || empty( $messaggio ) ) {
+        wp_send_json_error( array( 'message' => 'Compila tutti i campi obbligatori' ) );
+    }
+
+    // Verify annuncio exists and get author
+    $annuncio = get_post( $annuncio_id );
+    if ( ! $annuncio || $annuncio->post_type !== $tipo_annuncio ) {
+        wp_send_json_error( array( 'message' => 'Annuncio non trovato' ) );
+    }
+
+    $destinatario_id = $annuncio->post_author;
+
+    // Prevent sending messages to yourself
+    if ( $destinatario_id == $user_id ) {
+        wp_send_json_error( array( 'message' => 'Non puoi inviare messaggi ai tuoi annunci' ) );
+    }
+
+    // Create message title
+    $annuncio_title = $annuncio->post_title;
+    $message_title = sprintf( 'Messaggio per: %s', $annuncio_title );
+
+    // Create message post
+    $message_id = wp_insert_post( array(
+        'post_title' => $message_title,
+        'post_content' => $messaggio,
+        'post_status' => 'publish',
+        'post_type' => 'messaggi_annunci',
+        'post_author' => $user_id,
+    ) );
+
+    if ( is_wp_error( $message_id ) ) {
+        wp_send_json_error( array( 'message' => 'Errore durante l\'invio del messaggio' ) );
+    }
+
+    // Save ACF fields
+    update_field( 'mittente_id', $user_id, $message_id );
+    update_field( 'destinatario_id', $destinatario_id, $message_id );
+    update_field( 'annuncio_id', $annuncio_id, $message_id );
+    update_field( 'tipo_annuncio', $tipo_annuncio, $message_id );
+    update_field( 'email_mittente', $user->user_email, $message_id );
+    if ( $telefono ) {
+        update_field( 'telefono_mittente', $telefono, $message_id );
+    }
+    update_field( 'stato_messaggio', 'non_letto', $message_id );
+    update_field( 'data_invio', current_time( 'Y-m-d H:i:s' ), $message_id );
+
+    // Send email notification to annuncio owner
+    $destinatario = get_userdata( $destinatario_id );
+    if ( $destinatario ) {
+        $email_subject = sprintf( '[CaninCasa] Nuovo messaggio per il tuo annuncio: %s', $annuncio_title );
+        $email_message = sprintf(
+            "Ciao %s,\n\nHai ricevuto un nuovo messaggio per il tuo annuncio '%s'.\n\nDa: %s (%s)\n\nMessaggio:\n%s\n\n",
+            $destinatario->display_name,
+            $annuncio_title,
+            $user->display_name,
+            $user->user_email,
+            strip_tags( $messaggio )
+        );
+
+        if ( $telefono ) {
+            $email_message .= sprintf( "Telefono di contatto: %s\n\n", $telefono );
+        }
+
+        $email_message .= sprintf(
+            "Rispondi direttamente a questa email per contattare %s.\n\nPuoi visualizzare tutti i tuoi messaggi nella dashboard: %s\n\n--\nQuesto è un messaggio automatico, per favore non rispondere a questa email.",
+            $user->display_name,
+            home_url( '/dashboard/' )
+        );
+
+        wp_mail( $destinatario->user_email, $email_subject, $email_message, array( 'Reply-To: ' . $user->user_email ) );
+    }
+
+    wp_send_json_success( array(
+        'message' => 'Messaggio inviato con successo! Il proprietario dell\'annuncio ti contatterà presto.',
+        'message_id' => $message_id
+    ) );
+}

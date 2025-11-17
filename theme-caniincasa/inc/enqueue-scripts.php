@@ -343,3 +343,28 @@ function caniincasa_enqueue_richieste_strutture_scripts() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'caniincasa_enqueue_richieste_strutture_scripts', 20 );
+
+/**
+ * Enqueue Contact Annuncio Scripts
+ */
+function caniincasa_enqueue_contact_annuncio_scripts() {
+    // Only load on single annunci pages
+    if ( is_singular( array( 'annunci_cucciolate', 'annunci_dogsitter' ) ) ) {
+
+        // Contact Annuncio JavaScript
+        wp_enqueue_script(
+            'caniincasa-contact-annuncio',
+            CANIINCASA_THEME_URI . '/js/contact-annuncio.js',
+            array( 'jquery' ),
+            CANIINCASA_VERSION,
+            true
+        );
+
+        // Localize script for AJAX
+        wp_localize_script( 'caniincasa-contact-annuncio', 'caniincasa_ajax', array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'caniincasa_send_message' ),
+        ) );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'caniincasa_enqueue_contact_annuncio_scripts', 20 );

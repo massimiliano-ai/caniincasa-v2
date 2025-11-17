@@ -1062,6 +1062,9 @@ require_once CANIINCASA_INC_DIR . '/enqueue-scripts.php';
 // User System
 require_once CANIINCASA_INC_DIR . '/user-system.php';
 
+// Moderation System
+require_once CANIINCASA_INC_DIR . '/moderation.php';
+
 // Custom Post Type: Cucciolate
 require_once CANIINCASA_INC_DIR . '/cpt-cucciolate.php';
 

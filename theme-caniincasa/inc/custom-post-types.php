@@ -392,10 +392,45 @@ function caniincasa_register_post_types() {
     ) );
 
     /**
+     * 12. Messaggi Annunci
+     * Sistema di messaggistica tra utenti per annunci
+     */
+    register_post_type( 'messaggi_annunci', array(
+        'labels' => array(
+            'name'                  => _x( 'Messaggi Annunci', 'Post type general name', 'caniincasa' ),
+            'singular_name'         => _x( 'Messaggio', 'Post type singular name', 'caniincasa' ),
+            'menu_name'             => _x( 'Messaggi Annunci', 'Admin Menu text', 'caniincasa' ),
+            'add_new'               => __( 'Nuovo Messaggio', 'caniincasa' ),
+            'edit_item'             => __( 'Visualizza Messaggio', 'caniincasa' ),
+            'view_item'             => __( 'Leggi Messaggio', 'caniincasa' ),
+            'all_items'             => __( 'Tutti i Messaggi', 'caniincasa' ),
+            'search_items'          => __( 'Cerca Messaggi', 'caniincasa' ),
+            'not_found'             => __( 'Nessun messaggio trovato.', 'caniincasa' ),
+        ),
+        'public'              => false,
+        'publicly_queryable'  => false,
+        'show_ui'             => true,
+        'show_in_menu'        => true,
+        'show_in_rest'        => false,
+        'query_var'           => false,
+        'has_archive'         => false,
+        'hierarchical'        => false,
+        'menu_position'       => 31,
+        'menu_icon'           => 'dashicons-email',
+        'capability_type'     => 'post',
+        'capabilities'        => array(
+            'create_posts'  => 'do_not_allow', // Prevents manual creation from admin
+        ),
+        'map_meta_cap'        => true,
+        'supports'            => array( 'title', 'editor' ),
+        'can_export'          => true,
+    ) );
+
+    /**
      * Flush rewrite rules on theme activation and when CPT settings change
      * Force flush if has_archive was recently enabled
      */
-    $flush_version = 'v2_has_archive_enabled'; // Incrementa quando cambiano le rewrite rules
+    $flush_version = 'v3_messaggi_annunci_added'; // Incrementa quando cambiano le rewrite rules
     if ( get_option( 'caniincasa_flush_rewrite_rules' ) !== $flush_version ) {
         flush_rewrite_rules();
         update_option( 'caniincasa_flush_rewrite_rules', $flush_version );

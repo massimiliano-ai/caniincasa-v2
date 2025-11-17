@@ -953,3 +953,106 @@ acf_add_local_field_group( array(
     'label_placement' => 'top',
     'instruction_placement' => 'label',
 ) );
+
+/**
+ * Messaggi Annunci - Campi Custom
+ */
+acf_add_local_field_group( array(
+    'key' => 'group_messaggi_annunci',
+    'title' => 'Dettagli Messaggio',
+    'fields' => array(
+
+        array(
+            'key' => 'field_messaggio_mittente',
+            'label' => 'ID Mittente',
+            'name' => 'mittente_id',
+            'type' => 'number',
+            'required' => 1,
+            'readonly' => 1,
+        ),
+
+        array(
+            'key' => 'field_messaggio_destinatario',
+            'label' => 'ID Destinatario',
+            'name' => 'destinatario_id',
+            'type' => 'number',
+            'required' => 1,
+            'readonly' => 1,
+        ),
+
+        array(
+            'key' => 'field_messaggio_annuncio',
+            'label' => 'ID Annuncio',
+            'name' => 'annuncio_id',
+            'type' => 'number',
+            'required' => 1,
+            'readonly' => 1,
+        ),
+
+        array(
+            'key' => 'field_messaggio_tipo_annuncio',
+            'label' => 'Tipo Annuncio',
+            'name' => 'tipo_annuncio',
+            'type' => 'text',
+            'required' => 1,
+            'readonly' => 1,
+            'instructions' => 'annunci_cucciolate o annunci_dogsitter',
+        ),
+
+        array(
+            'key' => 'field_messaggio_email_mittente',
+            'label' => 'Email Mittente',
+            'name' => 'email_mittente',
+            'type' => 'email',
+            'required' => 1,
+            'readonly' => 1,
+        ),
+
+        array(
+            'key' => 'field_messaggio_telefono_mittente',
+            'label' => 'Telefono Mittente',
+            'name' => 'telefono_mittente',
+            'type' => 'text',
+            'required' => 0,
+            'readonly' => 1,
+        ),
+
+        array(
+            'key' => 'field_messaggio_stato',
+            'label' => 'Stato Messaggio',
+            'name' => 'stato_messaggio',
+            'type' => 'select',
+            'choices' => array(
+                'non_letto' => 'Non letto',
+                'letto' => 'Letto',
+                'archiviato' => 'Archiviato',
+            ),
+            'default_value' => 'non_letto',
+        ),
+
+        array(
+            'key' => 'field_messaggio_data_invio',
+            'label' => 'Data Invio',
+            'name' => 'data_invio',
+            'type' => 'date_time_picker',
+            'display_format' => 'd/m/Y H:i',
+            'return_format' => 'Y-m-d H:i:s',
+            'readonly' => 1,
+        ),
+
+    ),
+    'location' => array(
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'messaggi_annunci',
+            ),
+        ),
+    ),
+    'menu_order' => 0,
+    'position' => 'normal',
+    'style' => 'default',
+    'label_placement' => 'top',
+    'instruction_placement' => 'label',
+) );

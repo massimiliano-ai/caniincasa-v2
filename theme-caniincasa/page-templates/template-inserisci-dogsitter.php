@@ -81,6 +81,13 @@ $current_user = wp_get_current_user();
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="zona_disponibilita">Zona Disponibilità</label>
+                        <input type="text" id="zona_disponibilita" name="zona_disponibilita"
+                               placeholder="Es: Milano centro, Provincia di Roma, ecc.">
+                        <small class="form-help">Specifica l'area in cui offri i tuoi servizi</small>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="esperienza">Anni di Esperienza *</label>
@@ -197,6 +204,26 @@ $current_user = wp_get_current_user();
                                   placeholder="Descrivi la tua esperienza, le tue competenze, eventuali certificazioni, disponibilità di spazi (giardino, ecc.), e cosa ti rende un buon dogsitter..."></textarea>
                         <small class="form-help">Minimo 100 caratteri. Più dettagliata è la descrizione, più sarà convincente per i proprietari.</small>
                         <div id="char-count" class="char-count">0/100 caratteri</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-title">Contatti</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="telefono">Telefono</label>
+                            <input type="tel" id="telefono" name="contatto_telefono"
+                                   placeholder="Es: 333 1234567">
+                            <small class="form-help">Numero di telefono per essere contattato (opzionale)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="contatto_email"
+                                   placeholder="tua@email.it">
+                            <small class="form-help">Email di contatto (opzionale)</small>
+                        </div>
                     </div>
                 </div>
 

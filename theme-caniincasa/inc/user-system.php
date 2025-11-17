@@ -566,6 +566,19 @@ function caniincasa_ajax_submit_dogsitter() {
     update_field( 'servizi', $servizi, $post_id );
     update_field( 'taglie', $taglie, $post_id );
 
+    // Optional fields
+    if ( ! empty( $_POST['zona_disponibilita'] ) ) {
+        update_field( 'zona_disponibilita', sanitize_text_field( $_POST['zona_disponibilita'] ), $post_id );
+    }
+
+    if ( ! empty( $_POST['contatto_telefono'] ) ) {
+        update_field( 'contatto_telefono', sanitize_text_field( $_POST['contatto_telefono'] ), $post_id );
+    }
+
+    if ( ! empty( $_POST['contatto_email'] ) ) {
+        update_field( 'contatto_email', sanitize_email( $_POST['contatto_email'] ), $post_id );
+    }
+
     // Set provincia taxonomy
     wp_set_post_terms( $post_id, array( $provincia_id ), 'provincia' );
 

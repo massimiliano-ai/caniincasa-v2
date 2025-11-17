@@ -180,13 +180,14 @@ function caniincasa_enqueue_page_templates_grid() {
          is_page_template( 'page-templates/template-canili.php' ) ||
          is_page_template( 'page-templates/template-veterinari.php' ) ||
          is_page_template( 'page-templates/template-centri-cinofili.php' ) ||
-         is_page_template( 'page-templates/template-pensioni.php' ) ) {
+         is_page_template( 'page-templates/template-pensioni.php' ) ||
+         is_page_template( 'page-templates/template-annunci.php' ) ) {
 
         // Page templates grid CSS
         wp_enqueue_style(
             'caniincasa-page-templates-grid',
             CANIINCASA_THEME_URI . '/css/page-templates-grid.css',
-            array(),
+            array( 'caniincasa-main', 'caniincasa-pages', 'caniincasa-blog' ),
             CANIINCASA_VERSION
         );
 
@@ -194,7 +195,7 @@ function caniincasa_enqueue_page_templates_grid() {
         wp_enqueue_style(
             'caniincasa-archivi-filtri',
             CANIINCASA_THEME_URI . '/css/archivi-filtri.css',
-            array(),
+            array( 'caniincasa-main' ),
             CANIINCASA_VERSION
         );
 

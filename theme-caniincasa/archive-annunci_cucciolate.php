@@ -251,108 +251,49 @@ get_header();
                         </div>
                     </div>
 
-                    <div class="cucciolate-grid grid grid-3">
+                    <div class="annunci-list">
                         <?php
                         while ( have_posts() ) :
                             the_post();
                             ?>
-                            <div class="card cucciolata-card">
+                            <article class="annuncio-card annuncio-card--horizontal">
+
+                                <!-- Image -->
                                 <?php if ( has_post_thumbnail() ) : ?>
-                                    <a href="<?php the_permalink(); ?>" class="card-image-link">
-                                        <?php the_post_thumbnail( 'caniincasa-card', array( 'class' => 'card-image' ) ); ?>
-                                    </a>
+                                    <div class="annuncio-card__image">
+                                        <a href="<?php the_permalink(); ?>">
+                                            <?php the_post_thumbnail( 'medium', array( 'class' => 'card-image' ) ); ?>
+                                        </a>
+                                    </div>
                                 <?php endif; ?>
 
-                                <div class="card-content">
-                                    <div class="card-badges">
-                                        <?php
-                                        $ricerca_offerta = get_field( 'ricerca_offerta' );
-                                        if ( $ricerca_offerta === 'offerta' ) :
-                                        ?>
-                                            <span class="badge badge--offerta">Offerta</span>
-                                        <?php elseif ( $ricerca_offerta === 'ricerca' ) : ?>
-                                            <span class="badge badge--ricerca">Ricerca</span>
-                                        <?php endif; ?>
+                                <!-- Content -->
+                                <div class="annuncio-card__content">
 
-                                        <?php if ( get_field( 'cuccioli_disponibili' ) ) : ?>
-                                            <span class="badge badge--available">✓ Disponibili</span>
-                                        <?php endif; ?>
-                                    </div>
-
-                                    <h3 class="card-title">
+                                    <h3 class="annuncio-card__title">
                                         <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
                                     </h3>
 
-                                    <!-- Razza -->
                                     <?php
-                                    $razze_terms = get_the_terms( get_the_ID(), 'razze_allevamenti' );
-                                    if ( ! empty( $razze_terms ) && ! is_wp_error( $razze_terms ) ) :
+                                    $data_nascita = get_field( 'data_nascita' );
+                                    if ( $data_nascita ) :
                                     ?>
-                                        <div class="cucciolata-breed">
-                                            <strong><?php esc_html_e( 'Razza:', 'caniincasa' ); ?></strong>
-                                            <?php echo esc_html( $razze_terms[0]->name ); ?>
+                                        <div class="annuncio-card__date">
+                                            <?php echo esc_html( date_i18n( 'F j, Y', strtotime( $data_nascita ) ) ); ?>
                                         </div>
                                     <?php endif; ?>
 
-                                    <!-- Info Cards -->
-                                    <div class="cucciolata-info-grid">
-                                        <?php
-                                        $data_nascita = get_field( 'data_nascita' );
-                                        $cuccioli_disponibili_num = get_field( 'numero_cuccioli_disponibili' );
-                                        $prezzo = get_field( 'prezzo' );
-
-                                        if ( $data_nascita ) :
-                                        ?>
-                                            <div class="info-card">
-                                                <span class="icon">📅</span>
-                                                <span class="label"><?php esc_html_e( 'Nascita', 'caniincasa' ); ?></span>
-                                                <span class="value"><?php echo esc_html( date_i18n( 'd/m/Y', strtotime( $data_nascita ) ) ); ?></span>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <?php if ( $cuccioli_disponibili_num ) : ?>
-                                            <div class="info-card">
-                                                <span class="icon">🐕</span>
-                                                <span class="label"><?php esc_html_e( 'Disponibili', 'caniincasa' ); ?></span>
-                                                <span class="value"><?php echo esc_html( $cuccioli_disponibili_num ); ?></span>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <?php if ( $prezzo ) : ?>
-                                            <div class="info-card price-card">
-                                                <span class="icon">💰</span>
-                                                <span class="label"><?php esc_html_e( 'Prezzo', 'caniincasa' ); ?></span>
-                                                <span class="value">€<?php echo esc_html( number_format( $prezzo, 0, ',', '.' ) ); ?></span>
-                                            </div>
-                                        <?php endif; ?>
+                                    <div class="annuncio-card__excerpt">
+                                        <?php echo wp_trim_words( get_the_excerpt(), 30, '...' ); ?>
                                     </div>
 
-                                    <!-- Location -->
-                                    <?php
-                                    $citta = get_field( 'citta' );
-                                    $provincia_terms = get_the_terms( get_the_ID(), 'provincia' );
-                                    if ( $citta || $provincia_terms ) :
-                                    ?>
-                                        <div class="cucciolata-location">
-                                            <span class="icon">📍</span>
-                                            <?php
-                                            if ( $citta ) {
-                                                echo esc_html( $citta );
-                                            }
-                                            if ( $provincia_terms && ! is_wp_error( $provincia_terms ) ) {
-                                                echo ' (' . esc_html( $provincia_terms[0]->name ) . ')';
-                                            }
-                                            ?>
-                                        </div>
-                                    <?php endif; ?>
+                                    <a href="<?php the_permalink(); ?>" class="annuncio-card__link">
+                                        <?php esc_html_e( 'Learn more', 'caniincasa' ); ?>
+                                    </a>
 
-                                    <div class="card-footer">
-                                        <a href="<?php the_permalink(); ?>" class="btn btn-primary btn-block">
-                                            <?php esc_html_e( 'Vedi Dettagli', 'caniincasa' ); ?>
-                                        </a>
-                                    </div>
                                 </div>
-                            </div>
+
+                            </article>
                         <?php endwhile; ?>
                     </div>
 

@@ -1,0 +1,179 @@
+/**
+ * Archivi Filtri CSS
+ * Styles for archive filters and loading
+ *
+ * @package CaninCasa
+ * @since 2.0.0
+ */
+
+/* ==========================================================================
+   FILTERS WRAPPER
+   ========================================================================== */
+
+.filters-wrapper {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.filters-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    color: #333;
+}
+
+.filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-size: 0.9375rem;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+    transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #e65229;
+    box-shadow: 0 0 0 3px rgba(230, 82, 41, 0.1);
+}
+
+#reset-filters {
+    padding: 0.625rem 1.25rem;
+    white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filters-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        min-width: 100%;
+    }
+
+    #reset-filters {
+        width: 100%;
+    }
+}
+
+/* ==========================================================================
+   LOADING SPINNER
+   ========================================================================== */
+
+.loading-spinner {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.loading-spinner .spinner {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 1rem;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #e65229;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9375rem;
+}
+
+/* ==========================================================================
+   NO ITEMS STATE
+   ========================================================================== */
+
+.no-items {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.no-items-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.no-items h3 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+}
+
+.no-items p {
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+}
+
+/* ==========================================================================
+   RESULTS INFO
+   ========================================================================== */
+
+.results-info {
+    margin-bottom: 1.5rem;
+}
+
+.results-count {
+    font-size: 0.9375rem;
+    color: #666;
+    margin: 0;
+}
+
+.results-count strong {
+    color: #e65229;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   FADE ANIMATION
+   ========================================================================== */
+
+.items-grid {
+    transition: opacity 0.3s ease;
+}
+
+.items-grid.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}

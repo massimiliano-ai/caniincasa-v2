@@ -30,7 +30,14 @@ get_header();
 
         <?php
         // Query per tutte le razze
+        // For page templates, check both 'paged' and 'page' query vars
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+        if ( $paged < 1 ) {
+            $paged = ( get_query_var( 'page' ) ) ? get_query_var( 'page' ) : 1;
+        }
+        if ( $paged < 1 ) {
+            $paged = 1;
+        }
 
         $args = array(
             'post_type' => 'razze_di_cani',

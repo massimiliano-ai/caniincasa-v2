@@ -15,6 +15,13 @@ get_header();
 <main id="main-content" class="site-main">
     <?php while ( have_posts() ) : the_post(); ?>
 
+        <?php
+        // Hero Section
+        caniincasa_page_hero( array(
+            'subtitle' => 'Razza di Cane',
+        ) );
+        ?>
+
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'razza-single' ); ?>>
 
             <div class="container">
@@ -24,11 +31,6 @@ get_header();
 
                     <!-- COLONNA PRINCIPALE 2/3 (Desktop) / Prima su Mobile -->
                     <div class="razza-content">
-
-                        <!-- Titolo -->
-                        <header class="razza-header">
-                            <h1 class="razza-title"><?php the_title(); ?></h1>
-                        </header>
 
                         <!-- Descrizione Generale -->
                         <?php
@@ -202,24 +204,55 @@ get_header();
 
                         <!-- Allevamenti Collegati -->
                         <?php
+                        // Get the current razza taxonomy term
+                        $current_razza_slug = get_post_field( 'post_name', get_the_ID() );
+                        $current_razza_name = get_the_title();
+
+                        // Try to find the corresponding razze_allevamenti term
+                        $razza_term = get_term_by( 'slug', $current_razza_slug, 'razze_allevamenti' );
+                        if ( ! $razza_term ) {
+                            // Try by name if slug doesn't match
+                            $razza_term = get_term_by( 'name', $current_razza_name, 'razze_allevamenti' );
+                        }
+
                         $args = array(
                             'post_type'      => 'allevamenti',
                             'posts_per_page' => 5,
-                            'tax_query'      => array(
+                            'orderby'        => 'rand',
+                            'post_status'    => 'publish',
+                        );
+
+                        // Only add tax_query if we found a matching term
+                        if ( $razza_term ) {
+                            $args['tax_query'] = array(
                                 array(
                                     'taxonomy' => 'razze_allevamenti',
-                                    'field'    => 'slug',
-                                    'terms'    => get_post_field( 'post_name', get_the_ID() ),
+                                    'field'    => 'term_id',
+                                    'terms'    => $razza_term->term_id,
                                 ),
-                            ),
-                        );
+                            );
+                        }
 
                         $allevamenti_query = new WP_Query( $args );
 
                         if ( $allevamenti_query->have_posts() ) :
+                            // Build the "view all" link with filter
+                            $view_all_link = home_url( '/allevamenti/' );
+                            if ( $razza_term ) {
+                                $view_all_link = add_query_arg( 'filter_razza', $razza_term->slug, $view_all_link );
+                            }
                         ?>
                             <div class="info-box info-box--allevamenti">
                                 <h3 class="info-box__title">🏠 Allevamenti di <?php the_title(); ?></h3>
+                                <p class="info-box__description">
+                                    <?php
+                                    printf(
+                                        esc_html__( 'Selezionati casualmente %d allevamenti che allevano %s', 'caniincasa' ),
+                                        min( 5, $allevamenti_query->found_posts ),
+                                        esc_html( $current_razza_name )
+                                    );
+                                    ?>
+                                </p>
                                 <ul class="related-list">
                                     <?php while ( $allevamenti_query->have_posts() ) : $allevamenti_query->the_post(); ?>
                                         <li>
@@ -227,7 +260,10 @@ get_header();
                                                 <?php the_title(); ?>
                                             </a>
                                             <?php
-                                            $provincia = get_post_meta( get_the_ID(), 'provincia_', true );
+                                            $provincia = get_post_meta( get_the_ID(), 'desprovincia', true );
+                                            if ( ! $provincia ) {
+                                                $provincia = get_post_meta( get_the_ID(), 'provincia_', true );
+                                            }
                                             if ( $provincia ) :
                                                 echo ' <span class="provincia">(' . esc_html( $provincia ) . ')</span>';
                                             endif;
@@ -235,8 +271,14 @@ get_header();
                                         </li>
                                     <?php endwhile; ?>
                                 </ul>
-                                <a href="<?php echo esc_url( home_url( '/allevamenti/' ) ); ?>" class="btn btn-outline btn-block">
-                                    Vedi tutti gli allevamenti
+                                <a href="<?php echo esc_url( $view_all_link ); ?>" class="btn btn-outline btn-block">
+                                    <?php
+                                    printf(
+                                        esc_html__( 'Vedi tutti gli allevamenti di %s (%d)', 'caniincasa' ),
+                                        esc_html( $current_razza_name ),
+                                        $allevamenti_query->found_posts
+                                    );
+                                    ?>
                                 </a>
                             </div>
                         <?php

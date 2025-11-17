@@ -266,6 +266,38 @@
     color: #856404;
 }
 
+.badge-cucciolate {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-dogsitter {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* Annunci Specifici */
+.annuncio-type-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+.annuncio-card .item-image {
+    min-height: 240px;
+}
+
+.annuncio-card .item-date,
+.annuncio-card .item-location,
+.annuncio-card .item-breed {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    color: var(--template-text-light);
+}
+
 /* Services/Courses */
 .item-services,
 .item-courses,

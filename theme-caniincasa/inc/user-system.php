@@ -132,9 +132,12 @@ function caniincasa_ajax_register() {
     wp_set_current_user( $user_id );
     wp_set_auth_cookie( $user_id );
 
+    // Gestisci redirect personalizzato
+    $redirect_to = isset( $_POST['redirect_to'] ) ? esc_url_raw( $_POST['redirect_to'] ) : home_url( '/dashboard/' );
+
     wp_send_json_success( array(
         'message' => 'Registrazione completata! Benvenuto su CaninCasa.',
-        'redirect' => home_url( '/dashboard/' )
+        'redirect' => $redirect_to
     ) );
 }
 
@@ -385,6 +388,7 @@ function caniincasa_ajax_submit_cucciolata() {
     $user_id = get_current_user_id();
 
     // Sanitize input
+    $ricerca_offerta = sanitize_text_field( $_POST['ricerca_offerta'] );
     $titolo = sanitize_text_field( $_POST['titolo'] );
     $razza_id = intval( $_POST['razza'] );
     $data_nascita = sanitize_text_field( $_POST['data_nascita'] );
@@ -395,9 +399,14 @@ function caniincasa_ajax_submit_cucciolata() {
     $provincia_id = intval( $_POST['provincia'] );
     $descrizione = wp_kses_post( $_POST['descrizione'] );
 
-    // Validate
-    if ( empty( $titolo ) || empty( $razza_id ) || empty( $data_nascita ) || empty( $descrizione ) ) {
+    // Validate base fields
+    if ( empty( $titolo ) || empty( $razza_id ) || empty( $ricerca_offerta ) || empty( $descrizione ) ) {
         wp_send_json_error( array( 'message' => 'Compila tutti i campi obbligatori' ) );
+    }
+
+    // Validate offerta-specific fields
+    if ( $ricerca_offerta === 'offerta' && empty( $data_nascita ) ) {
+        wp_send_json_error( array( 'message' => 'La data di nascita è obbligatoria per gli annunci di offerta' ) );
     }
 
     // Create post
@@ -414,15 +423,20 @@ function caniincasa_ajax_submit_cucciolata() {
     }
 
     // Add meta fields
+    update_field( 'ricerca_offerta', $ricerca_offerta, $post_id );
     update_field( 'razza', $razza_id, $post_id );
-    update_field( 'data_nascita', $data_nascita, $post_id );
-    update_field( 'numero_maschi', $numero_maschi, $post_id );
-    update_field( 'numero_femmine', $numero_femmine, $post_id );
-    if ( $prezzo ) {
-        update_field( 'prezzo', $prezzo, $post_id );
-    }
-    if ( $pedigree ) {
-        update_field( 'pedigree', $pedigree, $post_id );
+
+    // Only save offerta-specific fields if type is offerta
+    if ( $ricerca_offerta === 'offerta' ) {
+        update_field( 'data_nascita', $data_nascita, $post_id );
+        update_field( 'numero_maschi', $numero_maschi, $post_id );
+        update_field( 'numero_femmine', $numero_femmine, $post_id );
+        if ( $prezzo ) {
+            update_field( 'prezzo', $prezzo, $post_id );
+        }
+        if ( $pedigree ) {
+            update_field( 'pedigree', $pedigree, $post_id );
+        }
     }
 
     // Set taxonomy
@@ -590,6 +604,144 @@ function caniincasa_ajax_reject_post() {
     wp_mail( $author->user_email, 'Annuncio non approvato', $message );
 
     wp_send_json_success( array( 'message' => 'Annuncio rifiutato' ) );
+}
+
+/**
+ * Submit Richiesta Struttura AJAX
+ */
+add_action( 'wp_ajax_caniincasa_submit_richiesta', 'caniincasa_ajax_submit_richiesta' );
+
+function caniincasa_ajax_submit_richiesta() {
+    check_ajax_referer( 'caniincasa_submit_richiesta', 'nonce' );
+
+    if ( ! is_user_logged_in() ) {
+        wp_send_json_error( array( 'message' => 'Non autorizzato' ) );
+    }
+
+    $user_id = get_current_user_id();
+    $current_user = wp_get_current_user();
+
+    // Sanitize input
+    $tipo_struttura = sanitize_text_field( $_POST['tipo_struttura'] );
+    $tipo_azione = sanitize_text_field( $_POST['tipo_azione'] );
+    $nome_struttura_esistente = isset( $_POST['nome_struttura_esistente'] ) ? sanitize_text_field( $_POST['nome_struttura_esistente'] ) : '';
+    $nome_struttura = isset( $_POST['nome_struttura'] ) ? sanitize_text_field( $_POST['nome_struttura'] ) : '';
+    $indirizzo = isset( $_POST['indirizzo'] ) ? sanitize_text_field( $_POST['indirizzo'] ) : '';
+    $provincia_id = isset( $_POST['provincia'] ) ? intval( $_POST['provincia'] ) : 0;
+    $comune = isset( $_POST['comune'] ) ? sanitize_text_field( $_POST['comune'] ) : '';
+    $cap = isset( $_POST['cap'] ) ? sanitize_text_field( $_POST['cap'] ) : '';
+    $telefono = isset( $_POST['telefono'] ) ? sanitize_text_field( $_POST['telefono'] ) : '';
+    $email = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
+    $sito_web = isset( $_POST['sito_web'] ) ? esc_url_raw( $_POST['sito_web'] ) : '';
+    $descrizione = isset( $_POST['descrizione'] ) ? sanitize_textarea_field( $_POST['descrizione'] ) : '';
+    $motivazione = isset( $_POST['motivazione'] ) ? sanitize_textarea_field( $_POST['motivazione'] ) : '';
+    $note = isset( $_POST['note'] ) ? sanitize_textarea_field( $_POST['note'] ) : '';
+    $razze_allevate = isset( $_POST['razze_allevate'] ) ? sanitize_textarea_field( $_POST['razze_allevate'] ) : '';
+    $enci_riconosciuto = isset( $_POST['enci_riconosciuto'] ) ? true : false;
+
+    // Validate
+    if ( empty( $tipo_struttura ) || empty( $tipo_azione ) ) {
+        wp_send_json_error( array( 'message' => 'Dati mancanti' ) );
+    }
+
+    if ( ( $tipo_azione === 'modifica' || $tipo_azione === 'rimozione' ) && empty( $nome_struttura_esistente ) ) {
+        wp_send_json_error( array( 'message' => 'Indica il nome della struttura esistente' ) );
+    }
+
+    if ( ( $tipo_azione === 'modifica' || $tipo_azione === 'rimozione' ) && strlen( $motivazione ) < 50 ) {
+        wp_send_json_error( array( 'message' => 'La motivazione deve essere almeno 50 caratteri' ) );
+    }
+
+    if ( ( $tipo_azione === 'inserimento' || $tipo_azione === 'modifica' ) && ( empty( $nome_struttura ) || empty( $indirizzo ) || empty( $comune ) || empty( $telefono ) ) ) {
+        wp_send_json_error( array( 'message' => 'Compila tutti i campi obbligatori' ) );
+    }
+
+    // Create richiesta as pending comment
+    $tipo_labels = array(
+        'allevamento' => 'Allevamento',
+        'veterinario' => 'Veterinario',
+        'centro' => 'Centro Cinofilo',
+        'canile' => 'Canile',
+        'pensione' => 'Pensione',
+    );
+
+    $azione_labels = array(
+        'inserimento' => 'Inserimento',
+        'modifica' => 'Modifica',
+        'rimozione' => 'Rimozione',
+    );
+
+    $titolo = $azione_labels[$tipo_azione] . ' ' . $tipo_labels[$tipo_struttura] . ': ' . ( $nome_struttura ?: $nome_struttura_esistente );
+
+    $contenuto = "Tipo Struttura: " . $tipo_labels[$tipo_struttura] . "\n";
+    $contenuto .= "Tipo Richiesta: " . $azione_labels[$tipo_azione] . "\n\n";
+
+    if ( $nome_struttura_esistente ) {
+        $contenuto .= "Struttura Esistente: $nome_struttura_esistente\n\n";
+    }
+
+    if ( $tipo_azione === 'inserimento' || $tipo_azione === 'modifica' ) {
+        $contenuto .= "Nome: $nome_struttura\n";
+        $contenuto .= "Indirizzo: $indirizzo\n";
+        $contenuto .= "Comune: $comune\n";
+        if ( $provincia_id ) {
+            $provincia = get_term( $provincia_id );
+            $contenuto .= "Provincia: " . $provincia->name . "\n";
+        }
+        if ( $cap ) $contenuto .= "CAP: $cap\n";
+        $contenuto .= "Telefono: $telefono\n";
+        if ( $email ) $contenuto .= "Email: $email\n";
+        if ( $sito_web ) $contenuto .= "Sito Web: $sito_web\n";
+        if ( $razze_allevate ) $contenuto .= "Razze Allevate: $razze_allevate\n";
+        if ( $enci_riconosciuto ) $contenuto .= "ENCI Riconosciuto: Sì\n";
+        if ( $descrizione ) $contenuto .= "\nDescrizione:\n$descrizione\n";
+    }
+
+    if ( $motivazione ) {
+        $contenuto .= "\nMotivazione:\n$motivazione\n";
+    }
+
+    if ( $note ) {
+        $contenuto .= "\nNote:\n$note\n";
+    }
+
+    $contenuto .= "\n---\n";
+    $contenuto .= "Richiesta inviata da: " . $current_user->display_name . " (" . $current_user->user_email . ")\n";
+    $contenuto .= "Data: " . current_time( 'd/m/Y H:i' );
+
+    // Insert as comment (richiesta type)
+    $comment_id = wp_insert_comment( array(
+        'comment_post_ID' => 1,
+        'comment_author' => $current_user->display_name,
+        'comment_author_email' => $current_user->user_email,
+        'comment_content' => $contenuto,
+        'user_id' => $user_id,
+        'comment_type' => 'richiesta_struttura',
+        'comment_approved' => 0,
+    ) );
+
+    if ( ! $comment_id ) {
+        wp_send_json_error( array( 'message' => 'Errore durante l\'invio della richiesta' ) );
+    }
+
+    // Add meta
+    add_comment_meta( $comment_id, 'tipo_struttura', $tipo_struttura );
+    add_comment_meta( $comment_id, 'tipo_azione', $tipo_azione );
+    add_comment_meta( $comment_id, 'titolo_richiesta', $titolo );
+
+    // Send email to admins
+    $admins = get_users( array( 'role' => 'administrator' ) );
+    foreach ( $admins as $admin ) {
+        wp_mail(
+            $admin->user_email,
+            'Nuova richiesta struttura - ' . $titolo,
+            $contenuto . "\n\nGestisci richiesta: " . admin_url( 'edit-comments.php?comment_type=richiesta_struttura' )
+        );
+    }
+
+    wp_send_json_success( array(
+        'message' => 'Richiesta inviata con successo! Riceverai una notifica via email quando sarà elaborata.'
+    ) );
 }
 
 /**

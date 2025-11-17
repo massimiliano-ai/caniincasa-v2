@@ -12,214 +12,135 @@ get_header();
 <main id="main-content" class="site-main">
     <?php while ( have_posts() ) : the_post(); ?>
 
+        <?php
+        // Hero Section
+        caniincasa_page_hero( array(
+            'subtitle' => 'Veterinario o Struttura Veterinaria',
+        ) );
+        ?>
+
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'veterinario-single' ); ?>>
 
-            <?php caniincasa_breadcrumbs(); ?>
-
             <div class="container">
+
+                <?php caniincasa_breadcrumbs(); ?>
+
                 <div class="veterinario-single__layout">
 
                     <!-- Main Content -->
                     <div class="veterinario-single__content">
 
-                        <!-- Header -->
-                        <header class="veterinario-single__header">
+                        <!-- Info Table -->
+                        <div class="info-table">
                             <?php
-                            $pronto_soccorso = get_post_meta( get_the_ID(), 'pronto_soccorso', true );
-                            if ( $pronto_soccorso ) :
+                            // Get ACF fields
+                            $direttore = get_field( 'direttore_sanitario' );
+                            $indirizzo = get_field( 'indirizzo' );
+                            $localita = get_field( 'localita' ) ?: get_field( 'comune' );
+                            $provincia = get_field( 'provincia_estesa' );
+                            $telefono = get_field( 'telefono' );
+                            $pronto_soccorso = get_field( 'pronto_soccorso_h24' );
+                            $reperibilita = get_field( 'reperibilita_h24' );
+                            $servizi = get_field( 'servizi_offerti' );
+                            $orari = get_field( 'orari_di_apertura' );
                             ?>
-                                <div class="emergency-badge">
-                                    <span class="emergency-icon">🚨</span>
-                                    <?php esc_html_e( 'Pronto Soccorso 24h', 'caniincasa' ); ?>
+
+                            <?php if ( $direttore ) : ?>
+                                <div class="info-row">
+                                    <div class="info-label"><?php esc_html_e( 'Direttore sanitario', 'caniincasa' ); ?></div>
+                                    <div class="info-value"><?php echo esc_html( $direttore ); ?></div>
                                 </div>
                             <?php endif; ?>
 
-                            <h1 class="veterinario-single__title"><?php the_title(); ?></h1>
-
-                            <?php
-                            $citta = get_post_meta( get_the_ID(), 'citta', true );
-                            $provincia = get_post_meta( get_the_ID(), 'provincia', true );
-                            if ( $citta || $provincia ) :
-                            ?>
-                                <div class="veterinario-single__location">
-                                    <i class="icon-location">📍</i>
-                                    <?php
-                                    if ( $citta ) {
-                                        echo esc_html( $citta );
-                                    }
-                                    if ( $provincia ) {
-                                        echo $citta ? ' (' . esc_html( $provincia ) . ')' : esc_html( $provincia );
-                                    }
-                                    ?>
+                            <?php if ( $indirizzo ) : ?>
+                                <div class="info-row">
+                                    <div class="info-label"><?php esc_html_e( 'Indirizzo', 'caniincasa' ); ?></div>
+                                    <div class="info-value"><?php echo esc_html( $indirizzo ); ?></div>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ( has_post_thumbnail() ) : ?>
-                                <div class="veterinario-single__image">
-                                    <?php the_post_thumbnail( 'caniincasa-featured', array( 'alt' => get_the_title() ) ); ?>
+                            <?php if ( $localita || $provincia ) : ?>
+                                <div class="info-row">
+                                    <div class="info-label"><?php esc_html_e( 'Località', 'caniincasa' ); ?></div>
+                                    <div class="info-value">
+                                        <?php
+                                        if ( $localita && $provincia ) {
+                                            echo esc_html( $localita ) . ' - ' . esc_html( $provincia );
+                                        } elseif ( $localita ) {
+                                            echo esc_html( $localita );
+                                        } else {
+                                            echo esc_html( $provincia );
+                                        }
+                                        ?>
+                                    </div>
                                 </div>
                             <?php endif; ?>
-                        </header>
 
-                        <!-- Direttore Sanitario -->
-                        <?php
-                        $direttore = get_post_meta( get_the_ID(), 'direttore_sanitario', true );
-                        if ( $direttore ) :
-                        ?>
-                            <div class="info-highlight">
-                                <strong><?php esc_html_e( 'Direttore Sanitario:', 'caniincasa' ); ?></strong>
-                                <?php echo esc_html( $direttore ); ?>
-                            </div>
-                        <?php endif; ?>
+                            <?php if ( $telefono ) : ?>
+                                <div class="info-row">
+                                    <div class="info-label"><?php esc_html_e( 'Telefono', 'caniincasa' ); ?></div>
+                                    <div class="info-value"><?php echo esc_html( $telefono ); ?></div>
+                                </div>
+                            <?php endif; ?>
 
-                        <!-- Description -->
-                        <div class="veterinario-single__description">
-                            <?php the_content(); ?>
+                            <?php if ( $pronto_soccorso ) : ?>
+                                <div class="info-row">
+                                    <div class="info-label"><?php esc_html_e( 'Pronto Soccorso Veterinario', 'caniincasa' ); ?></div>
+                                    <div class="info-value"><strong><?php echo $pronto_soccorso === '1' || $pronto_soccorso === 'SI' ? 'SI' : esc_html( $pronto_soccorso ); ?></strong></div>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ( $reperibilita ) : ?>
+                                <div class="info-row">
+                                    <div class="info-label"><?php esc_html_e( 'Reperibilità:', 'caniincasa' ); ?></div>
+                                    <div class="info-value"><?php echo $reperibilita === '1' || $reperibilita === 'SI' ? 'SI' : esc_html( $reperibilita ); ?></div>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ( $servizi ) : ?>
+                                <div class="info-row">
+                                    <div class="info-label"><?php esc_html_e( 'Servizi Offerti', 'caniincasa' ); ?></div>
+                                    <div class="info-value"><?php echo esc_html( $servizi ); ?></div>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if ( $orari ) : ?>
+                                <div class="info-row">
+                                    <div class="info-label"><?php esc_html_e( 'Orari Apertura', 'caniincasa' ); ?></div>
+                                    <div class="info-value">
+                                        <?php
+                                        // Output orari with allowed HTML tags
+                                        echo wp_kses_post( $orari );
+                                        ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                         </div>
-
-                        <!-- Servizi Offerti -->
-                        <?php
-                        $servizi = get_post_meta( get_the_ID(), 'servizi_offerti', true );
-                        if ( $servizi ) :
-                        ?>
-                            <div class="servizi-section">
-                                <h2><?php esc_html_e( 'Servizi Offerti', 'caniincasa' ); ?></h2>
-                                <div class="servizi-list">
-                                    <?php echo wpautop( esc_html( $servizi ) ); ?>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-
-                        <!-- Servizi Tags (taxonomy) -->
-                        <?php
-                        $servizi_terms = wp_get_post_terms( get_the_ID(), 'servizi_veterinari' );
-                        if ( ! empty( $servizi_terms ) && ! is_wp_error( $servizi_terms ) ) :
-                        ?>
-                            <div class="servizi-tags">
-                                <h3><?php esc_html_e( 'Specializzazioni', 'caniincasa' ); ?></h3>
-                                <div class="tag-list">
-                                    <?php foreach ( $servizi_terms as $term ) : ?>
-                                        <span class="tag tag-servizio"><?php echo esc_html( $term->name ); ?></span>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-
-                        <!-- Orari Apertura -->
-                        <?php
-                        // Se hai un repeater ACF per orari, usa questo
-                        // Se è un campo textarea, mostralo così:
-                        $orari = get_post_meta( get_the_ID(), 'orari_apertura', true );
-                        if ( $orari ) :
-                        ?>
-                            <div class="orari-section">
-                                <h2><?php esc_html_e( 'Orari di Apertura', 'caniincasa' ); ?></h2>
-                                <div class="orari-content">
-                                    <?php echo wpautop( esc_html( $orari ) ); ?>
-                                </div>
-                            </div>
-                        <?php endif; ?>
 
                     </div><!-- .veterinario-single__content -->
 
                     <!-- Sidebar -->
                     <aside class="veterinario-single__sidebar">
 
-                        <!-- Contact Box -->
-                        <?php
-                        $telefono_principale = get_post_meta( get_the_ID(), 'telefono_principale', true );
-                        $telefono_reperibilita = get_post_meta( get_the_ID(), 'telefono_reperibilita', true );
-                        $email = get_post_meta( get_the_ID(), 'email', true );
-                        $sito_web = get_post_meta( get_the_ID(), 'sito_web', true );
-                        $indirizzo_completo = get_post_meta( get_the_ID(), 'indirizzo_completo', true );
-                        ?>
-
-                        <div class="contact-box">
-                            <h3 class="contact-box__title"><?php esc_html_e( 'Contatti', 'caniincasa' ); ?></h3>
-                            <ul class="contact-list">
-                                <?php if ( $telefono_principale ) : ?>
-                                    <li class="contact-phone">
-                                        <i class="icon-phone">📞</i>
-                                        <div>
-                                            <strong><?php esc_html_e( 'Telefono:', 'caniincasa' ); ?></strong><br>
-                                            <a href="<?php echo esc_url( 'tel:' . preg_replace( '/[^0-9+]/', '', $telefono_principale ) ); ?>">
-                                                <?php echo esc_html( $telefono_principale ); ?>
-                                            </a>
-                                        </div>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ( $telefono_reperibilita ) : ?>
-                                    <li class="contact-phone">
-                                        <i class="icon-phone">📱</i>
-                                        <div>
-                                            <strong><?php esc_html_e( 'Reperibilità:', 'caniincasa' ); ?></strong><br>
-                                            <a href="<?php echo esc_url( 'tel:' . preg_replace( '/[^0-9+]/', '', $telefono_reperibilita ) ); ?>">
-                                                <?php echo esc_html( $telefono_reperibilita ); ?>
-                                            </a>
-                                        </div>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ( $email ) : ?>
-                                    <li class="contact-email">
-                                        <i class="icon-email">✉️</i>
-                                        <a href="<?php echo esc_url( 'mailto:' . $email ); ?>">
-                                            <?php echo esc_html( $email ); ?>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ( $sito_web ) : ?>
-                                    <li class="contact-web">
-                                        <i class="icon-web">🌐</i>
-                                        <a href="<?php echo esc_url( $sito_web ); ?>" target="_blank" rel="noopener">
-                                            <?php esc_html_e( 'Visita il sito', 'caniincasa' ); ?>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-
-                                <?php if ( $indirizzo_completo ) : ?>
-                                    <li class="contact-location">
-                                        <i class="icon-location">📍</i>
-                                        <?php echo esc_html( $indirizzo_completo ); ?>
-                                    </li>
-                                <?php endif; ?>
-                            </ul>
-
-                            <?php if ( $telefono_principale ) : ?>
-                                <a href="<?php echo esc_url( 'tel:' . preg_replace( '/[^0-9+]/', '', $telefono_principale ) ); ?>" class="btn btn-primary btn-block">
-                                    <?php esc_html_e( 'Chiama Ora', 'caniincasa' ); ?>
-                                </a>
-                            <?php endif; ?>
-                        </div>
-
-                        <!-- Info Box -->
-                        <div class="info-box">
-                            <h3 class="info-box__title"><?php esc_html_e( 'Informazioni', 'caniincasa' ); ?></h3>
-                            <dl class="info-list">
-                                <?php
-                                $cap = get_post_meta( get_the_ID(), 'cap', true );
-                                if ( $cap ) :
-                                ?>
-                                    <dt><?php esc_html_e( 'CAP', 'caniincasa' ); ?></dt>
-                                    <dd><?php echo esc_html( $cap ); ?></dd>
-                                <?php endif; ?>
-
-                                <?php if ( $pronto_soccorso ) : ?>
-                                    <dt><?php esc_html_e( 'Pronto Soccorso', 'caniincasa' ); ?></dt>
-                                    <dd><span class="badge badge-success">Disponibile 24h</span></dd>
-                                <?php endif; ?>
-                            </dl>
+                        <!-- Cerca altro veterinario -->
+                        <div class="sidebar-box">
+                            <h3><?php esc_html_e( 'Cerca altro veterinario', 'caniincasa' ); ?></h3>
+                            <a href="<?php echo esc_url( home_url( '/veterinari/' ) ); ?>" class="btn btn-primary btn-block">
+                                <?php esc_html_e( 'Vai all\'elenco', 'caniincasa' ); ?>
+                            </a>
                         </div>
 
                         <!-- CTA Aggiorna Info -->
-                        <div class="cta-card cta-card--small">
-                            <h4><?php esc_html_e( 'Sei il proprietario?', 'caniincasa' ); ?></h4>
-                            <p><?php esc_html_e( 'Aggiorna le informazioni della tua struttura', 'caniincasa' ); ?></p>
-                            <a href="<?php echo esc_url( home_url( '/contattaci/' ) ); ?>" class="btn btn-sm">
+                        <div class="cta-card">
+                            <h4><?php esc_html_e( 'Sei il proprietario vuoi aggiornare i dati', 'caniincasa' ); ?></h4>
+                            <a href="<?php echo esc_url( home_url( '/contattaci/' ) ); ?>" class="btn btn-secondary btn-block">
                                 <?php esc_html_e( 'Contattaci', 'caniincasa' ); ?>
                             </a>
+                        </div>
+
+                        <!-- Vuoi proporre una cucciolata -->
+                        <div class="sidebar-box sidebar-box--secondary">
+                            <h4><?php esc_html_e( 'Vuoi proporre una cucciolata o una adozione? scrivici!!', 'caniincasa' ); ?></h4>
                         </div>
 
                     </aside><!-- .veterinario-single__sidebar -->

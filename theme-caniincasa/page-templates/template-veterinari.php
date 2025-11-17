@@ -12,37 +12,163 @@ get_header();
 
 <main id="main-content" class="site-main page-veterinari">
 
+    <?php
+    // Hero Section
+    caniincasa_page_hero( array(
+        'subtitle' => 'Veterinari - Cliniche e Ambulatori',
+    ) );
+    ?>
+
     <div class="container">
 
         <?php caniincasa_breadcrumbs(); ?>
 
-        <!-- Hero Section -->
-        <div class="page-hero">
-            <h1 class="page-title">
-                <?php echo esc_html( get_the_title() ); ?>
-            </h1>
-            <?php if ( get_the_content() ): ?>
-                <div class="page-intro">
-                    <?php the_content(); ?>
+        <!-- Filtri -->
+        <div class="filters-wrapper">
+            <form method="get" id="filters-form" class="filters-form">
+                <div class="filters-row">
+                    <div class="filter-group filter-search">
+                        <label for="filter-search">Cerca:</label>
+                        <input type="text" id="filter-search" name="search" class="filter-input" placeholder="Cerca per nome..." data-post-type="struttureveterinarie" value="<?php echo esc_attr( isset( $_GET['search'] ) ? $_GET['search'] : '' ); ?>">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-provincia">Provincia:</label>
+                        <select id="filter-provincia" name="provincia" class="filter-select" data-post-type="struttureveterinarie">
+                            <option value="">Tutti</option>
+                            <?php
+                            // Get all unique province values from ACF field 'provincia_estesa'
+                            global $wpdb;
+                            $province_values = $wpdb->get_col( "
+                                SELECT DISTINCT meta_value
+                                FROM {$wpdb->postmeta} pm
+                                INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+                                WHERE pm.meta_key = 'provincia_estesa'
+                                AND pm.meta_value != ''
+                                AND p.post_type = 'struttureveterinarie'
+                                AND p.post_status = 'publish'
+                                ORDER BY pm.meta_value ASC
+                            " );
+
+                            $selected_provincia = isset( $_GET['provincia'] ) ? $_GET['provincia'] : '';
+                            foreach ( $province_values as $provincia ):
+                            ?>
+                                <option value="<?php echo esc_attr( $provincia ); ?>" <?php selected( $selected_provincia, $provincia ); ?>>
+                                    <?php echo esc_html( $provincia ); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="filter-servizi">Servizi Offerti:</label>
+                        <select id="filter-servizi" name="servizi" class="filter-select">
+                            <option value="">Tutti</option>
+                            <?php
+                            // Get all unique services from ACF field 'servizi_offerti'
+                            $servizi_values = $wpdb->get_col( "
+                                SELECT DISTINCT meta_value
+                                FROM {$wpdb->postmeta} pm
+                                INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+                                WHERE pm.meta_key = 'servizi_offerti'
+                                AND pm.meta_value != ''
+                                AND p.post_type = 'struttureveterinarie'
+                                AND p.post_status = 'publish'
+                                ORDER BY pm.meta_value ASC
+                            " );
+
+                            // Split comma-separated services and get unique values
+                            $all_servizi = array();
+                            foreach ( $servizi_values as $servizi_string ) {
+                                $servizi_array = array_map( 'trim', explode( ',', $servizi_string ) );
+                                $all_servizi = array_merge( $all_servizi, $servizi_array );
+                            }
+                            $all_servizi = array_unique( array_filter( $all_servizi ) );
+                            sort( $all_servizi );
+
+                            $selected_servizio = isset( $_GET['servizi'] ) ? $_GET['servizi'] : '';
+                            foreach ( $all_servizi as $servizio ):
+                            ?>
+                                <option value="<?php echo esc_attr( $servizio ); ?>" <?php selected( $selected_servizio, $servizio ); ?>>
+                                    <?php echo esc_html( $servizio ); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>&nbsp;</label>
+                        <button type="submit" id="apply-filters" class="btn btn-primary">Filtra</button>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>&nbsp;</label>
+                        <button type="button" id="reset-filters" class="btn btn-outline">Ripristina</button>
+                    </div>
                 </div>
-            <?php endif; ?>
+            </form>
         </div>
 
         <?php
         // Query per tutte le strutture veterinarie
+        // For page templates, check both 'paged' and 'page' query vars
         $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+        if ( $paged < 1 ) {
+            $paged = ( get_query_var( 'page' ) ) ? get_query_var( 'page' ) : 1;
+        }
+        if ( $paged < 1 ) {
+            $paged = 1;
+        }
 
+        // Build query args
         $args = array(
             'post_type' => 'struttureveterinarie',
             'post_status' => 'publish',
-            'posts_per_page' => 12,
+            'posts_per_page' => 24,
             'paged' => $paged,
             'orderby' => 'title',
             'order' => 'ASC',
         );
 
+        // Add search filter
+        if ( isset( $_GET['search'] ) && ! empty( $_GET['search'] ) ) {
+            $args['s'] = sanitize_text_field( $_GET['search'] );
+        }
+
+        // Build meta query for ACF filters
+        $meta_query = array( 'relation' => 'AND' );
+
+        // Filter by provincia
+        if ( isset( $_GET['provincia'] ) && ! empty( $_GET['provincia'] ) ) {
+            $meta_query[] = array(
+                'key' => 'provincia_estesa',
+                'value' => sanitize_text_field( $_GET['provincia'] ),
+                'compare' => '=',
+            );
+        }
+
+        // Filter by servizi offerti
+        if ( isset( $_GET['servizi'] ) && ! empty( $_GET['servizi'] ) ) {
+            $meta_query[] = array(
+                'key' => 'servizi_offerti',
+                'value' => sanitize_text_field( $_GET['servizi'] ),
+                'compare' => 'LIKE',
+            );
+        }
+
+        // Add meta query if filters are set
+        if ( count( $meta_query ) > 1 ) {
+            $args['meta_query'] = $meta_query;
+        }
+
         $veterinari_query = new WP_Query( $args );
         ?>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner" style="display:none;">
+            <div class="spinner"></div>
+            <p>Caricamento...</p>
+        </div>
 
         <!-- Results Count -->
         <div class="results-info">
@@ -56,8 +182,15 @@ get_header();
 
         <?php if ( $veterinari_query->have_posts() ): ?>
 
+            <?php
+            // Pre-load caches for better performance
+            $post_ids = wp_list_pluck( $veterinari_query->posts, 'ID' );
+            update_post_caches( $veterinari_query->posts, 'struttureveterinarie', true, true );
+            update_object_term_cache( $post_ids, 'struttureveterinarie' );
+            ?>
+
             <!-- Veterinari Grid -->
-            <div class="items-grid">
+            <div class="items-grid" id="items-grid">
 
                 <?php while ( $veterinari_query->have_posts() ): $veterinari_query->the_post(); ?>
 
@@ -115,10 +248,10 @@ get_header();
                             <?php endif; ?>
 
                             <?php
-                            // Indirizzo
+                            // Indirizzo e Località/Comune
                             $indirizzo = get_field( 'indirizzo' );
-                            $citta = get_field( 'citta' );
-                            if ( $indirizzo || $citta ):
+                            $localita = get_field( 'localita' ) ?: get_field( 'comune' );
+                            if ( $indirizzo || $localita ):
                             ?>
                                 <div class="item-address">
                                     <span class="icon">🏠</span>
@@ -126,9 +259,9 @@ get_header();
                                         <?php
                                         if ( $indirizzo ) {
                                             echo esc_html( $indirizzo );
-                                            if ( $citta ) echo ', ';
+                                            if ( $localita ) echo ', ';
                                         }
-                                        if ( $citta ) echo esc_html( $citta );
+                                        if ( $localita ) echo esc_html( $localita );
                                         ?>
                                     </span>
                                 </div>
@@ -150,42 +283,6 @@ get_header();
                                 </div>
                             <?php endif; ?>
 
-                            <?php
-                            // Contatti (protetti - solo per utenti registrati)
-                            $telefono = get_field( 'telefono_principale' ) ?: get_field( 'telefono' );
-                            $email = get_field( 'email' );
-                            $sito_web = get_field( 'sito_web' );
-
-                            if ( $telefono || $email || $sito_web ):
-                            ?>
-                                <div class="item-contacts">
-                                    <?php if ( caniincasa_can_view_contacts() ): ?>
-                                        <?php if ( $telefono ): ?>
-                                            <a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $telefono ) ); ?>" class="contact-item" title="Telefono">
-                                                <span class="icon">📞</span>
-                                            </a>
-                                        <?php endif; ?>
-
-                                        <?php if ( $email ): ?>
-                                            <a href="mailto:<?php echo esc_attr( $email ); ?>" class="contact-item" title="Email">
-                                                <span class="icon">✉️</span>
-                                            </a>
-                                        <?php endif; ?>
-
-                                        <?php if ( $sito_web ): ?>
-                                            <a href="<?php echo esc_url( $sito_web ); ?>" target="_blank" rel="noopener" class="contact-item" title="Sito web">
-                                                <span class="icon">🌐</span>
-                                            </a>
-                                        <?php endif; ?>
-                                    <?php else: ?>
-                                        <div class="protected-contact-message">
-                                            <span class="icon">🔒</span>
-                                            <a href="<?php echo home_url( '/registrati/' ); ?>">Registrati per vedere i contatti</a>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
-
                             <!-- View More Button -->
                             <a href="<?php the_permalink(); ?>" class="btn-view-more">
                                 Visualizza dettagli
@@ -203,14 +300,9 @@ get_header();
             <?php if ( $veterinari_query->max_num_pages > 1 ): ?>
                 <div class="pagination-wrapper">
                     <?php
-                    echo paginate_links( array(
-                        'base' => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
-                        'format' => '?paged=%#%',
-                        'current' => max( 1, $paged ),
+                    echo caniincasa_get_pagination_with_filters( array(
                         'total' => $veterinari_query->max_num_pages,
-                        'prev_text' => '&laquo; Precedente',
-                        'next_text' => 'Successiva &raquo;',
-                        'type' => 'list',
+                        'current' => max( 1, $paged ),
                     ) );
                     ?>
                 </div>

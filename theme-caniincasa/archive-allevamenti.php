@@ -191,25 +191,12 @@ get_header();
                                     <!-- Location -->
                                     <?php
                                     $localita = get_post_meta( get_the_ID(), 'localita', true );
-                                    $provincia = get_post_meta( get_the_ID(), 'provincia_', true );
 
-                                    $location_parts = array();
-
-                                    // Localita
-                                    if ( $localita ) {
-                                        $location_parts[] = $localita;
-                                    }
-
-                                    // Provincia
-                                    if ( $provincia ) {
-                                        $location_parts[] = '(' . $provincia . ')';
-                                    }
-
-                                    if ( ! empty( $location_parts ) ) :
+                                    if ( $localita ) :
                                     ?>
                                         <div class="allevamento-card__location">
                                             <span class="icon">📍</span>
-                                            <?php echo esc_html( implode( ' ', $location_parts ) ); ?>
+                                            <?php echo esc_html( $localita ); ?>
                                         </div>
                                     <?php endif; ?>
 

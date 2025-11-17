@@ -1291,9 +1291,14 @@ function caniincasa_allevamenti_posts_per_page( $query ) {
         $query->set( 'post_status', 'publish' );
         // Remove any potential nopaging limitation
         $query->set( 'nopaging', false );
+        // Ensure orderby is set
+        if ( ! $query->get( 'orderby' ) ) {
+            $query->set( 'orderby', 'title' );
+            $query->set( 'order', 'ASC' );
+        }
     }
 }
-add_action( 'pre_get_posts', 'caniincasa_allevamenti_posts_per_page', 20 );
+add_action( 'pre_get_posts', 'caniincasa_allevamenti_posts_per_page', 999 );
 
 /**
  * Get Pagination Links with Filter Parameters Preserved

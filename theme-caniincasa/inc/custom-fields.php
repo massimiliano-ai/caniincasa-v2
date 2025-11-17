@@ -444,6 +444,20 @@ acf_add_local_field_group( array(
         ),
 
         array(
+            'key' => 'field_eta_cane',
+            'label' => 'Età Cane',
+            'name' => 'eta_cane',
+            'type' => 'select',
+            'required' => 0,
+            'choices' => array(
+                'cucciolo' => 'Cucciolo',
+                'adulto' => 'Adulto',
+            ),
+            'default_value' => 'cucciolo',
+            'allow_null' => 1,
+        ),
+
+        array(
             'key' => 'field_razza',
             'label' => 'Razza',
             'name' => 'razza',

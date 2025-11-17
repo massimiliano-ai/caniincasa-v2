@@ -54,6 +54,16 @@ $current_user = wp_get_current_user();
                         </select>
                         <small class="form-help">Scegli se stai offrendo cuccioli o cercando un cucciolo da adottare</small>
                     </div>
+
+                    <div class="form-group">
+                        <label for="eta_cane">Età del Cane</label>
+                        <select id="eta_cane" name="eta_cane">
+                            <option value="">Non specificato</option>
+                            <option value="cucciolo" selected>Cucciolo</option>
+                            <option value="adulto">Adulto</option>
+                        </select>
+                        <small class="form-help">Specifica se si tratta di cucciolo o adulto (opzionale)</small>
+                    </div>
                 </div>
 
                 <div class="form-section">
@@ -89,8 +99,8 @@ $current_user = wp_get_current_user();
                         </div>
 
                         <div class="form-group field-offerta-only">
-                            <label for="data_nascita">Data di Nascita Cuccioli <span class="required-offerta">*</span></label>
-                            <input type="date" id="data_nascita" name="data_nascita" data-required-for="offerta">
+                            <label for="data_nascita">Data di Nascita Cuccioli</label>
+                            <input type="date" id="data_nascita" name="data_nascita">
                         </div>
                     </div>
 
@@ -154,10 +164,10 @@ $current_user = wp_get_current_user();
                     <h2 class="section-title">Descrizione</h2>
 
                     <div class="form-group">
-                        <label for="descrizione">Descrizione *</label>
-                        <textarea id="descrizione" name="descrizione" rows="8" required
+                        <label for="descrizione">Descrizione</label>
+                        <textarea id="descrizione" name="descrizione" rows="8"
                                   placeholder="Descrivi l'annuncio, i cuccioli, i genitori, eventuali caratteristiche, temperamento..."></textarea>
-                        <small class="form-help">Minimo 100 caratteri. Descrivi dettagliatamente l'annuncio.</small>
+                        <small class="form-help">Descrivi dettagliatamente l'annuncio (opzionale).</small>
                     </div>
                 </div>
 

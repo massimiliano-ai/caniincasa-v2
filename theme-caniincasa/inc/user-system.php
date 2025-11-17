@@ -389,24 +389,20 @@ function caniincasa_ajax_submit_cucciolata() {
 
     // Sanitize input
     $ricerca_offerta = sanitize_text_field( $_POST['ricerca_offerta'] );
+    $eta_cane = ! empty( $_POST['eta_cane'] ) ? sanitize_text_field( $_POST['eta_cane'] ) : '';
     $titolo = sanitize_text_field( $_POST['titolo'] );
     $razza_id = intval( $_POST['razza'] );
-    $data_nascita = sanitize_text_field( $_POST['data_nascita'] );
+    $data_nascita = ! empty( $_POST['data_nascita'] ) ? sanitize_text_field( $_POST['data_nascita'] ) : '';
     $numero_maschi = intval( $_POST['numero_maschi'] );
     $numero_femmine = intval( $_POST['numero_femmine'] );
     $prezzo = ! empty( $_POST['prezzo'] ) ? floatval( $_POST['prezzo'] ) : '';
-    $pedigree = sanitize_text_field( $_POST['pedigree'] );
+    $pedigree = ! empty( $_POST['pedigree'] ) ? sanitize_text_field( $_POST['pedigree'] ) : '';
     $provincia_id = intval( $_POST['provincia'] );
-    $descrizione = wp_kses_post( $_POST['descrizione'] );
+    $descrizione = ! empty( $_POST['descrizione'] ) ? wp_kses_post( $_POST['descrizione'] ) : '';
 
-    // Validate base fields
-    if ( empty( $titolo ) || empty( $razza_id ) || empty( $ricerca_offerta ) || empty( $descrizione ) ) {
+    // Validate base fields (only required: titolo, razza, ricerca_offerta, provincia)
+    if ( empty( $titolo ) || empty( $razza_id ) || empty( $ricerca_offerta ) ) {
         wp_send_json_error( array( 'message' => 'Compila tutti i campi obbligatori' ) );
-    }
-
-    // Validate offerta-specific fields
-    if ( $ricerca_offerta === 'offerta' && empty( $data_nascita ) ) {
-        wp_send_json_error( array( 'message' => 'La data di nascita è obbligatoria per gli annunci di offerta' ) );
     }
 
     // Create post
@@ -424,11 +420,16 @@ function caniincasa_ajax_submit_cucciolata() {
 
     // Add meta fields
     update_field( 'ricerca_offerta', $ricerca_offerta, $post_id );
+    if ( $eta_cane ) {
+        update_field( 'eta_cane', $eta_cane, $post_id );
+    }
     update_field( 'razza', $razza_id, $post_id );
 
     // Only save offerta-specific fields if type is offerta
     if ( $ricerca_offerta === 'offerta' ) {
-        update_field( 'data_nascita', $data_nascita, $post_id );
+        if ( $data_nascita ) {
+            update_field( 'data_nascita', $data_nascita, $post_id );
+        }
         update_field( 'numero_maschi', $numero_maschi, $post_id );
         update_field( 'numero_femmine', $numero_femmine, $post_id );
         if ( $prezzo ) {
@@ -517,18 +518,17 @@ function caniincasa_ajax_submit_dogsitter() {
     // Sanitize input
     $titolo = sanitize_text_field( $_POST['titolo'] );
     $provincia_id = intval( $_POST['provincia'] );
-    $comune = sanitize_text_field( $_POST['comune'] );
-    $esperienza = sanitize_text_field( $_POST['esperienza'] );
-    $tariffe = floatval( $_POST['tariffe'] );
-    $descrizione = wp_kses_post( $_POST['descrizione'] );
+    $comune = ! empty( $_POST['comune'] ) ? sanitize_text_field( $_POST['comune'] ) : '';
+    $esperienza = ! empty( $_POST['esperienza'] ) ? sanitize_text_field( $_POST['esperienza'] ) : '';
+    $tariffe = ! empty( $_POST['tariffe'] ) ? floatval( $_POST['tariffe'] ) : '';
+    $descrizione = ! empty( $_POST['descrizione'] ) ? wp_kses_post( $_POST['descrizione'] ) : '';
 
-    // Validate required fields
-    if ( empty( $titolo ) || empty( $provincia_id ) || empty( $comune ) ||
-         empty( $esperienza ) || empty( $tariffe ) || empty( $descrizione ) ) {
-        wp_send_json_error( array( 'message' => 'Compila tutti i campi obbligatori' ) );
+    // Validate required fields (only titolo and provincia are required)
+    if ( empty( $titolo ) || empty( $provincia_id ) ) {
+        wp_send_json_error( array( 'message' => 'Compila tutti i campi obbligatori (Titolo e Provincia)' ) );
     }
 
-    // Validate arrays
+    // Validate arrays (all optional now)
     $disponibilita = isset( $_POST['disponibilita'] ) && is_array( $_POST['disponibilita'] )
         ? array_map( 'sanitize_text_field', $_POST['disponibilita'] )
         : array();
@@ -540,10 +540,6 @@ function caniincasa_ajax_submit_dogsitter() {
     $taglie = isset( $_POST['taglie'] ) && is_array( $_POST['taglie'] )
         ? array_map( 'sanitize_text_field', $_POST['taglie'] )
         : array();
-
-    if ( empty( $disponibilita ) || empty( $servizi ) || empty( $taglie ) ) {
-        wp_send_json_error( array( 'message' => 'Seleziona almeno un\'opzione per disponibilità, servizi e taglie' ) );
-    }
 
     // Create post
     $post_id = wp_insert_post( array(
@@ -558,10 +554,18 @@ function caniincasa_ajax_submit_dogsitter() {
         wp_send_json_error( array( 'message' => $post_id->get_error_message() ) );
     }
 
-    // Save ACF fields
-    update_field( 'comune', $comune, $post_id );
-    update_field( 'esperienza', $esperienza, $post_id );
-    update_field( 'tariffe', $tariffe, $post_id );
+    // Save ACF fields (only save if not empty)
+    if ( $comune ) {
+        update_field( 'comune', $comune, $post_id );
+    }
+    if ( $esperienza ) {
+        update_field( 'esperienza', $esperienza, $post_id );
+    }
+    if ( $tariffe ) {
+        update_field( 'tariffe', $tariffe, $post_id );
+    }
+
+    // Save arrays (even if empty)
     update_field( 'disponibilita', $disponibilita, $post_id );
     update_field( 'servizi', $servizi, $post_id );
     update_field( 'taglie', $taglie, $post_id );

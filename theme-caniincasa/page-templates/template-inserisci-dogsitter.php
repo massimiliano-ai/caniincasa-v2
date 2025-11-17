@@ -75,8 +75,8 @@ $current_user = wp_get_current_user();
                         </div>
 
                         <div class="form-group">
-                            <label for="comune_dogsitter">Comune *</label>
-                            <input type="text" id="comune_dogsitter" name="comune" required
+                            <label for="comune_dogsitter">Comune</label>
+                            <input type="text" id="comune_dogsitter" name="comune"
                                    placeholder="Es: Milano">
                         </div>
                     </div>
@@ -90,8 +90,8 @@ $current_user = wp_get_current_user();
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="esperienza">Anni di Esperienza *</label>
-                            <select id="esperienza" name="esperienza" required>
+                            <label for="esperienza">Anni di Esperienza</label>
+                            <select id="esperienza" name="esperienza">
                                 <option value="">Seleziona</option>
                                 <option value="meno-1">Meno di 1 anno</option>
                                 <option value="1-3">1-3 anni</option>
@@ -102,10 +102,10 @@ $current_user = wp_get_current_user();
                         </div>
 
                         <div class="form-group">
-                            <label for="tariffe">Tariffa Oraria (€) *</label>
-                            <input type="number" id="tariffe" name="tariffe" min="5" max="100" step="1" required
+                            <label for="tariffe">Tariffa Oraria (€)</label>
+                            <input type="number" id="tariffe" name="tariffe" min="5" max="100" step="1"
                                    placeholder="Es: 15">
-                            <small class="form-help">Tariffa oraria indicativa in euro</small>
+                            <small class="form-help">Tariffa oraria indicativa in euro (opzionale)</small>
                         </div>
                     </div>
                 </div>
@@ -114,7 +114,7 @@ $current_user = wp_get_current_user();
                     <h2 class="section-title">Disponibilità e Servizi</h2>
 
                     <div class="form-group">
-                        <label>Disponibilità Oraria *</label>
+                        <label>Disponibilità Oraria</label>
                         <div class="checkbox-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" name="disponibilita[]" value="mattina">
@@ -137,11 +137,11 @@ $current_user = wp_get_current_user();
                                 <span>🌙 Notturno</span>
                             </label>
                         </div>
-                        <small class="form-help">Seleziona almeno una fascia oraria</small>
+                        <small class="form-help">Seleziona le fasce orarie in cui sei disponibile (opzionale)</small>
                     </div>
 
                     <div class="form-group">
-                        <label>Servizi Offerti *</label>
+                        <label>Servizi Offerti</label>
                         <div class="checkbox-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" name="servizi[]" value="passeggiate">
@@ -168,11 +168,11 @@ $current_user = wp_get_current_user();
                                 <span>🎓 Addestramento base</span>
                             </label>
                         </div>
-                        <small class="form-help">Seleziona almeno un servizio</small>
+                        <small class="form-help">Seleziona i servizi che offri (opzionale)</small>
                     </div>
 
                     <div class="form-group">
-                        <label>Taglie Accettate *</label>
+                        <label>Taglie Accettate</label>
                         <div class="checkbox-group checkbox-group-inline">
                             <label class="checkbox-label">
                                 <input type="checkbox" name="taglie[]" value="piccola">
@@ -191,7 +191,7 @@ $current_user = wp_get_current_user();
                                 <span>🐕 Gigante (oltre 45kg)</span>
                             </label>
                         </div>
-                        <small class="form-help">Seleziona almeno una taglia</small>
+                        <small class="form-help">Seleziona le taglie che puoi accettare (opzionale)</small>
                     </div>
                 </div>
 
@@ -199,11 +199,11 @@ $current_user = wp_get_current_user();
                     <h2 class="section-title">Presentazione</h2>
 
                     <div class="form-group">
-                        <label for="descrizione_dogsitter">Descrizione dei Tuoi Servizi *</label>
-                        <textarea id="descrizione_dogsitter" name="descrizione" rows="10" required
+                        <label for="descrizione_dogsitter">Descrizione dei Tuoi Servizi</label>
+                        <textarea id="descrizione_dogsitter" name="descrizione" rows="10"
                                   placeholder="Descrivi la tua esperienza, le tue competenze, eventuali certificazioni, disponibilità di spazi (giardino, ecc.), e cosa ti rende un buon dogsitter..."></textarea>
-                        <small class="form-help">Minimo 100 caratteri. Più dettagliata è la descrizione, più sarà convincente per i proprietari.</small>
-                        <div id="char-count" class="char-count">0/100 caratteri</div>
+                        <small class="form-help">Più dettagliata è la descrizione, più sarà convincente per i proprietari (opzionale).</small>
+                        <div id="char-count" class="char-count">0 caratteri</div>
                     </div>
                 </div>
 

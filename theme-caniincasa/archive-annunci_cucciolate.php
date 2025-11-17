@@ -77,14 +77,39 @@ get_header();
                             <div class="annuncio-type-badge">
                                 <?php
                                 $ricerca_offerta = get_field( 'ricerca_offerta' );
-                                if ( $ricerca_offerta === 'offerta' ) :
+                                $eta_cane = get_field( 'eta_cane' );
+
+                                // Build badge text with età if available
+                                $badge_text = '';
+                                $badge_class = 'badge-cucciolate';
+
+                                if ( $ricerca_offerta === 'offerta' ) {
+                                    $badge_text = '💼 Offro';
+                                    $badge_class = 'badge-offerta';
+                                    if ( $eta_cane === 'cucciolo' ) {
+                                        $badge_text .= ' Cucciolo';
+                                    } elseif ( $eta_cane === 'adulto' ) {
+                                        $badge_text .= ' Adulto';
+                                    } else {
+                                        $badge_text .= ' Cuccioli';
+                                    }
+                                } elseif ( $ricerca_offerta === 'ricerca' ) {
+                                    $badge_text = '🔍 Cerco';
+                                    $badge_class = 'badge-ricerca';
+                                    if ( $eta_cane === 'cucciolo' ) {
+                                        $badge_text .= ' Cucciolo';
+                                    } elseif ( $eta_cane === 'adulto' ) {
+                                        $badge_text .= ' Adulto';
+                                    } else {
+                                        $badge_text .= ' Cucciolo';
+                                    }
+                                } else {
+                                    $badge_text = '🐶 Cucciolata';
+                                }
                                 ?>
-                                    <span class="badge badge-offerta">💼 Offro Cuccioli</span>
-                                <?php elseif ( $ricerca_offerta === 'ricerca' ) : ?>
-                                    <span class="badge badge-ricerca">🔍 Cerco Cucciolo</span>
-                                <?php else : ?>
-                                    <span class="badge badge-cucciolate">🐶 Cucciolata</span>
-                                <?php endif; ?>
+                                <span class="badge <?php echo esc_attr( $badge_class ); ?>">
+                                    <?php echo esc_html( $badge_text ); ?>
+                                </span>
                             </div>
                         </div>
 

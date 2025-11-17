@@ -37,16 +37,41 @@ get_header();
                             <?php
                             // Tipo annuncio badge
                             $ricerca_offerta = get_field( 'ricerca_offerta' );
-                            if ( $ricerca_offerta ) :
+                            $eta_cane = get_field( 'eta_cane' );
+
+                            // Build badge text with età if available
+                            $badge_text = '';
+                            $badge_class = 'badge-cucciolate';
+
+                            if ( $ricerca_offerta === 'offerta' ) {
+                                $badge_text = '💼 Offro';
+                                $badge_class = 'badge-offerta';
+                                if ( $eta_cane === 'cucciolo' ) {
+                                    $badge_text .= ' Cucciolo';
+                                } elseif ( $eta_cane === 'adulto' ) {
+                                    $badge_text .= ' Adulto';
+                                } else {
+                                    $badge_text .= ' Cuccioli';
+                                }
+                            } elseif ( $ricerca_offerta === 'ricerca' ) {
+                                $badge_text = '🔍 Cerco';
+                                $badge_class = 'badge-ricerca';
+                                if ( $eta_cane === 'cucciolo' ) {
+                                    $badge_text .= ' Cucciolo';
+                                } elseif ( $eta_cane === 'adulto' ) {
+                                    $badge_text .= ' Adulto';
+                                } else {
+                                    $badge_text .= ' Cucciolo';
+                                }
+                            } else {
+                                $badge_text = '🐶 Cucciolata';
+                            }
                             ?>
-                                <div class="annuncio-tipo-badge">
-                                    <?php if ( $ricerca_offerta === 'offerta' ) : ?>
-                                        <span class="badge badge--offerta">Offro Cuccioli</span>
-                                    <?php else : ?>
-                                        <span class="badge badge--ricerca">Cerco Cucciolo</span>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
+                            <div class="annuncio-tipo-badge">
+                                <span class="badge <?php echo esc_attr( $badge_class ); ?>">
+                                    <?php echo esc_html( $badge_text ); ?>
+                                </span>
+                            </div>
 
                             <h1 class="cucciolata-single__title"><?php the_title(); ?></h1>
 
@@ -74,6 +99,7 @@ get_header();
                         <div class="cucciolata-info-grid">
                             <?php
                             $ricerca_offerta = get_field( 'ricerca_offerta' );
+                            $eta_cane = get_field( 'eta_cane' );
                             $data_nascita = get_field( 'data_nascita' );
                             $numero_maschi = get_field( 'numero_maschi' );
                             $numero_femmine = get_field( 'numero_femmine' );
@@ -96,6 +122,19 @@ get_header();
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Età Cane -->
+                            <?php if ( $eta_cane ) : ?>
+                                <div class="info-card">
+                                    <div class="info-card__icon">🎂</div>
+                                    <div class="info-card__content">
+                                        <div class="info-card__label"><?php esc_html_e( 'Età', 'caniincasa' ); ?></div>
+                                        <div class="info-card__value">
+                                            <?php echo esc_html( ucfirst( $eta_cane ) ); ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
 
                             <!-- Razza -->
                             <?php if ( $razza ) : ?>

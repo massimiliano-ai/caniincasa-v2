@@ -1291,6 +1291,8 @@ function caniincasa_allevamenti_posts_per_page( $query ) {
         $query->set( 'post_status', 'publish' );
         // Remove any potential nopaging limitation
         $query->set( 'nopaging', false );
+        // Force WordPress to calculate found_posts for pagination
+        $query->set( 'no_found_rows', false );
         // Ensure orderby is set
         if ( ! $query->get( 'orderby' ) ) {
             $query->set( 'orderby', 'title' );

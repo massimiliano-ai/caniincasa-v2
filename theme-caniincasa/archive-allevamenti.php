@@ -132,14 +132,22 @@ get_header();
                     $post_ids = wp_list_pluck( $wp_query->posts, 'ID' );
                     update_post_caches( $wp_query->posts, 'allevamenti', true, true );
                     update_object_term_cache( $post_ids, 'allevamenti' );
+
+                    // Get accurate count
+                    $total_allevamenti = $wp_query->found_posts;
+
+                    // Debug: log the values
+                    error_log('Allevamenti Archive - found_posts: ' . $total_allevamenti);
+                    error_log('Allevamenti Archive - post_count: ' . $wp_query->post_count);
+                    error_log('Allevamenti Archive - max_num_pages: ' . $wp_query->max_num_pages);
                     ?>
 
                     <div class="archive-results-header">
                         <p class="results-count">
                             <?php
                             printf(
-                                esc_html( _n( '%d allevamento trovato', '%d allevamenti trovati', $wp_query->found_posts, 'caniincasa' ) ),
-                                number_format_i18n( $wp_query->found_posts )
+                                esc_html( _n( '%d allevamento trovato', '%d allevamenti trovati', $total_allevamenti, 'caniincasa' ) ),
+                                number_format_i18n( $total_allevamenti )
                             );
                             ?>
                         </p>

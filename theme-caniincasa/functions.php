@@ -1283,14 +1283,17 @@ function caniincasa_filter_annunci_archive( $query ) {
 add_action( 'pre_get_posts', 'caniincasa_filter_annunci_archive' );
 
 /**
- * Set posts per page for allevamenti archive
+ * Set posts per page for allevamenti archive and ensure all published posts are shown
  */
 function caniincasa_allevamenti_posts_per_page( $query ) {
     if ( ! is_admin() && $query->is_main_query() && is_post_type_archive( 'allevamenti' ) ) {
         $query->set( 'posts_per_page', 24 );
+        $query->set( 'post_status', 'publish' );
+        // Remove any potential nopaging limitation
+        $query->set( 'nopaging', false );
     }
 }
-add_action( 'pre_get_posts', 'caniincasa_allevamenti_posts_per_page' );
+add_action( 'pre_get_posts', 'caniincasa_allevamenti_posts_per_page', 20 );
 
 /**
  * Get Pagination Links with Filter Parameters Preserved

@@ -162,94 +162,101 @@ get_header();
 
         <?php if ( $annunci_query->have_posts() ): ?>
 
-            <!-- Annunci Grid -->
-            <div class="items-grid" id="items-grid">
+            <!-- Annunci List Layout (Horizontal Cards) -->
+            <div class="annunci-list-layout" id="items-grid">
 
                 <?php while ( $annunci_query->have_posts() ): $annunci_query->the_post(); ?>
 
-                    <div class="item-card annuncio-card">
+                    <article class="annuncio-horizontal-card">
 
-                        <!-- Badge Tipo Annuncio -->
-                        <div class="annuncio-type-badge">
-                            <?php
-                            $post_type = get_post_type();
-                            if ( $post_type === 'annunci_cucciolate' ) {
-                                echo '<span class="badge badge-cucciolate">🐶 Cucciolata</span>';
-                            } elseif ( $post_type === 'annunci_dogsitter' ) {
-                                echo '<span class="badge badge-dogsitter">🦴 Dogsitter</span>';
-                            }
-                            ?>
-                        </div>
-
-                        <!-- Image -->
-                        <?php if ( has_post_thumbnail() ): ?>
-                            <div class="item-image">
-                                <a href="<?php the_permalink(); ?>">
-                                    <?php the_post_thumbnail( 'medium_large', array(
+                        <!-- Image Section (Left) -->
+                        <div class="annuncio-image-wrapper">
+                            <?php if ( has_post_thumbnail() ): ?>
+                                <a href="<?php the_permalink(); ?>" class="annuncio-image-link">
+                                    <?php the_post_thumbnail( 'large', array(
                                         'loading' => 'lazy',
-                                        'alt' => get_the_title()
+                                        'alt' => get_the_title(),
+                                        'class' => 'annuncio-featured-image'
                                     ) ); ?>
                                 </a>
+                            <?php else: ?>
+                                <div class="annuncio-placeholder-image">
+                                    <span class="placeholder-icon">📢</span>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Badge Tipo Annuncio -->
+                            <div class="annuncio-type-badge">
+                                <?php
+                                $post_type = get_post_type();
+                                if ( $post_type === 'annunci_cucciolate' ) {
+                                    echo '<span class="badge badge-cucciolate">🐶 Cucciolata</span>';
+                                } elseif ( $post_type === 'annunci_dogsitter' ) {
+                                    echo '<span class="badge badge-dogsitter">🦴 Dogsitter</span>';
+                                }
+                                ?>
                             </div>
-                        <?php endif; ?>
+                        </div>
 
-                        <!-- Content -->
-                        <div class="item-content">
+                        <!-- Content Section (Right) -->
+                        <div class="annuncio-content-wrapper">
 
-                            <h3 class="item-title">
+                            <h2 class="annuncio-title">
                                 <a href="<?php the_permalink(); ?>">
                                     <?php the_title(); ?>
                                 </a>
-                            </h3>
+                            </h2>
 
-                            <?php
-                            // Data pubblicazione
-                            ?>
-                            <div class="item-date">
-                                <span class="icon">📅</span>
-                                <span class="text"><?php echo get_the_date(); ?></span>
+                            <!-- Meta Info -->
+                            <div class="annuncio-meta">
+                                <span class="annuncio-date"><?php echo get_the_date( 'F j, Y' ); ?></span>
                             </div>
 
-                            <?php
-                            // Provincia
-                            $province = wp_get_post_terms( get_the_ID(), 'provincia' );
-                            if ( ! empty( $province ) && ! is_wp_error( $province ) ):
-                            ?>
-                                <div class="item-location">
-                                    <span class="icon">📍</span>
-                                    <span class="text"><?php echo esc_html( $province[0]->name ); ?></span>
-                                </div>
-                            <?php endif; ?>
+                            <!-- Description -->
+                            <div class="annuncio-description">
+                                <?php
+                                if ( has_excerpt() ) {
+                                    echo wp_trim_words( get_the_excerpt(), 30, '...' );
+                                } else {
+                                    echo wp_trim_words( get_the_content(), 30, '...' );
+                                }
+                                ?>
+                            </div>
 
-                            <?php
-                            // Razza (per cucciolate)
-                            if ( get_post_type() === 'annunci_cucciolate' ):
-                                $razza = get_field( 'razza' );
-                                if ( $razza ):
-                            ?>
-                                <div class="item-breed">
-                                    <span class="icon">🐕</span>
-                                    <span class="text"><?php echo esc_html( $razza ); ?></span>
-                                </div>
-                            <?php endif; endif; ?>
+                            <!-- Additional Meta -->
+                            <div class="annuncio-additional-meta">
+                                <?php
+                                // Provincia
+                                $province = wp_get_post_terms( get_the_ID(), 'provincia' );
+                                if ( ! empty( $province ) && ! is_wp_error( $province ) ):
+                                ?>
+                                    <span class="meta-item">
+                                        <span class="icon">📍</span>
+                                        <span class="text"><?php echo esc_html( $province[0]->name ); ?></span>
+                                    </span>
+                                <?php endif; ?>
 
-                            <?php
-                            // Excerpt
-                            if ( has_excerpt() ):
-                            ?>
-                                <div class="item-excerpt">
-                                    <?php echo wp_trim_words( get_the_excerpt(), 20, '...' ); ?>
-                                </div>
-                            <?php endif; ?>
+                                <?php
+                                // Razza (per cucciolate)
+                                if ( get_post_type() === 'annunci_cucciolate' ):
+                                    $razza = get_field( 'razza' );
+                                    if ( $razza ):
+                                ?>
+                                    <span class="meta-item">
+                                        <span class="icon">🐕</span>
+                                        <span class="text"><?php echo esc_html( $razza ); ?></span>
+                                    </span>
+                                <?php endif; endif; ?>
+                            </div>
 
-                            <!-- View More Button -->
-                            <a href="<?php the_permalink(); ?>" class="btn-view-more">
-                                Visualizza dettagli
+                            <!-- Learn More Link -->
+                            <a href="<?php the_permalink(); ?>" class="annuncio-learn-more">
+                                Learn more
                             </a>
 
                         </div>
 
-                    </div>
+                    </article>
 
                 <?php endwhile; ?>
 

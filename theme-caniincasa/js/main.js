@@ -177,6 +177,58 @@
     }
 
     /**
+     * Archive Filter Forms
+     * Reset pagination when filters are applied
+     */
+    function initFilterForms() {
+        $('.filter-form, #allevamenti-filter-form, #cucciolate-filter-form, #filtri-allevamenti-form, #filtri-annunci-form').on('submit', function(e) {
+            const form = $(this);
+            const currentUrl = window.location.href;
+
+            // Check if we're on a paginated URL (e.g., /page/2/, /page/3/)
+            if (currentUrl.match(/\/page\/\d+\//)) {
+                e.preventDefault();
+
+                // Remove /page/X/ from URL to reset to page 1
+                const baseUrl = currentUrl.replace(/\/page\/\d+\/.*$/, '/');
+
+                // Get form data
+                const formData = form.serialize();
+
+                // Redirect to page 1 with filters
+                if (formData) {
+                    window.location.href = baseUrl + '?' + formData;
+                } else {
+                    window.location.href = baseUrl;
+                }
+
+                return false;
+            }
+        });
+
+        // Reset filters button
+        $('#reset-filters').on('click', function(e) {
+            const form = $(this).closest('form');
+
+            // If not in a form, check for nearby forms
+            if (!form.length) {
+                const nearbyForm = $('.filter-form, #allevamenti-filter-form, #cucciolate-filter-form, #filtri-allevamenti-form, #filtri-annunci-form').first();
+
+                if (nearbyForm.length) {
+                    e.preventDefault();
+
+                    // Get base URL without /page/X/ and query params
+                    let baseUrl = window.location.pathname;
+                    baseUrl = baseUrl.replace(/\/page\/\d+\/.*$/, '/');
+
+                    window.location.href = baseUrl;
+                    return false;
+                }
+            }
+        });
+    }
+
+    /**
      * Initialize all functions
      */
     $(document).ready(function() {
@@ -186,6 +238,7 @@
         initFormValidation();
         initLazyLoading();
         initAccessibleMenus();
+        initFilterForms();
     });
 
 })(jQuery);

@@ -45,9 +45,6 @@
 
         // Event listeners
         bindEvents();
-
-        // Update range slider displays
-        updateRangeDisplays();
     }
 
     /**
@@ -64,19 +61,8 @@
             }, 500);
         });
 
-        // Checkboxes dimensione
-        $('.filter-input[type="checkbox"]').on('change', function() {
-            currentPage = 1;
-            applyFilters();
-        });
-
-        // Range sliders - update display
-        $('.range-slider').on('input', function() {
-            updateRangeDisplays();
-        });
-
-        // Range sliders - apply filters
-        $('.range-slider').on('change', function() {
+        // Filter selects - apply filters
+        $('#filter-energy, #filter-apartment, #filter-affection, #filter-strangers, #filter-vocality, #filter-kids, #filter-experience').on('change', function() {
             currentPage = 1;
             applyFilters();
         });
@@ -101,51 +87,23 @@
     }
 
     /**
-     * Update range slider value displays
-     */
-    function updateRangeDisplays() {
-        // Energy
-        const energy = parseFloat($('#filter-energy').val());
-        $('#energy-value').text(energy === 0 ? 'Tutti' : energy.toFixed(1));
-
-        // Apartment
-        const apartment = parseFloat($('#filter-apartment').val());
-        $('#apartment-value').text(apartment === 0 ? 'Tutti' : apartment.toFixed(1));
-
-        // Kids
-        const kids = parseFloat($('#filter-kids').val());
-        $('#kids-value').text(kids === 0 ? 'Tutti' : kids.toFixed(1));
-
-        // Experience
-        const experience = parseFloat($('#filter-experience').val());
-        if (experience === 5) {
-            $('#experience-value').text('Tutti');
-        } else {
-            $('#experience-value').text(experience.toFixed(1));
-        }
-    }
-
-    /**
      * Collect current filter values
      */
     function collectFilters() {
         const filters = {
             search: $('#search-breed').val(),
-            sizes: [],
-            energy: parseFloat($('#filter-energy').val()),
-            apartment: parseFloat($('#filter-apartment').val()),
-            kids: parseFloat($('#filter-kids').val()),
-            experience: parseFloat($('#filter-experience').val()),
+            energy: parseInt($('#filter-energy').val()),
+            apartment: parseInt($('#filter-apartment').val()),
+            affection: parseInt($('#filter-affection').val()),
+            strangers: parseInt($('#filter-strangers').val()),
+            vocality: parseInt($('#filter-vocality').val()),
+            kids: parseInt($('#filter-kids').val()),
+            experience: parseInt($('#filter-experience').val()),
             sort_by: $('#filter-sort').val() || 'name-asc',
             paged: currentPage,
             action: 'filter_razze',
             nonce: razzeFilters.nonce
         };
-
-        // Collect selected sizes
-        $('.filter-input[name="size"]:checked').each(function() {
-            filters.sizes.push($(this).val());
-        });
 
         return filters;
     }
@@ -320,20 +278,17 @@
         // Clear search
         $('#search-breed').val('');
 
-        // Uncheck all sizes
-        $('.filter-input[name="size"]').prop('checked', false);
-
-        // Reset range sliders
+        // Reset select filters
         $('#filter-energy').val(0);
         $('#filter-apartment').val(0);
+        $('#filter-affection').val(0);
+        $('#filter-strangers').val(0);
+        $('#filter-vocality').val(0);
         $('#filter-kids').val(0);
         $('#filter-experience').val(5);
 
         // Reset sort
         $('#filter-sort').val('name-asc');
-
-        // Update displays
-        updateRangeDisplays();
 
         // Reset page and apply
         currentPage = 1;
@@ -404,5 +359,12 @@
             $('#razze-count').text(count + ' razze trovate');
         }
     }
+
+    /**
+     * Initialize on document ready
+     */
+    $(document).ready(function() {
+        init();
+    });
 
 })(jQuery);

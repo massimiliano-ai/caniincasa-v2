@@ -11,7 +11,7 @@
    ========================================================================== */
 
 .single .site-main {
-    padding: var(--spacing-xl) 0;
+    padding: 0 0 var(--spacing-xl) 0;
 }
 
 .single-layout {
@@ -389,7 +389,7 @@
 
 .archive .site-main,
 .search .site-main {
-    padding: var(--spacing-xl) 0;
+    padding: 0 0 var(--spacing-xl) 0;
 }
 
 .archive-header,
@@ -1181,6 +1181,36 @@
     margin-bottom: var(--spacing-xl);
 }
 
+/* Card con immagini uniformi */
+.cucciolata-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.cucciolata-card .card-image-link {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    position: relative;
+    background-color: #f3f4f6;
+}
+
+.cucciolata-card .card-image,
+.cucciolata-card .card-image-link img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+    display: block;
+}
+
+.cucciolata-card:hover .card-image,
+.cucciolata-card:hover .card-image-link img {
+    transform: scale(1.05);
+}
+
 .cucciolata-card .badge--available {
     background: #10b981;
     color: white;
@@ -1516,4 +1546,114 @@
 
 .contact-link:hover {
     text-decoration: underline;
+}
+
+/* ============================================
+   Annunci Horizontal Layout
+   ============================================ */
+
+.annunci-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.annuncio-card--horizontal {
+    display: flex;
+    gap: var(--spacing-lg);
+    background: #fff;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+    border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.annuncio-card--horizontal:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.annuncio-card__image {
+    flex-shrink: 0;
+    width: 400px;
+    overflow: hidden;
+}
+
+.annuncio-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.annuncio-card--horizontal:hover .annuncio-card__image img {
+    transform: scale(1.05);
+}
+
+.annuncio-card__content {
+    flex: 1;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.annuncio-card__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 var(--spacing-sm) 0;
+    line-height: 1.3;
+}
+
+.annuncio-card__title a {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.annuncio-card__title a:hover {
+    color: var(--primary);
+}
+
+.annuncio-card__date {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.annuncio-card__excerpt {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+}
+
+.annuncio-card__link {
+    color: #ef4444;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+}
+
+.annuncio-card__link:hover {
+    color: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .annuncio-card--horizontal {
+        flex-direction: column;
+    }
+
+    .annuncio-card__image {
+        width: 100%;
+        height: 250px;
+    }
+
+    .annuncio-card__content {
+        padding: var(--spacing-md);
+    }
+
+    .annuncio-card__title {
+        font-size: 1.5rem;
+    }
 }

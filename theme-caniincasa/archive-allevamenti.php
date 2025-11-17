@@ -10,18 +10,18 @@ get_header();
 ?>
 
 <main id="main-content" class="site-main">
+
+    <?php
+    // Hero Section
+    caniincasa_page_hero( array(
+        'title' => 'Allevamenti di Cani',
+        'subtitle' => 'Trova allevamenti certificati e professionali nella tua zona',
+    ) );
+    ?>
+
     <div class="container">
 
         <?php caniincasa_breadcrumbs(); ?>
-
-        <header class="archive-header">
-            <h1 class="archive-title">
-                <?php esc_html_e( 'Allevamenti di Cani', 'caniincasa' ); ?>
-            </h1>
-            <p class="archive-description">
-                <?php esc_html_e( 'Trova allevamenti certificati e professionali nella tua zona. Cerca per razza, provincia e caratteristiche specifiche.', 'caniincasa' ); ?>
-            </p>
-        </header>
 
         <div class="archive-layout archive-layout--with-filters">
             <!-- Filters Sidebar -->
@@ -44,31 +44,7 @@ get_header();
                             />
                         </div>
 
-                        <!-- Provincia -->
-                        <?php
-                        $province = get_terms( array(
-                            'taxonomy' => 'provincia',
-                            'hide_empty' => true,
-                        ) );
-                        if ( ! empty( $province ) && ! is_wp_error( $province ) ) :
-                        ?>
-                            <div class="filter-group">
-                                <label for="filter-provincia"><?php esc_html_e( 'Provincia', 'caniincasa' ); ?></label>
-                                <select id="filter-provincia" name="provincia" class="form-control">
-                                    <option value=""><?php esc_html_e( 'Tutte le province', 'caniincasa' ); ?></option>
-                                    <?php
-                                    $selected_provincia = get_query_var( 'provincia' );
-                                    foreach ( $province as $provincia ) :
-                                    ?>
-                                        <option value="<?php echo esc_attr( $provincia->slug ); ?>" <?php selected( $selected_provincia, $provincia->slug ); ?>>
-                                            <?php echo esc_html( $provincia->name ); ?> (<?php echo esc_html( $provincia->count ); ?>)
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
-
-                        <!-- Regione (se necessario) -->
+                        <!-- Regione -->
                         <div class="filter-group">
                             <label for="filter-regione"><?php esc_html_e( 'Regione', 'caniincasa' ); ?></label>
                             <select id="filter-regione" name="regione" class="form-control">
@@ -111,7 +87,8 @@ get_header();
                         $razze = get_terms( array(
                             'taxonomy' => 'razze_allevamenti',
                             'hide_empty' => true,
-                            'number' => 50,
+                            'orderby' => 'name',
+                            'order' => 'ASC',
                         ) );
                         if ( ! empty( $razze ) && ! is_wp_error( $razze ) ) :
                         ?>
@@ -124,71 +101,12 @@ get_header();
                                     foreach ( $razze as $razza ) :
                                     ?>
                                         <option value="<?php echo esc_attr( $razza->slug ); ?>" <?php selected( $selected_razza, $razza->slug ); ?>>
-                                            <?php echo esc_html( $razza->name ); ?> (<?php echo esc_html( $razza->count ); ?>)
+                                            <?php echo esc_html( $razza->name ); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                         <?php endif; ?>
-
-                        <!-- Certificazioni -->
-                        <div class="filter-group">
-                            <label><?php esc_html_e( 'Certificazioni', 'caniincasa' ); ?></label>
-                            <div class="checkbox-group">
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="certificato_enci"
-                                        value="1"
-                                        <?php checked( get_query_var( 'certificato_enci' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Certificato ENCI', 'caniincasa' ); ?></span>
-                                </label>
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="certificato_fci"
-                                        value="1"
-                                        <?php checked( get_query_var( 'certificato_fci' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Certificato FCI', 'caniincasa' ); ?></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Servizi Disponibili -->
-                        <div class="filter-group">
-                            <label><?php esc_html_e( 'Servizi disponibili', 'caniincasa' ); ?></label>
-                            <div class="checkbox-group">
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="cuccioli_disponibili"
-                                        value="1"
-                                        <?php checked( get_query_var( 'cuccioli_disponibili' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Cuccioli disponibili', 'caniincasa' ); ?></span>
-                                </label>
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="consegna_disponibile"
-                                        value="1"
-                                        <?php checked( get_query_var( 'consegna_disponibile' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Consegna disponibile', 'caniincasa' ); ?></span>
-                                </label>
-                                <label class="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="visite_consentite"
-                                        value="1"
-                                        <?php checked( get_query_var( 'visite_consentite' ), '1' ); ?>
-                                    />
-                                    <span><?php esc_html_e( 'Visite consentite', 'caniincasa' ); ?></span>
-                                </label>
-                            </div>
-                        </div>
 
                         <!-- Action Buttons -->
                         <div class="filter-actions">
@@ -208,13 +126,28 @@ get_header();
             <div class="archive-content">
                 <?php if ( have_posts() ) : ?>
 
+                    <?php
+                    // Pre-load caches for better performance
+                    global $wp_query;
+                    $post_ids = wp_list_pluck( $wp_query->posts, 'ID' );
+                    update_post_caches( $wp_query->posts, 'allevamenti', true, true );
+                    update_object_term_cache( $post_ids, 'allevamenti' );
+
+                    // Get accurate count
+                    $total_allevamenti = $wp_query->found_posts;
+
+                    // Debug: log the values
+                    error_log('Allevamenti Archive - found_posts: ' . $total_allevamenti);
+                    error_log('Allevamenti Archive - post_count: ' . $wp_query->post_count);
+                    error_log('Allevamenti Archive - max_num_pages: ' . $wp_query->max_num_pages);
+                    ?>
+
                     <div class="archive-results-header">
                         <p class="results-count">
                             <?php
-                            global $wp_query;
                             printf(
-                                esc_html( _n( '%d allevamento trovato', '%d allevamenti trovati', $wp_query->found_posts, 'caniincasa' ) ),
-                                number_format_i18n( $wp_query->found_posts )
+                                esc_html( _n( '%d allevamento trovato', '%d allevamenti trovati', $total_allevamenti, 'caniincasa' ) ),
+                                number_format_i18n( $total_allevamenti )
                             );
                             ?>
                         </p>
@@ -265,20 +198,13 @@ get_header();
 
                                     <!-- Location -->
                                     <?php
-                                    $citta = get_field( 'citta' );
-                                    $provincia_terms = get_the_terms( get_the_ID(), 'provincia' );
-                                    if ( $citta || $provincia_terms ) :
+                                    $localita = get_post_meta( get_the_ID(), 'localita', true );
+
+                                    if ( $localita ) :
                                     ?>
                                         <div class="allevamento-card__location">
                                             <span class="icon">📍</span>
-                                            <?php
-                                            if ( $citta ) {
-                                                echo esc_html( $citta );
-                                            }
-                                            if ( $provincia_terms && ! is_wp_error( $provincia_terms ) ) {
-                                                echo ' (' . esc_html( $provincia_terms[0]->name ) . ')';
-                                            }
-                                            ?>
+                                            <?php echo esc_html( $localita ); ?>
                                         </div>
                                     <?php endif; ?>
 
@@ -309,22 +235,6 @@ get_header();
                                     <div class="card-excerpt">
                                         <?php echo wp_trim_words( get_the_excerpt(), 15 ); ?>
                                     </div>
-
-                                    <!-- Contact Info -->
-                                    <?php
-                                    $telefono = get_field( 'telefono' );
-                                    $email = get_field( 'email' );
-                                    if ( $telefono || $email ) :
-                                    ?>
-                                        <div class="allevamento-card__contact">
-                                            <?php if ( $telefono ) : ?>
-                                                <a href="tel:<?php echo esc_attr( $telefono ); ?>" class="contact-link">
-                                                    <span class="icon">📞</span>
-                                                    <?php echo esc_html( $telefono ); ?>
-                                                </a>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php endif; ?>
 
                                     <div class="card-footer">
                                         <a href="<?php the_permalink(); ?>" class="btn btn-outline btn-block">

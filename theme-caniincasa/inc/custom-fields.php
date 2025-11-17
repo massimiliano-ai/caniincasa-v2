@@ -423,6 +423,328 @@ acf_add_local_field_group( array(
 ) );
 
 /**
+ * Annunci Cucciolate - Campi Custom
+ */
+acf_add_local_field_group( array(
+    'key' => 'group_annunci_cucciolate',
+    'title' => 'Dettagli Annuncio Cucciolata',
+    'fields' => array(
+
+        array(
+            'key' => 'field_ricerca_offerta',
+            'label' => 'Tipo Annuncio',
+            'name' => 'ricerca_offerta',
+            'type' => 'select',
+            'required' => 1,
+            'choices' => array(
+                'offerta' => 'Offro Cuccioli',
+                'ricerca' => 'Cerco Cucciolo',
+            ),
+            'default_value' => 'offerta',
+        ),
+
+        array(
+            'key' => 'field_razza',
+            'label' => 'Razza',
+            'name' => 'razza',
+            'type' => 'relationship',
+            'required' => 1,
+            'post_type' => array( 'razze_di_cani' ),
+            'max' => 1,
+            'return_format' => 'object',
+        ),
+
+        array(
+            'key' => 'field_data_nascita',
+            'label' => 'Data di Nascita Cuccioli',
+            'name' => 'data_nascita',
+            'type' => 'date_picker',
+            'display_format' => 'd/m/Y',
+            'return_format' => 'Y-m-d',
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_ricerca_offerta',
+                        'operator' => '==',
+                        'value' => 'offerta',
+                    ),
+                ),
+            ),
+        ),
+
+        array(
+            'key' => 'field_numero_maschi',
+            'label' => 'Numero Maschi',
+            'name' => 'numero_maschi',
+            'type' => 'number',
+            'min' => 0,
+            'default_value' => 0,
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_ricerca_offerta',
+                        'operator' => '==',
+                        'value' => 'offerta',
+                    ),
+                ),
+            ),
+        ),
+
+        array(
+            'key' => 'field_numero_femmine',
+            'label' => 'Numero Femmine',
+            'name' => 'numero_femmine',
+            'type' => 'number',
+            'min' => 0,
+            'default_value' => 0,
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_ricerca_offerta',
+                        'operator' => '==',
+                        'value' => 'offerta',
+                    ),
+                ),
+            ),
+        ),
+
+        array(
+            'key' => 'field_prezzo',
+            'label' => 'Prezzo (€)',
+            'name' => 'prezzo',
+            'type' => 'number',
+            'min' => 0,
+            'instructions' => 'Prezzo per cucciolo (opzionale)',
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_ricerca_offerta',
+                        'operator' => '==',
+                        'value' => 'offerta',
+                    ),
+                ),
+            ),
+        ),
+
+        array(
+            'key' => 'field_pedigree',
+            'label' => 'Pedigree',
+            'name' => 'pedigree',
+            'type' => 'select',
+            'choices' => array(
+                'si' => 'Sì',
+                'no' => 'No',
+            ),
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_ricerca_offerta',
+                        'operator' => '==',
+                        'value' => 'offerta',
+                    ),
+                ),
+            ),
+        ),
+
+        array(
+            'key' => 'field_foto_genitori',
+            'label' => 'Foto dei Genitori',
+            'name' => 'foto_genitori',
+            'type' => 'gallery',
+            'return_format' => 'array',
+            'library' => 'all',
+            'min' => 0,
+            'max' => 5,
+        ),
+
+        array(
+            'key' => 'field_documenti_disponibili',
+            'label' => 'Documenti Disponibili',
+            'name' => 'documenti_disponibili',
+            'type' => 'checkbox',
+            'choices' => array(
+                'pedigree' => 'Pedigree',
+                'vaccinazioni' => 'Libretto Vaccinazioni',
+                'microchip' => 'Microchip',
+                'certificato_salute' => 'Certificato di Salute',
+                'esami_genitori' => 'Esami Genitori',
+            ),
+        ),
+
+        array(
+            'key' => 'field_allevamento_riferimento',
+            'label' => 'Allevamento di Riferimento',
+            'name' => 'allevamento_riferimento',
+            'type' => 'relationship',
+            'post_type' => array( 'allevamenti' ),
+            'max' => 1,
+            'return_format' => 'object',
+        ),
+
+        array(
+            'key' => 'field_contatto',
+            'label' => 'Informazioni di Contatto',
+            'name' => 'contatto',
+            'type' => 'textarea',
+            'rows' => 3,
+        ),
+
+        array(
+            'key' => 'field_data_scadenza',
+            'label' => 'Data Scadenza Annuncio',
+            'name' => 'data_scadenza',
+            'type' => 'date_picker',
+            'display_format' => 'd/m/Y',
+            'return_format' => 'Y-m-d',
+            'instructions' => 'Data dopo la quale l\'annuncio non sarà più visibile',
+        ),
+
+    ),
+    'location' => array(
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'annunci_cucciolate',
+            ),
+        ),
+    ),
+    'menu_order' => 0,
+    'position' => 'normal',
+    'style' => 'default',
+    'label_placement' => 'top',
+    'instruction_placement' => 'label',
+    'active' => true,
+) );
+
+/**
+ * Annunci Dogsitter - Campi Custom
+ */
+acf_add_local_field_group( array(
+    'key' => 'group_annunci_dogsitter',
+    'title' => 'Dettagli Annuncio Dogsitter',
+    'fields' => array(
+
+        array(
+            'key' => 'field_comune',
+            'label' => 'Comune',
+            'name' => 'comune',
+            'type' => 'text',
+            'required' => 1,
+        ),
+
+        array(
+            'key' => 'field_zona_disponibilita',
+            'label' => 'Zona Disponibilità',
+            'name' => 'zona_disponibilita',
+            'type' => 'text',
+            'instructions' => 'Es: Milano centro, Provincia di Roma, ecc.',
+        ),
+
+        array(
+            'key' => 'field_esperienza_anni',
+            'label' => 'Anni di Esperienza',
+            'name' => 'esperienza',
+            'type' => 'select',
+            'required' => 1,
+            'choices' => array(
+                'meno-1' => 'Meno di 1 anno',
+                '1-3' => '1-3 anni',
+                '3-5' => '3-5 anni',
+                '5-10' => '5-10 anni',
+                'oltre-10' => 'Oltre 10 anni',
+            ),
+        ),
+
+        array(
+            'key' => 'field_tariffa_oraria',
+            'label' => 'Tariffa Oraria (€)',
+            'name' => 'tariffe',
+            'type' => 'number',
+            'required' => 1,
+            'min' => 5,
+            'max' => 100,
+            'step' => 1,
+        ),
+
+        array(
+            'key' => 'field_disponibilita_oraria',
+            'label' => 'Disponibilità Oraria',
+            'name' => 'disponibilita',
+            'type' => 'checkbox',
+            'required' => 1,
+            'choices' => array(
+                'mattina' => 'Mattina (08:00-13:00)',
+                'pomeriggio' => 'Pomeriggio (13:00-19:00)',
+                'sera' => 'Sera (19:00-23:00)',
+                'weekend' => 'Weekend',
+                'notturno' => 'Notturno',
+            ),
+        ),
+
+        array(
+            'key' => 'field_servizi_offerti',
+            'label' => 'Servizi Offerti',
+            'name' => 'servizi',
+            'type' => 'checkbox',
+            'required' => 1,
+            'choices' => array(
+                'passeggiate' => 'Passeggiate',
+                'pensione' => 'Pensione a casa mia',
+                'domicilio' => 'Assistenza a domicilio',
+                'toelettatura' => 'Toelettatura base',
+                'trasporto' => 'Trasporto',
+                'addestramento' => 'Addestramento base',
+            ),
+        ),
+
+        array(
+            'key' => 'field_taglie_accettate',
+            'label' => 'Taglie Accettate',
+            'name' => 'taglie',
+            'type' => 'checkbox',
+            'required' => 1,
+            'choices' => array(
+                'piccola' => 'Piccola (fino a 10kg)',
+                'media' => 'Media (10-25kg)',
+                'grande' => 'Grande (25-45kg)',
+                'gigante' => 'Gigante (oltre 45kg)',
+            ),
+        ),
+
+        array(
+            'key' => 'field_contatto_telefono',
+            'label' => 'Telefono',
+            'name' => 'contatto_telefono',
+            'type' => 'text',
+        ),
+
+        array(
+            'key' => 'field_contatto_email',
+            'label' => 'Email',
+            'name' => 'contatto_email',
+            'type' => 'email',
+        ),
+
+    ),
+    'location' => array(
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'annunci_dogsitter',
+            ),
+        ),
+    ),
+    'menu_order' => 0,
+    'position' => 'normal',
+    'style' => 'default',
+    'label_placement' => 'top',
+    'instruction_placement' => 'label',
+    'active' => true,
+) );
+
+/**
  * Helper function to get rating label text
  */
 function caniincasa_get_rating_label( $field_name, $value ) {
@@ -479,3 +801,141 @@ function caniincasa_get_rating_label( $field_name, $value ) {
 
     return '';
 }
+
+/**
+ * Page Hero Settings
+ * Campi per configurare la barra del titolo delle pagine
+ */
+acf_add_local_field_group( array(
+    'key' => 'group_page_hero_settings',
+    'title' => 'Impostazioni Barra Titolo',
+    'fields' => array(
+        array(
+            'key' => 'field_hero_disable',
+            'label' => 'Disabilita Barra Titolo',
+            'name' => 'hero_disable',
+            'type' => 'true_false',
+            'instructions' => 'Attiva per nascondere completamente la barra del titolo in questa pagina.',
+            'default_value' => 0,
+            'ui' => 1,
+        ),
+        array(
+            'key' => 'field_page_subtitle',
+            'label' => 'Sottotitolo (H2)',
+            'name' => 'page_subtitle',
+            'type' => 'text',
+            'instructions' => 'Sottotitolo da visualizzare sotto il titolo principale nella barra hero. Lascia vuoto per usare il valore predefinito.',
+            'placeholder' => 'Es: Veterinari - Cliniche e Ambulatori',
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_hero_disable',
+                        'operator' => '!=',
+                        'value' => '1',
+                    ),
+                ),
+            ),
+        ),
+        array(
+            'key' => 'field_hero_background_image',
+            'label' => 'Immagine di Sfondo Barra Titolo',
+            'name' => 'hero_background_image',
+            'type' => 'image',
+            'instructions' => 'Immagine di sfondo per la barra del titolo. Lascia vuoto per usare il gradiente predefinito o l\'immagine configurata nelle impostazioni tema.',
+            'return_format' => 'id',
+            'preview_size' => 'medium',
+            'library' => 'all',
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_hero_disable',
+                        'operator' => '!=',
+                        'value' => '1',
+                    ),
+                ),
+            ),
+        ),
+        array(
+            'key' => 'field_hero_overlay_color',
+            'label' => 'Colore Overlay',
+            'name' => 'hero_overlay_color',
+            'type' => 'color_picker',
+            'instructions' => 'Colore dell\'overlay scuro sopra l\'immagine di sfondo. Lascia vuoto per usare il nero predefinito (rgba(0,0,0,0.5)).',
+            'default_value' => '',
+            'enable_opacity' => 1,
+            'return_format' => 'string',
+            'conditional_logic' => array(
+                array(
+                    array(
+                        'field' => 'field_hero_disable',
+                        'operator' => '!=',
+                        'value' => '1',
+                    ),
+                ),
+            ),
+        ),
+    ),
+    'location' => array(
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'page',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'post',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'razze_di_cani',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'allevamenti',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'struttureveterinarie',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'canili',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'centri_cinofili',
+            ),
+        ),
+        array(
+            array(
+                'param' => 'post_type',
+                'operator' => '==',
+                'value' => 'pensioni_per_cani',
+            ),
+        ),
+    ),
+    'menu_order' => 0,
+    'position' => 'side',
+    'style' => 'default',
+    'label_placement' => 'top',
+    'instruction_placement' => 'label',
+) );

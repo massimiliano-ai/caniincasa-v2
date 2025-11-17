@@ -183,10 +183,17 @@ get_header();
             <div class="archive-content">
                 <?php if ( have_posts() ) : ?>
 
+                    <?php
+                    // Pre-load caches for better performance
+                    global $wp_query;
+                    $post_ids = wp_list_pluck( $wp_query->posts, 'ID' );
+                    update_post_caches( $wp_query->posts, 'centri_cinofili', true, true );
+                    update_object_term_cache( $post_ids, 'centri_cinofili' );
+                    ?>
+
                     <div class="archive-results-header">
                         <p class="results-count">
                             <?php
-                            global $wp_query;
                             printf(
                                 esc_html( _n( '%d centro cinofilo trovato', '%d centri cinofili trovati', $wp_query->found_posts, 'caniincasa' ) ),
                                 number_format_i18n( $wp_query->found_posts )

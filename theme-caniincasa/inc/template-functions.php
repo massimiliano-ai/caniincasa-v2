@@ -102,7 +102,11 @@ function caniincasa_get_breadcrumbs() {
 
     } elseif ( is_archive() ) {
         $output .= '<li class="breadcrumb-item active" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">';
-        $output .= '<span itemprop="name">' . esc_html( get_the_archive_title() ) . '</span>';
+        // Remove "Archivi: " prefix and tags from title
+        $archive_title = get_the_archive_title();
+        $archive_title = wp_strip_all_tags( $archive_title );
+        $archive_title = preg_replace( '/^(Archivi|Archive|Archivos):\s*/i', '', $archive_title );
+        $output .= '<span itemprop="name">' . esc_html( $archive_title ) . '</span>';
         $output .= '<meta itemprop="position" content="' . esc_attr( $position ) . '" />';
         $output .= '</li>';
 

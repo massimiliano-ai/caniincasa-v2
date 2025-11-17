@@ -12,6 +12,13 @@ get_header();
 <main id="main-content" class="site-main">
     <?php while ( have_posts() ) : the_post(); ?>
 
+        <?php
+        // Hero Section
+        caniincasa_page_hero( array(
+            'subtitle' => 'Annuncio Dogsitter',
+        ) );
+        ?>
+
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'dogsitter-single' ); ?>>
 
             <?php caniincasa_breadcrumbs(); ?>
@@ -116,9 +123,7 @@ get_header();
                                 ?>
                                     <li class="contact-email">
                                         <i class="icon-email">✉️</i>
-                                        <a href="<?php echo esc_url( 'mailto:' . $email ); ?>">
-                                            <?php echo esc_html( $email ); ?>
-                                        </a>
+                                        <?php echo esc_html( $email ); ?>
                                     </li>
                                 <?php endif; ?>
                             </ul>

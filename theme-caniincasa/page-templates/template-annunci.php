@@ -1,59 +1,86 @@
 <?php
 /**
- * Archive Template for Annunci Cucciolate (Litter Announcements)
+ * Template Name: Annunci - Griglia
+ * Template Post Type: page
  *
  * @package CaninCasa
- * @since 1.0.0
+ * @since 2.0.0
  */
 
 get_header();
 ?>
 
 <main id="main-content" class="site-main page-annunci">
+
+    <?php
+    // Hero Section
+    caniincasa_page_hero( array(
+        'subtitle' => 'Annunci',
+    ) );
+    ?>
+
     <div class="container">
 
         <?php caniincasa_breadcrumbs(); ?>
 
-        <header class="page-hero">
-            <h1 class="page-title">
-                <?php esc_html_e( 'Annunci Cucciolate', 'caniincasa' ); ?>
-            </h1>
-            <p class="page-intro">
-                <?php esc_html_e( 'Trova cuccioli disponibili da allevamenti certificati. Scegli la razza e la zona che preferisci.', 'caniincasa' ); ?>
-            </p>
-        </header>
-
         <?php
-        // Pre-load caches for better performance
-        if ( have_posts() ) {
-            global $wp_query;
-            $post_ids = wp_list_pluck( $wp_query->posts, 'ID' );
-            update_post_caches( $wp_query->posts, 'annunci_cucciolate', true, true );
-            update_object_term_cache( $post_ids, 'annunci_cucciolate' );
+        // Query per tutti gli annunci
+        // For page templates, check both 'paged' and 'page' query vars
+        $paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+        if ( $paged < 1 ) {
+            $paged = ( get_query_var( 'page' ) ) ? get_query_var( 'page' ) : 1;
+        }
+        if ( $paged < 1 ) {
+            $paged = 1;
+        }
+
+        // Query per tutti i tipi di annunci
+        $post_types = array( 'annunci_cucciolate', 'annunci_dogsitter' );
+
+        $args = array(
+            'post_type' => $post_types,
+            'post_status' => 'publish',
+            'posts_per_page' => 24,
+            'paged' => $paged,
+            'orderby' => 'date',
+            'order' => 'DESC',
+        );
+
+        $annunci_query = new WP_Query( $args );
+
+        // Pre-carica term cache e meta cache per migliorare performance
+        if ( $annunci_query->have_posts() ) {
+            $post_ids = wp_list_pluck( $annunci_query->posts, 'ID' );
+            // Pre-carica cache per entrambi i post types
+            foreach ( $post_types as $post_type ) {
+                update_post_caches( $annunci_query->posts, $post_type, true, true );
+                update_object_term_cache( $post_ids, $post_type );
+            }
         }
         ?>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner" style="display:none;">
+            <div class="spinner"></div>
+            <p>Caricamento...</p>
+        </div>
 
         <!-- Results Count -->
         <div class="results-info">
             <p class="results-count">
-                <?php
-                if ( have_posts() ) {
-                    global $wp_query;
-                    printf(
-                        esc_html( _n( 'Trovato %d annuncio', 'Trovati %d annunci', $wp_query->found_posts, 'caniincasa' ) ),
-                        '<strong>' . number_format_i18n( $wp_query->found_posts ) . '</strong>'
-                    );
-                }
-                ?>
+                Trovati <strong><?php echo $annunci_query->found_posts; ?></strong> annunci
+                <?php if ( $annunci_query->max_num_pages > 1 ): ?>
+                    (Pagina <?php echo $paged; ?> di <?php echo $annunci_query->max_num_pages; ?>)
+                <?php endif; ?>
             </p>
         </div>
 
-        <?php if ( have_posts() ) : ?>
+        <?php if ( $annunci_query->have_posts() ): ?>
 
             <!-- Annunci List Layout (Horizontal Cards) -->
-            <div class="annunci-list-layout">
+            <div class="annunci-list-layout" id="items-grid">
 
-                <?php while ( have_posts() ) : the_post(); ?>
+                <?php while ( $annunci_query->have_posts() ): $annunci_query->the_post(); ?>
 
                     <article class="annuncio-horizontal-card">
 
@@ -75,7 +102,14 @@ get_header();
 
                             <!-- Badge Tipo Annuncio -->
                             <div class="annuncio-type-badge">
-                                <span class="badge badge-cucciolate">🐶 Cucciolata</span>
+                                <?php
+                                $post_type = get_post_type();
+                                if ( $post_type === 'annunci_cucciolate' ) {
+                                    echo '<span class="badge badge-cucciolate">🐶 Cucciolata</span>';
+                                } elseif ( $post_type === 'annunci_dogsitter' ) {
+                                    echo '<span class="badge badge-dogsitter">🦴 Dogsitter</span>';
+                                }
+                                ?>
                             </div>
                         </div>
 
@@ -90,14 +124,7 @@ get_header();
 
                             <!-- Meta Info -->
                             <div class="annuncio-meta">
-                                <?php
-                                $data_nascita = get_field( 'data_nascita' );
-                                if ( $data_nascita ) :
-                                ?>
-                                    <span class="annuncio-date"><?php echo esc_html( date_i18n( 'F j, Y', strtotime( $data_nascita ) ) ); ?></span>
-                                <?php else: ?>
-                                    <span class="annuncio-date"><?php echo get_the_date( 'F j, Y' ); ?></span>
-                                <?php endif; ?>
+                                <span class="annuncio-date"><?php echo get_the_date( 'F j, Y' ); ?></span>
                             </div>
 
                             <!-- Description -->
@@ -125,15 +152,16 @@ get_header();
                                 <?php endif; ?>
 
                                 <?php
-                                // Razza
-                                $razza = get_field( 'razza' );
-                                if ( $razza ):
+                                // Razza (per cucciolate)
+                                if ( get_post_type() === 'annunci_cucciolate' ):
+                                    $razza = get_field( 'razza' );
+                                    if ( $razza ):
                                 ?>
                                     <span class="meta-item">
                                         <span class="icon">🐕</span>
                                         <span class="text"><?php echo esc_html( $razza ); ?></span>
                                     </span>
-                                <?php endif; ?>
+                                <?php endif; endif; ?>
                             </div>
 
                             <!-- Learn More Link -->
@@ -150,26 +178,37 @@ get_header();
             </div>
 
             <!-- Pagination -->
-            <?php
-            the_posts_pagination( array(
-                'mid_size'  => 2,
-                'prev_text' => __( '← Precedente', 'caniincasa' ),
-                'next_text' => __( 'Successivo →', 'caniincasa' ),
-            ) );
-            ?>
+            <?php if ( $annunci_query->max_num_pages > 1 ): ?>
+                <div class="pagination-wrapper">
+                    <?php
+                    echo caniincasa_get_pagination_with_filters( array(
+                        'total' => $annunci_query->max_num_pages,
+                        'current' => max( 1, $paged ),
+                    ), array() );
+                    ?>
+                </div>
+            <?php endif; ?>
 
-        <?php else : ?>
+        <?php else: ?>
 
             <!-- No Results -->
             <div class="no-items">
                 <div class="no-items-icon">📢</div>
                 <h3>Nessun annuncio trovato</h3>
-                <p>Non ci sono annunci pubblicati al momento.</p>
+                <p>Non ci sono annunci pubblicati al momento con i filtri selezionati.</p>
+                <?php if ( is_user_logged_in() ): ?>
+                    <a href="<?php echo esc_url( home_url( '/inserisci-annuncio/' ) ); ?>" class="btn btn-primary">
+                        Pubblica un annuncio
+                    </a>
+                <?php endif; ?>
             </div>
 
         <?php endif; ?>
 
+        <?php wp_reset_postdata(); ?>
+
     </div>
+
 </main>
 
 <?php get_footer(); ?>

@@ -13,7 +13,7 @@
      * Registration Form Handler
      */
     function initRegistrationForm() {
-        const $form = $('#registration-form');
+        const $form = $('#register-form, #registration-form');
 
         if (!$form.length) {
             return;
@@ -38,6 +38,12 @@
                 password_confirm: $form.find('#password_confirm').val(),
                 privacy: $form.find('#privacy').is(':checked') ? '1' : '0'
             };
+
+            // Add redirect_to if present
+            const redirectTo = $form.find('input[name="redirect_to"]').val();
+            if (redirectTo) {
+                formData.redirect_to = redirectTo;
+            }
 
             // Client-side validation
             if (!validateRegistrationForm(formData, $form)) {

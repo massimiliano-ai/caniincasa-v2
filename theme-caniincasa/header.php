@@ -61,6 +61,42 @@
                     ) );
                     ?>
                 </nav><!-- #site-navigation -->
+
+                <!-- User Actions -->
+                <div class="header-user-actions">
+                    <?php
+                    // Pulsante Crea Annuncio
+                    // Utente loggato → vai direttamente al tab della dashboard
+                    // Utente non loggato → vai alla registrazione con redirect
+                    $annuncio_url = is_user_logged_in()
+                        ? home_url( '/dashboard/?tab=aggiungi-cucciolata' )
+                        : home_url( '/registrati/?redirect_to=' . urlencode( home_url( '/dashboard/?tab=aggiungi-cucciolata' ) ) );
+                    ?>
+                    <a href="<?php echo esc_url( $annuncio_url ); ?>" class="user-link btn-create-ad">
+                        <span class="icon">📝</span>
+                        <span class="text"><?php esc_html_e( 'Crea Annuncio', 'caniincasa' ); ?></span>
+                    </a>
+
+                    <?php if ( is_user_logged_in() ) : ?>
+                        <a href="<?php echo esc_url( home_url( '/dashboard/' ) ); ?>" class="user-link user-dashboard">
+                            <span class="icon">👤</span>
+                            <span class="text"><?php esc_html_e( 'Dashboard', 'caniincasa' ); ?></span>
+                        </a>
+                        <a href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>" class="user-link user-logout">
+                            <span class="icon">🚪</span>
+                            <span class="text"><?php esc_html_e( 'Esci', 'caniincasa' ); ?></span>
+                        </a>
+                    <?php else : ?>
+                        <a href="<?php echo esc_url( home_url( '/login/' ) ); ?>" class="user-link user-login">
+                            <span class="icon">🔐</span>
+                            <span class="text"><?php esc_html_e( 'Accedi', 'caniincasa' ); ?></span>
+                        </a>
+                        <a href="<?php echo esc_url( home_url( '/registrati/' ) ); ?>" class="user-link user-register btn-primary">
+                            <span class="icon">✨</span>
+                            <span class="text"><?php esc_html_e( 'Registrati', 'caniincasa' ); ?></span>
+                        </a>
+                    <?php endif; ?>
+                </div><!-- .header-user-actions -->
             </div><!-- .header-inner -->
         </div><!-- .container -->
     </header><!-- #masthead -->

@@ -205,7 +205,7 @@ get_header();
                 <div class="cta-card">
                     <div class="cta-card__icon">🐾</div>
                     <h3 class="cta-card__title">
-                        <?php esc_html_e( 'Vuoi proporre una cucciolata o una adozione?', 'caniincasa' ); ?>
+                        <?php esc_html_e( 'Vuoi pubblicare un annuncio o una adozione?', 'caniincasa' ); ?>
                     </h3>
                     <p class="cta-card__text">
                         <?php esc_html_e( 'Contattaci per aggiungere il tuo annuncio al nostro database', 'caniincasa' ); ?>

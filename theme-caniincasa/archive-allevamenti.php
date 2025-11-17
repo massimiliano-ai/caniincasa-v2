@@ -10,18 +10,18 @@ get_header();
 ?>
 
 <main id="main-content" class="site-main">
+
+    <?php
+    // Hero Section
+    caniincasa_page_hero( array(
+        'title' => 'Allevamenti di Cani',
+        'subtitle' => 'Trova allevamenti certificati e professionali nella tua zona',
+    ) );
+    ?>
+
     <div class="container">
 
         <?php caniincasa_breadcrumbs(); ?>
-
-        <header class="archive-header">
-            <h1 class="archive-title">
-                <?php esc_html_e( 'Allevamenti di Cani', 'caniincasa' ); ?>
-            </h1>
-            <p class="archive-description">
-                <?php esc_html_e( 'Trova allevamenti certificati e professionali nella tua zona. Cerca per razza, provincia e caratteristiche specifiche.', 'caniincasa' ); ?>
-            </p>
-        </header>
 
         <div class="archive-layout archive-layout--with-filters">
             <!-- Filters Sidebar -->
@@ -190,20 +190,32 @@ get_header();
 
                                     <!-- Location -->
                                     <?php
+                                    $comune = get_field( 'comune' );
                                     $citta = get_field( 'citta' );
+                                    $provincia_acf = get_field( 'provincia' ) ?: get_field( 'provincia_estesa' );
                                     $provincia_terms = get_the_terms( get_the_ID(), 'provincia' );
-                                    if ( $citta || $provincia_terms ) :
+
+                                    $location_parts = array();
+
+                                    // Comune o Città
+                                    if ( $comune ) {
+                                        $location_parts[] = $comune;
+                                    } elseif ( $citta ) {
+                                        $location_parts[] = $citta;
+                                    }
+
+                                    // Provincia (preferisci ACF field, fallback a taxonomy)
+                                    if ( $provincia_acf ) {
+                                        $location_parts[] = '(' . $provincia_acf . ')';
+                                    } elseif ( $provincia_terms && ! is_wp_error( $provincia_terms ) ) {
+                                        $location_parts[] = '(' . $provincia_terms[0]->name . ')';
+                                    }
+
+                                    if ( ! empty( $location_parts ) ) :
                                     ?>
                                         <div class="allevamento-card__location">
                                             <span class="icon">📍</span>
-                                            <?php
-                                            if ( $citta ) {
-                                                echo esc_html( $citta );
-                                            }
-                                            if ( $provincia_terms && ! is_wp_error( $provincia_terms ) ) {
-                                                echo ' (' . esc_html( $provincia_terms[0]->name ) . ')';
-                                            }
-                                            ?>
+                                            <?php echo esc_html( implode( ' ', $location_parts ) ); ?>
                                         </div>
                                     <?php endif; ?>
 

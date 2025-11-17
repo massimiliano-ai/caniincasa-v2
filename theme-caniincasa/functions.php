@@ -1283,6 +1283,16 @@ function caniincasa_filter_annunci_archive( $query ) {
 add_action( 'pre_get_posts', 'caniincasa_filter_annunci_archive' );
 
 /**
+ * Set posts per page for allevamenti archive
+ */
+function caniincasa_allevamenti_posts_per_page( $query ) {
+    if ( ! is_admin() && $query->is_main_query() && is_post_type_archive( 'allevamenti' ) ) {
+        $query->set( 'posts_per_page', 24 );
+    }
+}
+add_action( 'pre_get_posts', 'caniincasa_allevamenti_posts_per_page' );
+
+/**
  * Get Pagination Links with Filter Parameters Preserved
  *
  * Utility function to generate pagination links that preserve GET parameters

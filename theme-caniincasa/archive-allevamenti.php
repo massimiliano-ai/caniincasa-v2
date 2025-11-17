@@ -190,25 +190,19 @@ get_header();
 
                                     <!-- Location -->
                                     <?php
-                                    $comune = get_field( 'comune' );
-                                    $citta = get_field( 'citta' );
-                                    $provincia_acf = get_field( 'provincia' ) ?: get_field( 'provincia_estesa' );
-                                    $provincia_terms = get_the_terms( get_the_ID(), 'provincia' );
+                                    $des_localita = get_field( 'DesLocalita' );
+                                    $cod_provincia = get_field( 'CodProvincia' );
 
                                     $location_parts = array();
 
-                                    // Comune o Città
-                                    if ( $comune ) {
-                                        $location_parts[] = $comune;
-                                    } elseif ( $citta ) {
-                                        $location_parts[] = $citta;
+                                    // DesLocalita
+                                    if ( $des_localita ) {
+                                        $location_parts[] = $des_localita;
                                     }
 
-                                    // Provincia (preferisci ACF field, fallback a taxonomy)
-                                    if ( $provincia_acf ) {
-                                        $location_parts[] = '(' . $provincia_acf . ')';
-                                    } elseif ( $provincia_terms && ! is_wp_error( $provincia_terms ) ) {
-                                        $location_parts[] = '(' . $provincia_terms[0]->name . ')';
+                                    // CodProvincia
+                                    if ( $cod_provincia ) {
+                                        $location_parts[] = '(' . $cod_provincia . ')';
                                     }
 
                                     if ( ! empty( $location_parts ) ) :
@@ -246,22 +240,6 @@ get_header();
                                     <div class="card-excerpt">
                                         <?php echo wp_trim_words( get_the_excerpt(), 15 ); ?>
                                     </div>
-
-                                    <!-- Contact Info -->
-                                    <?php
-                                    $telefono = get_field( 'telefono' );
-                                    $email = get_field( 'email' );
-                                    if ( $telefono || $email ) :
-                                    ?>
-                                        <div class="allevamento-card__contact">
-                                            <?php if ( $telefono ) : ?>
-                                                <a href="tel:<?php echo esc_attr( $telefono ); ?>" class="contact-link">
-                                                    <span class="icon">📞</span>
-                                                    <?php echo esc_html( $telefono ); ?>
-                                                </a>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php endif; ?>
 
                                     <div class="card-footer">
                                         <a href="<?php the_permalink(); ?>" class="btn btn-outline btn-block">
